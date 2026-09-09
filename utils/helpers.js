@@ -1,69 +1,57 @@
- // ---helper.js---
+// ---helper.js---
 
 // utils/helpers.js
-import { expect } from '@playwright/test';
-import fs from 'fs';
-import fsPromises from 'fs/promises';
-import path from 'path';
+import { expect } from "@playwright/test";
+import fs from "fs";
+import fsPromises from "fs/promises";
+import path from "path";
 
 // --- Config & Constants ---
 export const CONFIG = {
-  BASE_URL:
-    process.env.BASE_URL ||
-    'https://datastore.geowgs84.com',
+  BASE_URL: process.env.BASE_URL || "https://datastore.geowgs84.com",
 
-  HEADLESS:
-    process.env.HEADLESS === 'true',
+  HEADLESS: process.env.HEADLESS === "true",
 
-  PW_SLOWMO:
-    Number(process.env.PW_SLOWMO || 0)
+  PW_SLOWMO: Number(process.env.PW_SLOWMO || 0),
 };
 
-export const PAUSE_MULTIPLIER =
-  Number(process.env.PAUSE_MULTIPLIER || 1.5);
+export const PAUSE_MULTIPLIER = Number(process.env.PAUSE_MULTIPLIER || 1.5);
 
-export const VISUAL_MIN_PAUSE =
-  Number(process.env.VISUAL_MIN_PAUSE || 150);
+export const VISUAL_MIN_PAUSE = Number(process.env.VISUAL_MIN_PAUSE || 150);
 
-export const DIAG_DIR =
-  'diagnostics';
+export const DIAG_DIR = "diagnostics";
 
-export const VIDEO_DIR =
-  path.join(process.cwd(), 'test-results');
+export const VIDEO_DIR = path.join(process.cwd(), "test-results");
 
 export const SOFT_ASSERT =
-  (process.env.SOFT_ASSERT || 'false').toLowerCase() === 'true';
+  (process.env.SOFT_ASSERT || "false").toLowerCase() === "true";
 
-export const DEFAULT_WAIT =
-  Number(process.env.DEFAULT_WAIT || 15000);
+export const DEFAULT_WAIT = Number(process.env.DEFAULT_WAIT || 15000);
 
-export const OUTLINE_WAIT_MS =
-  Number(process.env.OUTLINE_WAIT_MS || 90000);
+export const OUTLINE_WAIT_MS = Number(process.env.OUTLINE_WAIT_MS || 90000);
 
-export const PREVIEW_WAIT_MS =
-  Number(process.env.PREVIEW_WAIT_MS || 90000);
+export const PREVIEW_WAIT_MS = Number(process.env.PREVIEW_WAIT_MS || 90000);
 
-export const DETAILS_IMAGE_WAIT_MS =
-  Number(process.env.DETAILS_IMAGE_WAIT_MS || 120000);
-
+export const DETAILS_IMAGE_WAIT_MS = Number(
+  process.env.DETAILS_IMAGE_WAIT_MS || 120000,
+);
 
 // --- Context & State ---
 
-let CURRENT_TEST_FILE = '';
-let CURRENT_TESTCASE = '';
-let CURRENT_FLOW = '';
+let CURRENT_TEST_FILE = "";
+let CURRENT_TESTCASE = "";
+let CURRENT_FLOW = "";
 
 let CURRENT_CONTEXT = {
-  testcase: '',
-  flow: '',
-  testFile: '',
-  product: '',
-  scene: '',
-  details: null
+  testcase: "",
+  flow: "",
+  testFile: "",
+  product: "",
+  scene: "",
+  details: null,
 };
 
-export let LAST_ADDED_PRODUCT = '';
-
+export let LAST_ADDED_PRODUCT = "";
 
 // ★ Global page reference for auto-capture
 let CURRENT_PAGE_REF = null;
@@ -72,13 +60,11 @@ let lastAutoCaptureTime = 0;
 
 const AUTO_CAPTURE_COOLDOWN_MS = 1500;
 
-
 let INFOS = [];
 let WARNINGS = [];
 let ERRORS = [];
 
 const ARTIFACTS = [];
-
 
 // ★ Skipped steps tracking
 let SKIPPED_STEPS = [];
@@ -86,25 +72,14 @@ let SKIPPED_STEPS = [];
 let lastErrorCount = 0;
 let lastWarningCount = 0;
 
-
 // Ensure directories exist
-;(function ensureDirExists() {
-
-  [DIAG_DIR, VIDEO_DIR].forEach(dir => {
-
+(function ensureDirExists() {
+  [DIAG_DIR, VIDEO_DIR].forEach((dir) => {
     if (!fs.existsSync(dir)) {
-
-      fs.mkdirSync(
-        dir,
-        { recursive: true }
-      );
-
+      fs.mkdirSync(dir, { recursive: true });
     }
-
   });
-
 })();
-
 
 // =========================================================
 // PAGE REFERENCE MANAGEMENT
@@ -122,339 +97,210 @@ export function clearPageRef() {
   CURRENT_PAGE_REF = null;
 }
 
-
 // =========================================================
 // CONTEXT
 // =========================================================
 
-export function setContext(
-  {
-    testcase,
-    flow,
-    testFile
-  } = {}
-) {
+export function setContext({ testcase, flow, testFile } = {}) {
+  if (testcase !== undefined) CURRENT_TESTCASE = testcase;
 
-  if (testcase !== undefined)
-    CURRENT_TESTCASE = testcase;
+  if (flow !== undefined) CURRENT_FLOW = flow;
 
-  if (flow !== undefined)
-    CURRENT_FLOW = flow;
+  if (testFile !== undefined) CURRENT_TEST_FILE = testFile;
 
-  if (testFile !== undefined)
-    CURRENT_TEST_FILE = testFile;
-
-  logInfo(
-    `Context set`,
-    {
-      testcase: CURRENT_TESTCASE,
-      flow: CURRENT_FLOW,
-      testFile: CURRENT_TEST_FILE
-    }
-  );
+  logInfo(`Context set`, {
+    testcase: CURRENT_TESTCASE,
+    flow: CURRENT_FLOW,
+    testFile: CURRENT_TEST_FILE,
+  });
 }
-
 
 export function clearContext() {
-
-  CURRENT_TESTCASE = '';
-  CURRENT_FLOW = '';
-  CURRENT_TEST_FILE = '';
-
+  CURRENT_TESTCASE = "";
+  CURRENT_FLOW = "";
+  CURRENT_TEST_FILE = "";
 }
-
 
 export function setContextFromObject(ctx) {
-
   CURRENT_CONTEXT = {
     ...CURRENT_CONTEXT,
-    ...ctx
+    ...ctx,
   };
-
 }
-
 
 export function clearContextObject() {
-
   CURRENT_CONTEXT = {
-    testcase: '',
-    flow: '',
-    testFile: '',
-    product: '',
-    scene: '',
-    details: null
+    testcase: "",
+    flow: "",
+    testFile: "",
+    product: "",
+    scene: "",
+    details: null,
   };
-
 }
-
 
 export function setLastAddedProduct(val) {
-
   LAST_ADDED_PRODUCT = val;
-
 }
-
 
 export function getLastAddedProduct() {
-
   return LAST_ADDED_PRODUCT;
-
 }
-
 
 export function contextSnapshot() {
-
   return {
+    test: CURRENT_TESTCASE || CURRENT_CONTEXT.testcase || null,
 
-    test:
-      CURRENT_TESTCASE ||
-      CURRENT_CONTEXT.testcase ||
-      null,
+    flow: CURRENT_FLOW || CURRENT_CONTEXT.flow || null,
 
-    flow:
-      CURRENT_FLOW ||
-      CURRENT_CONTEXT.flow ||
-      null,
+    product: CURRENT_CONTEXT.product || null,
 
-    product:
-      CURRENT_CONTEXT.product ||
-      null,
+    scene: CURRENT_CONTEXT.scene || null,
 
-    scene:
-      CURRENT_CONTEXT.scene ||
-      null,
+    details: CURRENT_CONTEXT.details || null,
 
-    details:
-      CURRENT_CONTEXT.details ||
-      null,
-
-    time:
-      new Date().toISOString()
-
+    time: new Date().toISOString(),
   };
-
 }
-
 
 // =========================================================
 // SKIPPED STEPS
 // =========================================================
 
-export function markLogicSkipped(
-  reason,
-  meta = {}
-) {
-
-  const entry =
-    Object.assign(
-      {},
-      contextSnapshot(),
-      {
-        level: 'skipped',
-        reason,
-        meta,
-        time: new Date().toISOString()
-      }
-    );
+export function markLogicSkipped(reason, meta = {}) {
+  const entry = Object.assign({}, contextSnapshot(), {
+    level: "skipped",
+    reason,
+    meta,
+    time: new Date().toISOString(),
+  });
 
   SKIPPED_STEPS.push(entry);
 
   console.warn(
     `[SKIPPED] ${entry.time} ` +
-    `${entry.test ? `(${entry.test})` : ''} ` +
-    `${entry.flow ? `[${entry.flow}]` : ''} - ${reason}`
+      `${entry.test ? `(${entry.test})` : ""} ` +
+      `${entry.flow ? `[${entry.flow}]` : ""} - ${reason}`,
   );
 
-  addWarning(
-    `SKIPPED: ${reason}`,
-    meta
-  );
-
+  addWarning(`SKIPPED: ${reason}`, meta);
 }
-
 
 export function getSkippedSteps() {
-
-  return [
-    ...SKIPPED_STEPS
-  ];
-
+  return [...SKIPPED_STEPS];
 }
-
 
 export function clearSkippedSteps() {
-
   SKIPPED_STEPS = [];
-
 }
-
 
 // =========================================================
 // LOGGING
 // =========================================================
 
-export function logInfo(
-  message,
-  meta = {}
-) {
-
-  const entry =
-    Object.assign(
-      {},
-      contextSnapshot(),
-      {
-        level: 'info',
-        message,
-        meta
-      }
-    );
+export function logInfo(message, meta = {}) {
+  const entry = Object.assign({}, contextSnapshot(), {
+    level: "info",
+    message,
+    meta,
+  });
 
   INFOS.push(entry);
 
   console.log(
     `[INFO] ${entry.time} ` +
-    `${entry.test ? `(${entry.test})` : ''} ` +
-    `${entry.flow ? `[${entry.flow}]` : ''} - ${message}`
+      `${entry.test ? `(${entry.test})` : ""} ` +
+      `${entry.flow ? `[${entry.flow}]` : ""} - ${message}`,
   );
-
 }
 
-
-export function addWarning(
-  message,
-  meta = {}
-) {
-
-  const entry =
-    Object.assign(
-      {},
-      contextSnapshot(),
-      {
-        level: 'warning',
-        message,
-        meta
-      }
-    );
+export function addWarning(message, meta = {}) {
+  const entry = Object.assign({}, contextSnapshot(), {
+    level: "warning",
+    message,
+    meta,
+  });
 
   WARNINGS.push(entry);
 
   console.warn(
     `[WARNING] ${entry.time} ` +
-    `${entry.test ? `(${entry.test})` : ''} ` +
-    `${entry.flow ? `[${entry.flow}]` : ''} - ${message}`
+      `${entry.test ? `(${entry.test})` : ""} ` +
+      `${entry.flow ? `[${entry.flow}]` : ""} - ${message}`,
   );
 
-
   const now = Date.now();
-
 
   if (
     CURRENT_PAGE_REF &&
     !CURRENT_PAGE_REF.isClosed() &&
-    now - lastAutoCaptureTime >
-      AUTO_CAPTURE_COOLDOWN_MS
+    now - lastAutoCaptureTime > AUTO_CAPTURE_COOLDOWN_MS
   ) {
-
     lastAutoCaptureTime = now;
 
-    const safeReason =
-      (message || 'WARNING')
-        .substring(0, 60)
-        .replace(
-          /[^a-zA-Z0-9_\-]/g,
-          '_'
-        );
+    const safeReason = (message || "WARNING")
+      .substring(0, 60)
+      .replace(/[^a-zA-Z0-9_\-]/g, "_");
 
     captureScreenshot(
       CURRENT_PAGE_REF,
-      CURRENT_TESTCASE || 'warning',
-      `WARNING_${safeReason}`
+      CURRENT_TESTCASE || "warning",
+      `WARNING_${safeReason}`,
     )
-      .then(fp => {
-
-        if (fp)
-          ARTIFACTS.push(fp);
-
+      .then((fp) => {
+        if (fp) ARTIFACTS.push(fp);
       })
       .catch(() => {});
-
   }
-
 }
 
-
-export function addError(
-  message,
-  meta = {}
-) {
-
-  const entry =
-    Object.assign(
-      {},
-      contextSnapshot(),
-      {
-        level: 'error',
-        message,
-        meta
-      }
-    );
+export function addError(message, meta = {}) {
+  const entry = Object.assign({}, contextSnapshot(), {
+    level: "error",
+    message,
+    meta,
+  });
 
   ERRORS.push(entry);
 
   console.error(
     `[ERROR] ${entry.time} ` +
-    `${entry.test ? `(${entry.test})` : ''} ` +
-    `${entry.flow ? `[${entry.flow}]` : ''} - ${message}`
+      `${entry.test ? `(${entry.test})` : ""} ` +
+      `${entry.flow ? `[${entry.flow}]` : ""} - ${message}`,
   );
 
-
   const now = Date.now();
-
 
   if (
     CURRENT_PAGE_REF &&
     !CURRENT_PAGE_REF.isClosed() &&
-    now - lastAutoCaptureTime >
-      AUTO_CAPTURE_COOLDOWN_MS
+    now - lastAutoCaptureTime > AUTO_CAPTURE_COOLDOWN_MS
   ) {
-
     lastAutoCaptureTime = now;
 
-    const safeReason =
-      (message || 'ERROR')
-        .substring(0, 60)
-        .replace(
-          /[^a-zA-Z0-9_\-]/g,
-          '_'
-        );
+    const safeReason = (message || "ERROR")
+      .substring(0, 60)
+      .replace(/[^a-zA-Z0-9_\-]/g, "_");
 
     captureScreenshot(
       CURRENT_PAGE_REF,
-      CURRENT_TESTCASE || 'error',
-      `ERROR_${safeReason}`
+      CURRENT_TESTCASE || "error",
+      `ERROR_${safeReason}`,
     )
-      .then(fp => {
-
-        if (fp)
-          ARTIFACTS.push(fp);
-
+      .then((fp) => {
+        if (fp) ARTIFACTS.push(fp);
       })
       .catch(() => {});
-
   }
-
 }
-
 
 export function getWarnings() {
   return WARNINGS;
 }
 
 export function clearWarnings() {
-
   WARNINGS = [];
   lastWarningCount = 0;
-
 }
 
 export function getInfos() {
@@ -470,10 +316,8 @@ export function getErrors() {
 }
 
 export function clearErrors() {
-
   ERRORS = [];
   lastErrorCount = 0;
-
 }
 
 export function getArtifacts() {
@@ -484,9 +328,7 @@ export function clearArtifacts() {
   ARTIFACTS.length = 0;
 }
 
-
 export function clearDiagnostics() {
-
   INFOS.length = 0;
   WARNINGS.length = 0;
   ERRORS.length = 0;
@@ -495,654 +337,336 @@ export function clearDiagnostics() {
 
   lastErrorCount = 0;
   lastWarningCount = 0;
-
 }
-
 
 export function clearDiagnosticsFolder() {
-
   if (fs.existsSync(DIAG_DIR)) {
-
     try {
-
-      const files =
-        fs.readdirSync(DIAG_DIR);
+      const files = fs.readdirSync(DIAG_DIR);
 
       for (const file of files) {
+        const filePath = path.join(DIAG_DIR, file);
 
-        const filePath =
-          path.join(
-            DIAG_DIR,
-            file
-          );
-
-        if (
-          fs.lstatSync(
-            filePath
-          ).isDirectory()
-        ) {
-
-          fs.rmSync(
-            filePath,
-            {
-              recursive: true,
-              force: true
-            }
-          );
-
+        if (fs.lstatSync(filePath).isDirectory()) {
+          fs.rmSync(filePath, {
+            recursive: true,
+            force: true,
+          });
         } else {
-
-          fs.unlinkSync(
-            filePath
-          );
-
+          fs.unlinkSync(filePath);
         }
-
       }
 
-      logInfo(
-        'Diagnostics folder cleared'
-      );
-
+      logInfo("Diagnostics folder cleared");
     } catch (err) {
-
-      console.error(
-        'Failed to clear diagnostics folder',
-        err
-      );
-
+      console.error("Failed to clear diagnostics folder", err);
     }
-
   }
-
 }
-
 
 export async function sleep(ms) {
-
-  return new Promise(
-    resolve =>
-      setTimeout(resolve, ms)
-  );
-
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
-
 
 // =========================================================
 // UTILS
 // =========================================================
 
 export function sanitizeFilename(s) {
-
   return s
-    .replace(
-      /[:\/\\<>?"|]/g,
-      '-'
-    )
-    .replace(
-      /[^\w\-\.]/g,
-      '_'
-    )
-    .substring(
-      0,
-      220
-    );
-
+    .replace(/[:\/\\<>?"|]/g, "-")
+    .replace(/[^\w\-\.]/g, "_")
+    .substring(0, 220);
 }
 
-
-export async function fastWait(
-  pageArg,
-  ms = 300
-) {
-
-  const t =
-    Math.max(
-      VISUAL_MIN_PAUSE,
-      Math.round(
-        ms * PAUSE_MULTIPLIER
-      )
-    );
+export async function fastWait(pageArg, ms = 300) {
+  const t = Math.max(VISUAL_MIN_PAUSE, Math.round(ms * PAUSE_MULTIPLIER));
 
   return pageArg.waitForTimeout(t);
-
 }
 
-
-export async function focusPage(
-  pageArg
-) {
-
+export async function focusPage(pageArg) {
   try {
     await pageArg.bringToFront();
   } catch {}
 
   await pageArg.waitForTimeout(300);
-
 }
 
-
-export async function getInnerTextSafe(
-  locatorOrHandle
-) {
-
+export async function getInnerTextSafe(locatorOrHandle) {
   try {
+    if (!locatorOrHandle) return "";
 
-    if (!locatorOrHandle)
-      return '';
-
-    if (
-      typeof locatorOrHandle.innerText ===
-      'function'
-    ) {
-
-      return (
-        await locatorOrHandle.innerText()
-      ).trim();
-
+    if (typeof locatorOrHandle.innerText === "function") {
+      return (await locatorOrHandle.innerText()).trim();
     }
 
     if (locatorOrHandle.evaluate) {
-
       return (
-        await locatorOrHandle.evaluate(
-          el => el.innerText || ''
-        )
+        await locatorOrHandle.evaluate((el) => el.innerText || "")
       ).trim();
-
     }
 
-    return '';
-
+    return "";
   } catch {
-
-    return '';
-
+    return "";
   }
-
 }
-
 
 function _timestamp() {
-
   return new Date().toISOString();
-
 }
-
 
 // =========================================================
 // ARTIFACT NAMING
 // =========================================================
 
 export function getTestFileName() {
-
   return CURRENT_TEST_FILE;
-
 }
-
 
 function cleanForFilename(str) {
-
-  if (!str)
-    return '';
+  if (!str) return "";
 
   return str
-    .replace(
-      /[\[\]]/g,
-      ''
-    )
-    .replace(
-      /[:\/\\|?*]/g,
-      '_'
-    )
-    .replace(
-      /\s+/g,
-      '_'
-    )
-    .replace(
-      /_+/g,
-      '_'
-    )
-    .replace(
-      /^_|_$/g,
-      ''
-    )
-    .substring(
-      0,
-      50
-    );
-
+    .replace(/[\[\]]/g, "")
+    .replace(/[:\/\\|?*]/g, "_")
+    .replace(/\s+/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_|_$/g, "")
+    .substring(0, 50);
 }
 
+export function formatArtifactFilename(testFile, testTitle, reason, ext) {
+  const baseFileName = testFile
+    ? path.basename(testFile, path.extname(testFile))
+    : "test";
 
-export function formatArtifactFilename(
-  testFile,
-  testTitle,
-  reason,
-  ext
-) {
+  const cleanTitle = cleanForFilename(testTitle);
 
-  const baseFileName =
-    testFile
-      ? path.basename(
-          testFile,
-          path.extname(testFile)
-        )
-      : 'test';
-
-  const cleanTitle =
-    cleanForFilename(testTitle);
-
-  const cleanReason =
-    cleanForFilename(reason) ||
-    'FAILED';
+  const cleanReason = cleanForFilename(reason) || "FAILED";
 
   return `${baseFileName}_${cleanTitle}_${cleanReason}.${ext}`;
-
 }
 
+export function extractErrorReason(error) {
+  if (!error) return "FAILED";
 
-export function extractErrorReason(
-  error
-) {
+  const msg = error.message || String(error);
 
-  if (!error)
-    return 'FAILED';
+  if (msg.includes("TimeoutError") || msg.toLowerCase().includes("timeout"))
+    return "TIMEOUT";
 
-  const msg =
-    error.message ||
-    String(error);
+  if (msg.includes("AssertionError")) return "ASSERTION_FAIL";
 
-  if (
-    msg.includes('TimeoutError') ||
-    msg.toLowerCase().includes('timeout')
-  )
-    return 'TIMEOUT';
+  if (msg.includes("not visible") || msg.includes("not found"))
+    return "ELEMENT_NOT_FOUND";
 
-  if (
-    msg.includes('AssertionError')
-  )
-    return 'ASSERTION_FAIL';
+  if (msg.includes("selector")) return "SELECTOR_ERROR";
+
+  if (msg.includes("stale")) return "STALE_ELEMENT";
 
   if (
-    msg.includes('not visible') ||
-    msg.includes('not found')
+    msg.includes("count") &&
+    (msg.includes("mismatch") || msg.includes("found"))
   )
-    return 'ELEMENT_NOT_FOUND';
+    return "COUNT_MISMATCH";
 
-  if (
-    msg.includes('selector')
-  )
-    return 'SELECTOR_ERROR';
+  if (msg.includes("navigate")) return "NAVIGATION_ERROR";
 
-  if (
-    msg.includes('stale')
-  )
-    return 'STALE_ELEMENT';
-
-  if (
-    msg.includes('count') &&
-    (
-      msg.includes('mismatch') ||
-      msg.includes('found')
-    )
-  )
-    return 'COUNT_MISMATCH';
-
-  if (
-    msg.includes('navigate')
-  )
-    return 'NAVIGATION_ERROR';
-
-  return 'FAILED';
-
+  return "FAILED";
 }
-
 
 // =========================================================
 // ASSERTION & INTERACTION
 // =========================================================
 
-export async function waitForVisible(
-  locator,
-  timeout = DEFAULT_WAIT
-) {
-
+export async function waitForVisible(locator, timeout = DEFAULT_WAIT) {
   try {
-
     await locator.waitFor({
-      state: 'visible',
-      timeout
+      state: "visible",
+      timeout,
     });
 
     return true;
-
   } catch (err) {
+    addWarning("waitForVisible timed out", {
+      locator: locator?.toString?.() || String(locator),
 
-    addWarning(
-      'waitForVisible timed out',
-      {
-        locator:
-          locator?.toString?.() ||
-          String(locator),
+      timeout,
 
-        timeout,
+      error: err.message,
 
-        error:
-          err.message,
-
-        testcase:
-          CURRENT_TESTCASE
-      }
-    );
+      testcase: CURRENT_TESTCASE,
+    });
 
     return false;
-
   }
-
 }
 
-
-export async function assertVisible(
-  locator,
-  label
-) {
-
+export async function assertVisible(locator, label) {
   try {
-
-    await expect(locator)
-      .toBeVisible({
-        timeout: DEFAULT_WAIT
-      });
+    await expect(locator).toBeVisible({
+      timeout: DEFAULT_WAIT,
+    });
 
     return true;
-
   } catch (err) {
-
     const meta = {
       label,
       error: err.message,
-      testcase: CURRENT_TESTCASE
+      testcase: CURRENT_TESTCASE,
     };
 
     if (SOFT_ASSERT) {
-
-      addWarning(
-        `Soft-assert failed: ${label}`,
-        meta
-      );
+      addWarning(`Soft-assert failed: ${label}`, meta);
 
       return false;
-
     }
 
-    addError(
-      `Assertion failed: ${label}`,
-      meta
-    );
+    addError(`Assertion failed: ${label}`, meta);
 
     throw err;
-
   }
-
 }
-
 
 // =========================================================
 // ROBUST CLICK
 // =========================================================
 
-export async function robustClick(
-  page,
-  locator,
-  opts = {}
-) {
-
-  const {
-    timeout = DEFAULT_WAIT,
-    highlightBorder,
-    retry = 1
-  } = opts;
-
+export async function robustClick(page, locator, opts = {}) {
+  const { timeout = DEFAULT_WAIT, highlightBorder, retry = 1 } = opts;
 
   try {
+    const visible = await waitForVisible(locator, timeout);
 
-    const visible =
-      await waitForVisible(
-        locator,
-        timeout
-      );
-
-    if (!visible)
-      throw new Error(
-        'Element not visible to click'
-      );
-
+    if (!visible) throw new Error("Element not visible to click");
 
     try {
-
       await locator.scrollIntoViewIfNeeded({
-        timeout: 5000
+        timeout: 5000,
       });
 
-      await locator.evaluate(
-        el =>
-          el.scrollIntoView({
-            block: 'center',
-            inline: 'center'
-          })
+      await locator.evaluate((el) =>
+        el.scrollIntoView({
+          block: "center",
+          inline: "center",
+        }),
       );
-
     } catch (e) {}
-
 
     try {
-
-      await highlight(
-        page,
-        locator,
-        {
-          borderColor:
-            highlightBorder,
-          pause: 200
-        }
-      );
-
+      await highlight(page, locator, {
+        borderColor: highlightBorder,
+        pause: 200,
+      });
     } catch (e) {}
 
-
-    for (
-      let attempt = 0;
-      attempt <= retry;
-      attempt++
-    ) {
-
+    for (let attempt = 0; attempt <= retry; attempt++) {
       try {
-
         await locator.click({
           timeout: 5000,
-          force: false
+          force: false,
         });
 
-        logInfo(
-          'robustClick succeeded',
-          {
-            attempt,
-            testcase:
-              CURRENT_TESTCASE
-          }
-        );
+        logInfo("robustClick succeeded", {
+          attempt,
+          testcase: CURRENT_TESTCASE,
+        });
 
         return true;
-
       } catch (err) {
-
-        addWarning(
-          'robustClick attempt failed',
-          {
-            attempt,
-            error: err.message
-          }
-        );
+        addWarning("robustClick attempt failed", {
+          attempt,
+          error: err.message,
+        });
 
         if (attempt === retry) {
-
           try {
-
             await locator.click({
-              force: true
+              force: true,
             });
 
-            logInfo(
-              'robustClick succeeded with force: true',
-              {
-                testcase:
-                  CURRENT_TESTCASE
-              }
-            );
+            logInfo("robustClick succeeded with force: true", {
+              testcase: CURRENT_TESTCASE,
+            });
 
             return true;
-
           } catch (finalErr) {
-
             throw finalErr;
-
           }
-
         }
 
-        await new Promise(
-          r =>
-            setTimeout(r, 250)
-        );
-
+        await new Promise((r) => setTimeout(r, 250));
       }
-
     }
-
   } catch (err) {
-
-    addError(
-      'robustClick failed',
-      {
-        error: err.message,
-        testcase:
-          CURRENT_TESTCASE
-      }
-    );
+    addError("robustClick failed", {
+      error: err.message,
+      testcase: CURRENT_TESTCASE,
+    });
 
     throw err;
-
   }
-
 }
-
 
 // =========================================================
 // WAIT AND FILL
 // =========================================================
 
-export async function waitAndFill(
-  page,
-  locator,
-  value,
-  opts = {}
-) {
-
-  const {
-    timeout = DEFAULT_WAIT,
-    highlightBorder
-  } = opts;
-
+export async function waitAndFill(page, locator, value, opts = {}) {
+  const { timeout = DEFAULT_WAIT, highlightBorder } = opts;
 
   try {
+    const visible = await waitForVisible(locator, timeout);
 
-    const visible =
-      await waitForVisible(
-        locator,
-        timeout
-      );
-
-    if (!visible)
-      throw new Error(
-        'Element not visible to fill'
-      );
-
+    if (!visible) throw new Error("Element not visible to fill");
 
     try {
-
-      await highlight(
-        page,
-        locator,
-        {
-          borderColor:
-            highlightBorder,
-          pause: 200
-        }
-      );
-
+      await highlight(page, locator, {
+        borderColor: highlightBorder,
+        pause: 200,
+      });
     } catch (e) {}
 
+    await locator.fill(value, {
+      timeout: 5000,
+    });
 
-    await locator.fill(
-      value,
-      {
-        timeout: 5000
-      }
-    );
+    logInfo("Filled input", {
+      value:
+        typeof value === "string"
+          ? `${value.slice(0, 20)}${value.length > 20 ? "..." : ""}`
+          : typeof value,
 
-
-    logInfo(
-      'Filled input',
-      {
-        value:
-          typeof value === 'string'
-            ? `${value.slice(0, 20)}${value.length > 20 ? '...' : ''}`
-            : typeof value,
-
-        testcase:
-          CURRENT_TESTCASE
-      }
-    );
+      testcase: CURRENT_TESTCASE,
+    });
 
     return true;
-
   } catch (err) {
-
-    addError(
-      'waitAndFill failed',
-      {
-        error: err.message,
-        testcase:
-          CURRENT_TESTCASE
-      }
-    );
+    addError("waitAndFill failed", {
+      error: err.message,
+      testcase: CURRENT_TESTCASE,
+    });
 
     throw err;
-
   }
-
 }
-
 
 // =========================================================
 // VISUAL HELPERS
 // =========================================================
 
 const HIGHLIGHT_COLORS = [
-
-  'rgba(255, 99, 71, 0.18)',
-  'rgba(135, 206, 235, 0.18)',
-  'rgba(144, 238, 144, 0.18)',
-  'rgba(255, 215, 0, 0.18)',
-  'rgba(221, 160, 221, 0.18)',
-  'rgba(255, 182, 193, 0.18)'
-
+  "rgba(255, 99, 71, 0.18)",
+  "rgba(135, 206, 235, 0.18)",
+  "rgba(144, 238, 144, 0.18)",
+  "rgba(255, 215, 0, 0.18)",
+  "rgba(221, 160, 221, 0.18)",
+  "rgba(255, 182, 193, 0.18)",
 ];
 
-
 let lastColorIndex = -1;
-
 
 // =========================================================
 // FIXED HIGHLIGHT FUNCTION
@@ -1154,226 +678,131 @@ let lastColorIndex = -1;
 // - Previous step ka highlight next step mein nahi rahega
 // =========================================================
 
-export async function highlight(
-  page,
-  locator,
-  options = {}
-) {
-
-  const {
-    pause = 800,
-    forceOutlineOnly = false,
-    label = 'Element'
-  } = options;
-
+export async function highlight(page, locator, options = {}) {
+  const { pause = 800, forceOutlineOnly = false, label = "Element" } = options;
 
   // -------------------------------------------------------
   // Sequential highlight color
   // -------------------------------------------------------
 
-  const colorIndex =
-    (lastColorIndex + 1) %
-    HIGHLIGHT_COLORS.length;
+  const colorIndex = (lastColorIndex + 1) % HIGHLIGHT_COLORS.length;
 
-  lastColorIndex =
-    colorIndex;
+  lastColorIndex = colorIndex;
 
-
-  const bgColor =
-    options.color ||
-    HIGHLIGHT_COLORS[colorIndex];
-
+  const bgColor = options.color || HIGHLIGHT_COLORS[colorIndex];
 
   const borderColors = [
-
-    '#FF6347',
-    '#87CEEB',
-    '#90EE90',
-    '#FFD700',
-    '#DDA0DD',
-    '#FFB6C1'
-
+    "#FF6347",
+    "#87CEEB",
+    "#90EE90",
+    "#FFD700",
+    "#DDA0DD",
+    "#FFB6C1",
   ];
 
+  const effectiveBorder = options.borderColor || borderColors[colorIndex];
 
-  const effectiveBorder =
-    options.borderColor ||
-    borderColors[colorIndex];
-
-
-  const annotationId =
-    `pw-highlight-${Math.random()
-      .toString(36)
-      .slice(2, 9)}`;
-
+  const annotationId = `pw-highlight-${Math.random().toString(36).slice(2, 9)}`;
 
   let handle = null;
 
-
   try {
+    handle = await locator.elementHandle();
 
-    handle =
-      await locator.elementHandle();
-
-
-    if (!handle)
-      return;
-
+    if (!handle) return;
 
     // -----------------------------------------------------
     // APPLY HIGHLIGHT
     // -----------------------------------------------------
 
     await page.evaluate(
-      ({
-        el,
-        border,
-        bg,
-        forceOutlineOnly,
-        label,
-        annotationId
-      }) => {
-
-        if (!el)
-          return;
-
+      ({ el, border, bg, forceOutlineOnly, label, annotationId }) => {
+        if (!el) return;
 
         // =================================================
         // SAVE ORIGINAL INLINE STYLES
         // =================================================
 
-        el.dataset.pwOriginalOutline =
-          el.style.outline || '';
+        el.dataset.pwOriginalOutline = el.style.outline || "";
 
-        el.dataset.pwOriginalOutlineOffset =
-          el.style.outlineOffset || '';
+        el.dataset.pwOriginalOutlineOffset = el.style.outlineOffset || "";
 
-        el.dataset.pwOriginalBoxShadow =
-          el.style.boxShadow || '';
+        el.dataset.pwOriginalBoxShadow = el.style.boxShadow || "";
 
-        el.dataset.pwOriginalBackgroundColor =
-          el.style.backgroundColor || '';
-
+        el.dataset.pwOriginalBackgroundColor = el.style.backgroundColor || "";
 
         // =================================================
         // APPLY TEMPORARY HIGHLIGHT
         // =================================================
 
-        el.style.outline =
-          `3px solid ${border}`;
+        el.style.outline = `3px solid ${border}`;
 
-        el.style.outlineOffset =
-          '4px';
+        el.style.outlineOffset = "4px";
 
-        el.style.boxShadow =
-          `0 0 0 5px ${border}55, 0 0 18px ${border}`;
-
+        el.style.boxShadow = `0 0 0 5px ${border}55, 0 0 18px ${border}`;
 
         if (bg) {
-
-          el.style.backgroundColor =
-            bg;
-
+          el.style.backgroundColor = bg;
         }
-
 
         // =================================================
         // SCROLL INTO VIEW
         // =================================================
 
         if (!forceOutlineOnly) {
-
           el.scrollIntoView({
-            block: 'center',
-            inline: 'center'
+            block: "center",
+            inline: "center",
           });
-
         }
-
 
         // =================================================
         // VALIDATING BADGE
         // =================================================
 
-        const rect =
-          el.getBoundingClientRect();
+        const rect = el.getBoundingClientRect();
 
+        const badge = document.createElement("div");
 
-        const badge =
-          document.createElement('div');
+        badge.id = annotationId;
 
+        badge.textContent = `VALIDATING: ${label}`;
 
-        badge.id =
-          annotationId;
+        Object.assign(badge.style, {
+          position: "fixed",
 
+          left: `${Math.max(
+            8,
+            Math.min(rect.left, window.innerWidth - 280),
+          )}px`,
 
-        badge.textContent =
-          `VALIDATING: ${label}`;
+          top: `${Math.max(8, rect.top - 38)}px`,
 
+          zIndex: "2147483647",
 
-        Object.assign(
-          badge.style,
-          {
+          pointerEvents: "none",
 
-            position: 'fixed',
+          maxWidth: "270px",
 
-            left:
-              `${Math.max(
-                8,
-                Math.min(
-                  rect.left,
-                  window.innerWidth - 280
-                )
-              )}px`,
+          padding: "7px 11px",
 
-            top:
-              `${Math.max(
-                8,
-                rect.top - 38
-              )}px`,
+          border: `2px solid ${border}`,
 
-            zIndex:
-              '2147483647',
+          borderRadius: "6px",
 
-            pointerEvents:
-              'none',
+          background: "#111827",
 
-            maxWidth:
-              '270px',
+          color: "#ffffff",
 
-            padding:
-              '7px 11px',
+          font: "700 13px Segoe UI, sans-serif",
 
-            border:
-              `2px solid ${border}`,
+          lineHeight: "1.25",
 
-            borderRadius:
-              '6px',
+          boxShadow: `0 3px 12px rgba(0,0,0,.65),
+               0 0 10px ${border}`,
+        });
 
-            background:
-              '#111827',
-
-            color:
-              '#ffffff',
-
-            font:
-              '700 13px Segoe UI, sans-serif',
-
-            lineHeight:
-              '1.25',
-
-            boxShadow:
-              `0 3px 12px rgba(0,0,0,.65),
-               0 0 10px ${border}`
-
-          }
-        );
-
-
-        document.body.appendChild(
-          badge
-        );
-
+        document.body.appendChild(badge);
       },
       {
         el: handle,
@@ -1381,81 +810,54 @@ export async function highlight(
         bg: bgColor,
         forceOutlineOnly,
         label,
-        annotationId
-      }
+        annotationId,
+      },
     );
-
 
     // -----------------------------------------------------
     // KEEP HIGHLIGHT VISIBLE
     // -----------------------------------------------------
 
     await page.waitForTimeout(
-
-      Math.max(
-        VISUAL_MIN_PAUSE,
-        Math.round(
-          pause *
-          PAUSE_MULTIPLIER
-        )
-      )
-
+      Math.max(VISUAL_MIN_PAUSE, Math.round(pause * PAUSE_MULTIPLIER)),
     );
-
 
     // -----------------------------------------------------
     // REMOVE BADGE + RESTORE ORIGINAL STYLES
     // -----------------------------------------------------
 
     await page.evaluate(
-      ({
-        id,
-        el
-      }) => {
-
+      ({ id, el }) => {
         // Remove validation badge
-        const badge =
-          document.getElementById(id);
+        const badge = document.getElementById(id);
 
-        if (badge)
-          badge.remove();
+        if (badge) badge.remove();
 
-
-        if (!el)
-          return;
-
+        if (!el) return;
 
         // ===============================================
         // RESTORE ORIGINAL OUTLINE
         // ===============================================
 
-        el.style.outline =
-          el.dataset.pwOriginalOutline || '';
-
+        el.style.outline = el.dataset.pwOriginalOutline || "";
 
         // ===============================================
         // RESTORE ORIGINAL OUTLINE OFFSET
         // ===============================================
 
-        el.style.outlineOffset =
-          el.dataset.pwOriginalOutlineOffset || '';
-
+        el.style.outlineOffset = el.dataset.pwOriginalOutlineOffset || "";
 
         // ===============================================
         // RESTORE ORIGINAL BOX SHADOW
         // ===============================================
 
-        el.style.boxShadow =
-          el.dataset.pwOriginalBoxShadow || '';
-
+        el.style.boxShadow = el.dataset.pwOriginalBoxShadow || "";
 
         // ===============================================
         // RESTORE ORIGINAL BACKGROUND
         // ===============================================
 
-        el.style.backgroundColor =
-          el.dataset.pwOriginalBackgroundColor || '';
-
+        el.style.backgroundColor = el.dataset.pwOriginalBackgroundColor || "";
 
         // ===============================================
         // REMOVE TEMPORARY DATA
@@ -1468,54 +870,35 @@ export async function highlight(
         delete el.dataset.pwOriginalBoxShadow;
 
         delete el.dataset.pwOriginalBackgroundColor;
-
       },
       {
         id: annotationId,
-        el: handle
-      }
+        el: handle,
+      },
     );
-
-
   } catch (err) {
-
     // =====================================================
     // HIGHLIGHT MUST NEVER BREAK ACTUAL TEST
     // =====================================================
 
     try {
-
       await page.evaluate(
-        ({
-          id,
-          el
-        }) => {
-
+        ({ id, el }) => {
           // Remove badge
-          const badge =
-            document.getElementById(id);
+          const badge = document.getElementById(id);
 
-          if (badge)
-            badge.remove();
+          if (badge) badge.remove();
 
-
-          if (!el)
-            return;
-
+          if (!el) return;
 
           // Restore saved styles if available
-          el.style.outline =
-            el.dataset.pwOriginalOutline || '';
+          el.style.outline = el.dataset.pwOriginalOutline || "";
 
-          el.style.outlineOffset =
-            el.dataset.pwOriginalOutlineOffset || '';
+          el.style.outlineOffset = el.dataset.pwOriginalOutlineOffset || "";
 
-          el.style.boxShadow =
-            el.dataset.pwOriginalBoxShadow || '';
+          el.style.boxShadow = el.dataset.pwOriginalBoxShadow || "";
 
-          el.style.backgroundColor =
-            el.dataset.pwOriginalBackgroundColor || '';
-
+          el.style.backgroundColor = el.dataset.pwOriginalBackgroundColor || "";
 
           // Remove temporary dataset
           delete el.dataset.pwOriginalOutline;
@@ -1525,941 +908,478 @@ export async function highlight(
           delete el.dataset.pwOriginalBoxShadow;
 
           delete el.dataset.pwOriginalBackgroundColor;
-
         },
         {
           id: annotationId,
-          el: handle
-        }
+          el: handle,
+        },
       );
-
     } catch {}
-
   }
-
 }
-
 
 // =========================================================
 // SHOW STEP
 // =========================================================
 
-export async function showStep(
-  page,
-  text
-) {
-
-  logInfo(
-    `${text}`,
-    {
-      testcase:
-        CURRENT_TESTCASE
-    }
-  );
-
+export async function showStep(page, text) {
+  logInfo(`${text}`, {
+    testcase: CURRENT_TESTCASE,
+  });
 
   // Keep the first step visible through navigation
   try {
-
     await page.addInitScript(
-      ({
-        stepText,
-        testCase
-      }) => {
-
+      ({ stepText, testCase }) => {
         window.__pwLaunchStep = {
           stepText,
-          testCase
+          testCase,
         };
-
 
         const render = () => {
-
-          if (
-            !document.body ||
-            document.getElementById(
-              'pw-banner-container'
-            )
-          )
+          if (!document.body || document.getElementById("pw-banner-container"))
             return;
 
+          const bar = document.createElement("div");
 
-          const bar =
-            document.createElement('div');
+          bar.id = "pw-banner-container";
 
-          bar.id =
-            'pw-banner-container';
+          Object.assign(bar.style, {
+            position: "fixed",
 
+            top: "0",
 
-          Object.assign(
-            bar.style,
-            {
+            left: "0",
 
-              position:
-                'fixed',
+            width: "100%",
 
-              top:
-                '0',
+            zIndex: "99999",
 
-              left:
-                '0',
+            display: "flex",
 
-              width:
-                '100%',
+            alignItems: "center",
 
-              zIndex:
-                '99999',
+            gap: "12px",
 
-              display:
-                'flex',
+            padding: "10px 16px",
 
-              alignItems:
-                'center',
+            boxSizing: "border-box",
 
-              gap:
-                '12px',
+            pointerEvents: "none",
 
-              padding:
-                '10px 16px',
+            fontFamily: "Segoe UI, sans-serif",
 
-              boxSizing:
-                'border-box',
+            background:
+              "linear-gradient(90deg, rgba(20,70,120,.96), rgba(20,130,100,.96))",
 
-              pointerEvents:
-                'none',
+            borderBottom: "3px solid #F5A614",
+          });
 
-              fontFamily:
-                'Segoe UI, sans-serif',
+          const testcase = document.createElement("div");
 
-              background:
-                'linear-gradient(90deg, rgba(20,70,120,.96), rgba(20,130,100,.96))',
+          testcase.id = "pw-testcase-header";
 
-              borderBottom:
-                '3px solid #F5A614'
+          testcase.textContent = testCase ? `TEST CASE: ${testCase}` : "";
 
-            }
-          );
+          Object.assign(testcase.style, {
+            color: "#fff",
 
+            fontSize: "16px",
 
-          const testcase =
-            document.createElement(
-              'div'
-            );
+            fontWeight: "700",
 
-          testcase.id =
-            'pw-testcase-header';
+            lineHeight: "1.3",
 
-          testcase.textContent =
-            testCase
-              ? `TEST CASE: ${testCase}`
-              : '';
+            textShadow: "0 1px 2px #000",
 
+            whiteSpace: "nowrap",
+          });
 
-          Object.assign(
-            testcase.style,
-            {
+          const step = document.createElement("div");
 
-              color:
-                '#fff',
+          step.id = "pw-step-banner";
 
-              fontSize:
-                '16px',
+          step.textContent = stepText;
 
-              fontWeight:
-                '700',
+          Object.assign(step.style, {
+            color: "#10151c",
 
-              lineHeight:
-                '1.3',
+            fontSize: "15px",
 
-              textShadow:
-                '0 1px 2px #000',
+            fontWeight: "700",
 
-              whiteSpace:
-                'nowrap'
+            lineHeight: "1.3",
 
-            }
-          );
+            background: "rgba(255,255,255,.96)",
 
+            padding: "7px 12px",
 
-          const step =
-            document.createElement(
-              'div'
-            );
+            borderRadius: "6px",
 
-          step.id =
-            'pw-step-banner';
+            whiteSpace: "normal",
+          });
 
-          step.textContent =
-            stepText;
+          bar.append(testcase, step);
 
-
-          Object.assign(
-            step.style,
-            {
-
-              color:
-                '#10151c',
-
-              fontSize:
-                '15px',
-
-              fontWeight:
-                '700',
-
-              lineHeight:
-                '1.3',
-
-              background:
-                'rgba(255,255,255,.96)',
-
-              padding:
-                '7px 12px',
-
-              borderRadius:
-                '6px',
-
-              whiteSpace:
-                'normal'
-
-            }
-          );
-
-
-          bar.append(
-            testcase,
-            step
-          );
-
-
-          document.body.prepend(
-            bar
-          );
-
+          document.body.prepend(bar);
         };
 
-
-        if (document.body)
-          render();
-
+        if (document.body) render();
         else
-          document.addEventListener(
-            'DOMContentLoaded',
-            render,
-            { once: true }
-          );
-
+          document.addEventListener("DOMContentLoaded", render, { once: true });
       },
       {
         stepText: text,
-        testCase:
-          CURRENT_TESTCASE
-      }
+        testCase: CURRENT_TESTCASE,
+      },
     );
-
   } catch (err) {}
 
+  const currentErrorCount = ERRORS.length;
 
-  const currentErrorCount =
-    ERRORS.length;
+  const currentWarningCount = WARNINGS.length;
 
-  const currentWarningCount =
-    WARNINGS.length;
+  const hasNewErrors = currentErrorCount > lastErrorCount;
 
+  const hasNewWarnings = currentWarningCount > lastWarningCount;
 
-  const hasNewErrors =
-    currentErrorCount >
-    lastErrorCount;
+  lastErrorCount = currentErrorCount;
 
-  const hasNewWarnings =
-    currentWarningCount >
-    lastWarningCount;
-
-
-  lastErrorCount =
-    currentErrorCount;
-
-  lastWarningCount =
-    currentWarningCount;
-
+  lastWarningCount = currentWarningCount;
 
   // =======================================================
   // VISUAL ERROR / WARNING HANDLING
   // =======================================================
 
-  if (
-    hasNewErrors ||
-    hasNewWarnings
-  ) {
-
+  if (hasNewErrors || hasNewWarnings) {
     try {
-
       if (!page.isClosed()) {
+        const msgType = hasNewErrors ? "ERROR" : "WARNING";
 
-        const msgType =
-          hasNewErrors
-            ? 'ERROR'
-            : 'WARNING';
+        const msgText = hasNewErrors
+          ? ERRORS[ERRORS.length - 1]?.message || "Error occurred"
+          : WARNINGS[WARNINGS.length - 1]?.message || "Warning occurred";
 
+        await showFailureMessage(page, msgText, msgType, 0);
 
-        const msgText =
-          hasNewErrors
-            ? (
-                ERRORS[
-                  ERRORS.length - 1
-                ]?.message ||
-                'Error occurred'
-              )
-            : (
-                WARNINGS[
-                  WARNINGS.length - 1
-                ]?.message ||
-                'Warning occurred'
-              );
+        await fastWait(page, 1500);
 
+        const reason = hasNewErrors ? "ERROR_DETECTED" : "WARNING_DETECTED";
 
-        await showFailureMessage(
+        const filePath = await captureScreenshot(
           page,
-          msgText,
-          msgType,
-          0
+          CURRENT_TESTCASE,
+          reason,
         );
 
+        if (filePath) ARTIFACTS.push(filePath);
 
-        await fastWait(
-          page,
-          1500
-        );
-
-
-        const reason =
-          hasNewErrors
-            ? 'ERROR_DETECTED'
-            : 'WARNING_DETECTED';
-
-
-        const filePath =
-          await captureScreenshot(
-            page,
-            CURRENT_TESTCASE,
-            reason
-          );
-
-
-        if (filePath)
-          ARTIFACTS.push(
-            filePath
-          );
-
-
-        await removeFailureMessage(
-          page
-        );
-
+        await removeFailureMessage(page);
       }
-
     } catch (e) {
-
-      console.warn(
-        'Failed immediate capture:',
-        e.message
-      );
-
+      console.warn("Failed immediate capture:", e.message);
     }
-
   }
-
 
   // =======================================================
   // STEP BANNER LOGIC
   // =======================================================
 
   try {
-
     if (!page.isClosed()) {
-
       await page.evaluate(
-        ({
-          stepText,
-          testCase
-        }) => {
-
-          let spacer =
-            document.getElementById(
-              'pw-layout-spacer'
-            );
-
+        ({ stepText, testCase }) => {
+          let spacer = document.getElementById("pw-layout-spacer");
 
           if (!spacer) {
+            spacer = document.createElement("div");
 
-            spacer =
-              document.createElement(
-                'div'
-              );
+            spacer.id = "pw-layout-spacer";
 
-            spacer.id =
-              'pw-layout-spacer';
+            spacer.style.width = "100%";
 
-            spacer.style.width =
-              '100%';
+            spacer.style.pointerEvents = "none";
 
-            spacer.style.pointerEvents =
-              'none';
-
-            document.body.prepend(
-              spacer
-            );
-
+            document.body.prepend(spacer);
           }
 
-
-          let bar =
-            document.getElementById(
-              'pw-banner-container'
-            );
-
+          let bar = document.getElementById("pw-banner-container");
 
           if (!bar) {
+            bar = document.createElement("div");
 
-            bar =
-              document.createElement(
-                'div'
-              );
+            bar.id = "pw-banner-container";
 
-            bar.id =
-              'pw-banner-container';
+            Object.assign(bar.style, {
+              position: "fixed",
 
+              top: "0",
 
-            Object.assign(
-              bar.style,
-              {
+              left: "0",
 
-                position:
-                  'fixed',
+              width: "100%",
 
-                top:
-                  '0',
+              zIndex: "99999",
 
-                left:
-                  '0',
+              display: "flex",
 
-                width:
-                  '100%',
+              alignItems: "center",
 
-                zIndex:
-                  '99999',
+              gap: "12px",
 
-                display:
-                  'flex',
+              padding: "10px 16px",
 
-                alignItems:
-                  'center',
+              boxSizing: "border-box",
 
-                gap:
-                  '12px',
+              pointerEvents: "none",
 
-                padding:
-                  '10px 16px',
+              fontFamily: "Segoe UI, sans-serif",
 
-                boxSizing:
-                  'border-box',
+              background:
+                "linear-gradient(90deg, rgba(115,102,255,0.85), rgba(58,199,147,0.85))",
 
-                pointerEvents:
-                  'none',
+              borderBottom: "2px solid rgba(255,255,255,0.12)",
+            });
 
-                fontFamily:
-                  'Segoe UI, sans-serif',
+            const tc = document.createElement("div");
 
-                background:
-                  'linear-gradient(90deg, rgba(115,102,255,0.85), rgba(58,199,147,0.85))',
+            tc.id = "pw-testcase-header";
 
-                borderBottom:
-                  '2px solid rgba(255,255,255,0.12)'
+            Object.assign(tc.style, {
+              padding: "7px 12px",
 
-              }
-            );
+              fontSize: "16px",
 
+              fontWeight: "700",
 
-            const tc =
-              document.createElement(
-                'div'
-              );
+              color: "#fff",
 
-            tc.id =
-              'pw-testcase-header';
+              whiteSpace: "nowrap",
 
+              background: "rgba(0,0,0,0.2)",
 
-            Object.assign(
-              tc.style,
-              {
+              borderRadius: "4px",
+            });
 
-                padding:
-                  '7px 12px',
+            const step = document.createElement("div");
 
-                fontSize:
-                  '16px',
+            step.id = "pw-step-banner";
 
-                fontWeight:
-                  '700',
+            Object.assign(step.style, {
+              padding: "7px 12px",
 
-                color:
-                  '#fff',
+              fontSize: "15px",
 
-                whiteSpace:
-                  'nowrap',
+              fontWeight: "700",
 
-                background:
-                  'rgba(0,0,0,0.2)',
+              color: "rgba(10,10,30,0.95)",
 
-                borderRadius:
-                  '4px'
+              background: "rgba(255,255,255,0.96)",
 
-              }
-            );
+              borderRadius: "6px",
 
+              minWidth: "220px",
 
-            const step =
-              document.createElement(
-                'div'
-              );
+              maxWidth: "65%",
 
-            step.id =
-              'pw-step-banner';
+              overflow: "hidden",
 
+              textOverflow: "ellipsis",
 
-            Object.assign(
-              step.style,
-              {
-
-                padding:
-                  '7px 12px',
-
-                fontSize:
-                  '15px',
-
-                fontWeight:
-                  '700',
-
-                color:
-                  'rgba(10,10,30,0.95)',
-
-                background:
-                  'rgba(255,255,255,0.96)',
-
-                borderRadius:
-                  '6px',
-
-                minWidth:
-                  '220px',
-
-                maxWidth:
-                  '65%',
-
-                overflow:
-                  'hidden',
-
-                textOverflow:
-                  'ellipsis',
-
-                whiteSpace:
-                  'nowrap'
-
-              }
-            );
-
+              whiteSpace: "nowrap",
+            });
 
             bar.appendChild(tc);
             bar.appendChild(step);
 
-            document.body.appendChild(
-              bar
-            );
-
+            document.body.appendChild(bar);
           }
 
+          const tcEl = document.getElementById("pw-testcase-header");
 
-          const tcEl =
-            document.getElementById(
-              'pw-testcase-header'
-            );
-
-          const stepEl =
-            document.getElementById(
-              'pw-step-banner'
-            );
-
+          const stepEl = document.getElementById("pw-step-banner");
 
           if (testCase) {
+            tcEl.textContent = `TEST CASE : ${testCase}`;
 
-            tcEl.textContent =
-              `TEST CASE : ${testCase}`;
-
-            tcEl.style.display =
-              'block';
-
+            tcEl.style.display = "block";
           } else {
-
-            tcEl.style.display =
-              'none';
-
+            tcEl.style.display = "none";
           }
 
+          stepEl.textContent = stepText;
 
-          stepEl.textContent =
-            stepText;
-
-
-          spacer.style.height =
-            `${bar.offsetHeight}px`;
-
+          spacer.style.height = `${bar.offsetHeight}px`;
         },
         {
           stepText: text,
-          testCase:
-            CURRENT_TESTCASE
-        }
+          testCase: CURRENT_TESTCASE,
+        },
       );
-
     }
-
   } catch (err) {}
 
-
-  await fastWait(
-    page,
-    700
-  );
-
+  await fastWait(page, 700);
 }
-
 
 // =========================================================
 // FAILURE MESSAGE
 // =========================================================
 
-export async function removeFailureMessage(
-  pageArg
-) {
-
+export async function removeFailureMessage(pageArg) {
   try {
+    await pageArg.evaluate(() => {
+      const banner = document.getElementById("pw-fatal-failure-banner");
 
-    await pageArg.evaluate(
-      () => {
-
-        const banner =
-          document.getElementById(
-            'pw-fatal-failure-banner'
-          );
-
-        if (banner)
-          banner.remove();
-
-      }
-    );
-
+      if (banner) banner.remove();
+    });
   } catch (e) {}
-
 }
-
 
 export async function annotateElementLabel(
   pageArg,
   locator,
-  labelText = '',
-  opts = {}
+  labelText = "",
+  opts = {},
 ) {
-
   try {
+    const handle = await locator.elementHandle();
 
-    const handle =
-      await locator.elementHandle();
+    if (!handle) return null;
 
-    if (!handle)
-      return null;
-
-
-    const id =
-      `pw-annot-${Math.random()
-        .toString(36)
-        .slice(2, 9)}`;
-
+    const id = `pw-annot-${Math.random().toString(36).slice(2, 9)}`;
 
     await pageArg.evaluate(
-      ({
-        el,
-        id,
-        labelText,
-        opts
-      }) => {
-
+      ({ el, id, labelText, opts }) => {
         try {
+          const rect = el.getBoundingClientRect();
 
-          const rect =
-            el.getBoundingClientRect();
-
-
-          const div =
-            document.createElement(
-              'div'
-            );
-
+          const div = document.createElement("div");
 
           div.id = id;
 
-          div.dataset.pwAnnot =
-            '1';
+          div.dataset.pwAnnot = "1";
 
-          div.textContent =
-            labelText;
+          div.textContent = labelText;
 
+          Object.assign(div.style, {
+            position: "absolute",
 
-          Object.assign(
-            div.style,
-            {
+            left: `${Math.max(4, rect.left + window.scrollX)}px`,
 
-              position:
-                'absolute',
+            top: `${Math.max(4, rect.top + window.scrollY - 24)}px`,
 
-              left:
-                `${Math.max(
-                  4,
-                  rect.left +
-                    window.scrollX
-                )}px`,
+            zIndex: 9999999,
 
-              top:
-                `${Math.max(
-                  4,
-                  rect.top +
-                    window.scrollY -
-                    24
-                )}px`,
+            pointerEvents: "none",
 
-              zIndex:
-                9999999,
+            fontSize: "12px",
 
-              pointerEvents:
-                'none',
+            background: "rgba(0,0,0,0.72)",
 
-              fontSize:
-                '12px',
+            color: "#fff",
 
-              background:
-                'rgba(0,0,0,0.72)',
+            padding: "4px 8px",
 
-              color:
-                '#fff',
+            borderRadius: "4px",
 
-              padding:
-                '4px 8px',
+            boxShadow: "0 6px 20px rgba(0,0,0,0.38)",
+          });
 
-              borderRadius:
-                '4px',
+          if (opts.border) div.style.border = opts.border;
 
-              boxShadow:
-                '0 6px 20px rgba(0,0,0,0.38)'
+          document.body.appendChild(div);
 
-            }
-          );
+          const dot = document.createElement("div");
 
+          dot.id = `${id}-dot`;
 
-          if (opts.border)
-            div.style.border =
-              opts.border;
+          dot.dataset.pwAnnot = "1";
 
+          Object.assign(dot.style, {
+            position: "absolute",
 
-          document.body.appendChild(
-            div
-          );
+            left: `${Math.round(
+              rect.left + window.scrollX + rect.width / 2,
+            )}px`,
 
+            top: `${Math.round(rect.top + window.scrollY + rect.height / 2)}px`,
 
-          const dot =
-            document.createElement(
-              'div'
-            );
+            width: "8px",
 
+            height: "8px",
 
-          dot.id =
-            `${id}-dot`;
+            borderRadius: "50%",
 
-          dot.dataset.pwAnnot =
-            '1';
+            background: "rgba(255,0,0,0.85)",
 
+            transform: "translate(-50%,-50%)",
 
-          Object.assign(
-            dot.style,
-            {
+            zIndex: 9999999,
 
-              position:
-                'absolute',
+            pointerEvents: "none",
+          });
 
-              left:
-                `${Math.round(
-                  rect.left +
-                    window.scrollX +
-                    rect.width / 2
-                )}px`,
-
-              top:
-                `${Math.round(
-                  rect.top +
-                    window.scrollY +
-                    rect.height / 2
-                )}px`,
-
-              width:
-                '8px',
-
-              height:
-                '8px',
-
-              borderRadius:
-                '50%',
-
-              background:
-                'rgba(255,0,0,0.85)',
-
-              transform:
-                'translate(-50%,-50%)',
-
-              zIndex:
-                9999999,
-
-              pointerEvents:
-                'none'
-
-            }
-          );
-
-
-          document.body.appendChild(
-            dot
-          );
-
-
+          document.body.appendChild(dot);
         } catch (e) {}
-
       },
       {
         el: handle,
         id,
         labelText,
-        opts
-      }
+        opts,
+      },
     );
 
-
-    await pageArg.waitForTimeout(
-      300
-    );
-
+    await pageArg.waitForTimeout(300);
 
     return id;
-
   } catch (e) {
-
     return null;
-
   }
-
 }
 
-
-export async function removeAnnotationLabels(
-  pageArg
-) {
-
+export async function removeAnnotationLabels(pageArg) {
   try {
-
-    await pageArg.evaluate(
-      () => {
-
-        document
-          .querySelectorAll(
-            '[data-pwAnnot]'
-          )
-          .forEach(
-            el => el.remove()
-          );
-
-      }
-    );
-
+    await pageArg.evaluate(() => {
+      document.querySelectorAll("[data-pwAnnot]").forEach((el) => el.remove());
+    });
   } catch (e) {}
-
 }
-
 
 export async function annotateTemporary(
   pageArg,
   locator,
-  labelText = '',
+  labelText = "",
   ms = 1200,
-  opts = {}
+  opts = {},
 ) {
-
   try {
+    if (!locator) return null;
 
-    if (!locator)
-      return null;
+    const id = await annotateElementLabel(pageArg, locator, labelText, opts);
 
+    if (!id) return null;
 
-    const id =
-      await annotateElementLabel(
-        pageArg,
-        locator,
-        labelText,
-        opts
-      );
-
-
-    if (!id)
-      return null;
-
-
-    await pageArg.waitForTimeout(
-      ms
-    );
-
+    await pageArg.waitForTimeout(ms);
 
     try {
+      await pageArg.evaluate((id) => {
+        const el = document.getElementById(id);
 
-      await pageArg.evaluate(
-        id => {
+        if (el) el.remove();
 
-          const el =
-            document.getElementById(
-              id
-            );
+        const dot = document.getElementById(id + "-dot");
 
-          if (el)
-            el.remove();
-
-
-          const dot =
-            document.getElementById(
-              id + '-dot'
-            );
-
-          if (dot)
-            dot.remove();
-
-        },
-        id
-      );
-
+        if (dot) dot.remove();
+      }, id);
     } catch (e) {}
 
-
     return id;
-
   } catch (e) {
-
     return null;
-
   }
-
 }
-
 
 // =========================================================
 // WAIT FOR AND HIGHLIGHT
@@ -2469,247 +1389,125 @@ export async function waitForAndHighlight(
   p,
   locatorFactoryOrLocator,
   timeout = 10000,
-  options = {}
+  options = {},
 ) {
-
   try {
-
     const locator =
-      typeof locatorFactoryOrLocator ===
-      'function'
+      typeof locatorFactoryOrLocator === "function"
         ? locatorFactoryOrLocator(p)
         : locatorFactoryOrLocator;
 
+    await expect(locator).toBeVisible({
+      timeout,
+    });
 
-    await expect(locator)
-      .toBeVisible({
-        timeout
-      });
-
-
-    await highlight(
-      p,
-      locator,
-      options
-    );
-
+    await highlight(p, locator, options);
 
     if (options.label) {
-
       try {
-
         await annotateTemporary(
           p,
           locator,
           options.label,
           options.labelMs || 1200,
           {
-            border:
-              options.border
-          }
+            border: options.border,
+          },
         );
-
       } catch {}
-
-    }
-
-    else if (options.annotate) {
-
+    } else if (options.annotate) {
       try {
-
-        await annotateTemporary(
-          p,
-          locator,
-          'Visible',
-          options.labelMs || 900
-        );
-
+        await annotateTemporary(p, locator, "Visible", options.labelMs || 900);
       } catch {}
-
     }
-
 
     return locator;
-
   } catch (e) {
-
     return null;
-
   }
-
 }
-
 
 // =========================================================
 // CLICK WHEN VISIBLE
 // =========================================================
 
-export async function clickWhenVisible(
-  p,
-  locatorFactoryOrLocator,
-  opts = {}
-) {
-
+export async function clickWhenVisible(p, locatorFactoryOrLocator, opts = {}) {
   const {
     timeout = 10000,
     force = false,
     annotate = true,
-    label = null
+    label = null,
   } = opts;
 
-
   const locator =
-    typeof locatorFactoryOrLocator ===
-    'function'
+    typeof locatorFactoryOrLocator === "function"
       ? locatorFactoryOrLocator(p)
       : locatorFactoryOrLocator;
 
-
   try {
+    await expect(locator).toBeVisible({
+      timeout,
+    });
 
-    await expect(locator)
-      .toBeVisible({
-        timeout
-      });
-
-
-    await highlight(
-      p,
-      locator,
-      {
-        pause: 400
-      }
-    );
-
+    await highlight(p, locator, {
+      pause: 400,
+    });
 
     if (annotate) {
-
-      const derivedLabel =
-        label || 'Click';
-
+      const derivedLabel = label || "Click";
 
       try {
-
-        await annotateTemporary(
-          p,
-          locator,
-          derivedLabel,
-          1000,
-          {
-            border:
-              '2px solid rgba(0,200,120,0.95)'
-          }
-        );
-
+        await annotateTemporary(p, locator, derivedLabel, 1000, {
+          border: "2px solid rgba(0,200,120,0.95)",
+        });
       } catch {}
-
     }
 
-
-    if (
-      annotate &&
-      label
-    )
-      await fastWait(
-        p,
-        180
-      );
-
+    if (annotate && label) await fastWait(p, 180);
 
     try {
-
       await locator.click({
-        timeout: 8000
+        timeout: 8000,
       });
-
     } catch {
-
       if (force)
-
         await locator.click({
-          force: true
+          force: true,
         });
-
-      else
-
-        throw new Error(
-          'Click failed and force not set'
-        );
-
+      else throw new Error("Click failed and force not set");
     }
-
 
     if (annotate) {
-
       try {
-
-        await annotateTemporary(
-          p,
-          locator,
-          'Clicked',
-          700
-        );
-
+        await annotateTemporary(p, locator, "Clicked", 700);
       } catch {}
-
     }
 
-
-    await fastWait(
-      p,
-      300
-    );
-
+    await fastWait(p, 300);
 
     return true;
-
   } catch (e) {
-
-    addWarning(
-      `clickWhenVisible failed: ${e?.message || e}`
-    );
+    addWarning(`clickWhenVisible failed: ${e?.message || e}`);
 
     return false;
-
   }
-
 }
-
 
 // =========================================================
 // ARTIFACT & FAILURE HELPERS
 // =========================================================
 
-export async function showTestFailure(
-  page,
-  message,
-  type = 'FAILURE'
-) {
-
+export async function showTestFailure(page, message, type = "FAILURE") {
   try {
-
     await page.evaluate(
-      ({
-        message,
-        type
-      }) => {
+      ({ message, type }) => {
+        const banner = document.createElement("div");
 
-        const banner =
-          document.createElement(
-            'div'
-          );
-
-
-        banner.style.cssText =
-          `position:fixed;
+        banner.style.cssText = `position:fixed;
            top:0;
            left:0;
            width:100%;
-           background:${
-             type === 'FAILURE'
-               ? '#dc3545'
-               : '#ffc107'
-           };
+           background:${type === "FAILURE" ? "#dc3545" : "#ffc107"};
            color:#fff;
            padding:10px;
            z-index:9999999;
@@ -2717,263 +1515,152 @@ export async function showTestFailure(
            font-size:14px;
            text-align:center;`;
 
+        banner.textContent = `${type}: ${message}`;
 
-        banner.textContent =
-          `${type}: ${message}`;
-
-
-        document.body.appendChild(
-          banner
-        );
-
+        document.body.appendChild(banner);
       },
       {
         message,
-        type
-      }
+        type,
+      },
     );
-
   } catch (e) {}
-
 }
-
 
 export async function showFailureMessage(
   page,
   message,
-  type = 'FAILURE',
-  waitMs = 5000
+  type = "FAILURE",
+  waitMs = 5000,
 ) {
-
   const colors = {
-
     FAILURE: {
-      bg:
-        'rgba(180, 0, 0, 0.95)',
-      border:
-        '#ff0000'
+      bg: "rgba(180, 0, 0, 0.95)",
+      border: "#ff0000",
     },
 
     ERROR: {
-      bg:
-        'rgba(200, 50, 50, 0.95)',
-      border:
-        '#ff4444'
+      bg: "rgba(200, 50, 50, 0.95)",
+      border: "#ff4444",
     },
 
     WARNING: {
-      bg:
-        'rgba(200, 150, 0, 0.95)',
-      border:
-        '#ffaa00'
-    }
-
+      bg: "rgba(200, 150, 0, 0.95)",
+      border: "#ffaa00",
+    },
   };
 
-
-  const color =
-    colors[type] ||
-    colors.FAILURE;
-
+  const color = colors[type] || colors.FAILURE;
 
   const displayMsg =
-    message.length > 300
-      ? message.substring(0, 300) + '...'
-      : message;
+    message.length > 300 ? message.substring(0, 300) + "..." : message;
 
+  console.error(`\n${"=".repeat(70)}`);
 
-  console.error(
-    `\n${'='.repeat(70)}`
-  );
+  console.error(`[${type}] ${displayMsg}`);
 
-  console.error(
-    `[${type}] ${displayMsg}`
-  );
-
-  console.error(
-    `${'='.repeat(70)}\n`
-  );
-
+  console.error(`${"=".repeat(70)}\n`);
 
   try {
-
     if (!page.isClosed()) {
-
       await page.evaluate(
-        ({
-          msg,
-          type,
-          bgColor,
-          borderColor
-        }) => {
+        ({ msg, type, bgColor, borderColor }) => {
+          const existing = document.getElementById("pw-fatal-failure-banner");
 
-          const existing =
-            document.getElementById(
-              'pw-fatal-failure-banner'
-            );
+          if (existing) existing.remove();
 
+          const banner = document.createElement("div");
 
-          if (existing)
-            existing.remove();
+          banner.id = "pw-fatal-failure-banner";
 
+          Object.assign(banner.style, {
+            position: "fixed",
 
-          const banner =
-            document.createElement(
-              'div'
-            );
+            top: "50%",
 
+            left: "50%",
 
-          banner.id =
-            'pw-fatal-failure-banner';
+            transform: "translate(-50%, -50%)",
 
+            width: "500px",
 
-          Object.assign(
-            banner.style,
-            {
+            minHeight: "150px",
 
-              position:
-                'fixed',
+            zIndex: "9999999",
 
-              top:
-                '50%',
+            display: "flex",
 
-              left:
-                '50%',
+            flexDirection: "column",
 
-              transform:
-                'translate(-50%, -50%)',
+            alignItems: "center",
 
-              width:
-                '500px',
+            justifyContent: "center",
 
-              minHeight:
-                '150px',
+            background: bgColor,
 
-              zIndex:
-                '9999999',
+            color: "#ffffff",
 
-              display:
-                'flex',
+            fontFamily: "Segoe UI, sans-serif",
 
-              flexDirection:
-                'column',
+            fontSize: "16px",
 
-              alignItems:
-                'center',
+            fontWeight: "bold",
 
-              justifyContent:
-                'center',
+            padding: "25px",
 
-              background:
-                bgColor,
+            boxSizing: "border-box",
 
-              color:
-                '#ffffff',
+            textAlign: "center",
 
-              fontFamily:
-                'Segoe UI, sans-serif',
+            borderRadius: "8px",
 
-              fontSize:
-                '16px',
+            boxShadow: "0 4px 15px rgba(0,0,0,0.5)",
 
-              fontWeight:
-                'bold',
+            border: `2px solid ${borderColor}`,
+          });
 
-              padding:
-                '25px',
-
-              boxSizing:
-                'border-box',
-
-              textAlign:
-                'center',
-
-              borderRadius:
-                '8px',
-
-              boxShadow:
-                '0 4px 15px rgba(0,0,0,0.5)',
-
-              border:
-                `2px solid ${borderColor}`
-
-            }
-          );
-
-
-          const title =
-            document.createElement(
-              'div'
-            );
-
+          const title = document.createElement("div");
 
           title.innerText =
-            type === 'FAILURE'
-              ? '❌ TEST FAILED'
-              : type === 'ERROR'
-                ? '⚠️ ERROR DETECTED'
-                : '⚠️ WARNING';
+            type === "FAILURE"
+              ? "❌ TEST FAILED"
+              : type === "ERROR"
+                ? "⚠️ ERROR DETECTED"
+                : "⚠️ WARNING";
 
+          title.style.fontSize = "24px";
 
-          title.style.fontSize =
-            '24px';
+          title.style.marginBottom = "15px";
 
-          title.style.marginBottom =
-            '15px';
+          title.style.textShadow = "1px 1px 2px rgba(0,0,0,0.5)";
 
-          title.style.textShadow =
-            '1px 1px 2px rgba(0,0,0,0.5)';
+          const details = document.createElement("div");
 
+          details.innerText = msg;
 
-          const details =
-            document.createElement(
-              'div'
-            );
+          details.style.fontSize = "13px";
 
+          details.style.fontWeight = "normal";
 
-          details.innerText =
-            msg;
+          details.style.maxWidth = "100%";
 
-          details.style.fontSize =
-            '13px';
+          details.style.lineHeight = "1.5";
 
-          details.style.fontWeight =
-            'normal';
+          details.style.background = "rgba(0,0,0,0.2)";
 
-          details.style.maxWidth =
-            '100%';
+          details.style.padding = "10px";
 
-          details.style.lineHeight =
-            '1.5';
+          details.style.borderRadius = "4px";
 
-          details.style.background =
-            'rgba(0,0,0,0.2)';
+          details.style.marginBottom = "10px";
 
-          details.style.padding =
-            '10px';
+          const info = document.createElement("div");
 
-          details.style.borderRadius =
-            '4px';
+          info.innerText = "📸 Capturing screenshot...";
 
-          details.style.marginBottom =
-            '10px';
+          info.style.fontSize = "11px";
 
-
-          const info =
-            document.createElement(
-              'div'
-            );
-
-
-          info.innerText =
-            '📸 Capturing screenshot...';
-
-          info.style.fontSize =
-            '11px';
-
-          info.style.opacity =
-            '0.8';
-
+          info.style.opacity = "0.8";
 
           banner.appendChild(title);
 
@@ -2981,102 +1668,48 @@ export async function showFailureMessage(
 
           banner.appendChild(info);
 
-
-          document.body.appendChild(
-            banner
-          );
-
+          document.body.appendChild(banner);
         },
         {
           msg: displayMsg,
           type,
           bgColor: color.bg,
-          borderColor: color.border
-        }
+          borderColor: color.border,
+        },
       );
 
-
       if (waitMs > 0) {
-
-        await fastWait(
-          page,
-          waitMs
-        );
-
+        await fastWait(page, waitMs);
       }
-
     }
-
   } catch (err) {
-
-    console.warn(
-      'Could not show failure message on screen:',
-      err.message
-    );
-
+    console.warn("Could not show failure message on screen:", err.message);
   }
-
 }
 
+export async function showFailure(page, error) {
+  const message = error?.message || String(error);
 
-export async function showFailure(
-  page,
-  error
-) {
+  const stack = error?.stack || "";
 
-  const message =
-    error?.message ||
-    String(error);
+  console.error(`\n${"=".repeat(70)}`);
 
-  const stack =
-    error?.stack ||
-    '';
+  console.error(`[FAILURE] TEST FAILED`);
 
+  console.error(`${"=".repeat(70)}`);
 
-  console.error(
-    `\n${'='.repeat(70)}`
-  );
-
-  console.error(
-    `[FAILURE] TEST FAILED`
-  );
-
-  console.error(
-    `${'='.repeat(70)}`
-  );
-
-  console.error(
-    `Message: ${message}`
-  );
-
+  console.error(`Message: ${message}`);
 
   if (stack) {
+    console.error(`\nStack Trace:`);
 
-    console.error(
-      `\nStack Trace:`
-    );
-
-    console.error(
-      stack
-    );
-
+    console.error(stack);
   }
 
+  console.error(`${"=".repeat(70)}\n`);
 
-  console.error(
-    `${'='.repeat(70)}\n`
-  );
-
-
-  await showFailureMessage(
-    page,
-    message,
-    'FAILURE',
-    5000
-  );
-
+  await showFailureMessage(page, message, "FAILURE", 5000);
 }
-
 
 // =========================================================
 // SCREENSHOT
@@ -3086,1138 +1719,499 @@ export async function captureScreenshot(
   page,
   testTitle,
   reason,
-  testFile = null
+  testFile = null,
 ) {
-
   try {
-
-    const dir =
-      VIDEO_DIR;
-
+    const dir = VIDEO_DIR;
 
     if (!fs.existsSync(dir)) {
-
-      fs.mkdirSync(
-        dir,
-        {
-          recursive: true
-        }
-      );
-
+      fs.mkdirSync(dir, {
+        recursive: true,
+      });
     }
 
+    const actualTestFile = testFile || CURRENT_TEST_FILE || "test.spec.js";
 
-    const actualTestFile =
-      testFile ||
-      CURRENT_TEST_FILE ||
-      'test.spec.js';
+    const filename = formatArtifactFilename(
+      actualTestFile,
+      testTitle,
+      reason,
+      "png",
+    );
 
-
-    const filename =
-      formatArtifactFilename(
-        actualTestFile,
-        testTitle,
-        reason,
-        'png'
-      );
-
-
-    const filePath =
-      path.join(
-        dir,
-        filename
-      );
-
+    const filePath = path.join(dir, filename);
 
     await page.screenshot({
       path: filePath,
-      fullPage: true
+      fullPage: true,
     });
 
-
-    logInfo(
-      'Screenshot captured',
-      {
-        path: filePath,
-        filename
-      }
-    );
-
+    logInfo("Screenshot captured", {
+      path: filePath,
+      filename,
+    });
 
     return filePath;
-
   } catch (err) {
-
-    console.warn(
-      'captureScreenshot failed',
-      err.message
-    );
+    console.warn("captureScreenshot failed", err.message);
 
     return null;
-
   }
-
 }
 
-
-export function generateVideoFilename(
-  testFile,
-  testTitle,
-  reason
-) {
-
-  return formatArtifactFilename(
-    testFile,
-    testTitle,
-    reason,
-    'webm'
-  );
-
+export function generateVideoFilename(testFile, testTitle, reason) {
+  return formatArtifactFilename(testFile, testTitle, reason, "webm");
 }
-
 
 export async function saveMapScreenshot(
   p,
   sceneId,
-  suffix = 'overlay',
-  markWarning = false
+  suffix = "overlay",
+  markWarning = false,
 ) {
-
   try {
-
-    const dir =
-      path.join(
-        process.cwd(),
-        'test-results'
-      );
-
+    const dir = path.join(process.cwd(), "test-results");
 
     if (!fs.existsSync(dir)) {
-
-      fs.mkdirSync(
-        dir,
-        {
-          recursive: true
-        }
-      );
-
+      fs.mkdirSync(dir, {
+        recursive: true,
+      });
     }
 
+    const safe = sanitizeFilename(
+      `scene_${sceneId || "noid"}_${suffix}_${new Date().toISOString()}`,
+    );
 
-    const safe =
-      sanitizeFilename(
-        `scene_${sceneId || 'noid'}_${suffix}_${new Date().toISOString()}`
-      );
-
-
-    const filePath =
-      path.join(
-        dir,
-        `${safe}.png`
-      );
-
+    const filePath = path.join(dir, `${safe}.png`);
 
     await p.screenshot({
       path: filePath,
-      fullPage: true
+      fullPage: true,
     });
 
-
     if (markWarning) {
-
-      addWarning(
-        `screenshot saved: ${filePath}`,
-        {
-          sceneId,
-          suffix
-        }
-      );
-
+      addWarning(`screenshot saved: ${filePath}`, {
+        sceneId,
+        suffix,
+      });
     } else {
-
-      logInfo(
-        `screenshot saved: ${filePath}`,
-        {
-          sceneId,
-          suffix
-        }
-      );
-
+      logInfo(`screenshot saved: ${filePath}`, {
+        sceneId,
+        suffix,
+      });
     }
 
-
-    ARTIFACTS.push(
-      filePath
-    );
-
+    ARTIFACTS.push(filePath);
 
     return filePath;
-
   } catch (e) {
-
-    addWarning(
-      `Failed to save screenshot for ${sceneId}: ${e?.message || e}`
-    );
+    addWarning(`Failed to save screenshot for ${sceneId}: ${e?.message || e}`);
 
     return null;
-
   }
-
 }
-
 
 // =========================================================
 // OUTLINE DATA
 // =========================================================
 
-export async function saveOutlineData(
-  pageArg,
-  sceneId,
-  outlineResult
-) {
-
+export async function saveOutlineData(pageArg, sceneId, outlineResult) {
   try {
-
-    const dir =
-      path.join(
-        process.cwd(),
-        'test-results'
-      );
-
+    const dir = path.join(process.cwd(), "test-results");
 
     if (!fs.existsSync(dir)) {
-
-      fs.mkdirSync(
-        dir,
-        {
-          recursive: true
-        }
-      );
-
+      fs.mkdirSync(dir, {
+        recursive: true,
+      });
     }
-
 
     const data = {
+      sceneId: sceneId || null,
 
-      sceneId:
-        sceneId || null,
+      time: new Date().toISOString(),
 
-      time:
-        new Date().toISOString(),
+      type: outlineResult?.type || null,
 
-      type:
-        outlineResult?.type ||
-        null,
-
-      bbox:
-        outlineResult?.bbox ||
-        null
-
+      bbox: outlineResult?.bbox || null,
     };
 
-
     try {
-
-      if (
-        outlineResult &&
-        outlineResult.locator
-      ) {
-
-        const handle =
-          await outlineResult.locator
-            .elementHandle();
-
+      if (outlineResult && outlineResult.locator) {
+        const handle = await outlineResult.locator.elementHandle();
 
         if (handle) {
+          const outer = await handle.evaluate((el) => {
+            try {
+              if (el.tagName && el.tagName.toLowerCase() === "path") {
+                return {
+                  tag: "path",
 
-          const outer =
-            await handle.evaluate(
-              el => {
+                  d: el.getAttribute("d") || null,
 
-                try {
-
-                  if (
-                    el.tagName &&
-                    el.tagName.toLowerCase() ===
-                      'path'
-                  ) {
-
-                    return {
-
-                      tag:
-                        'path',
-
-                      d:
-                        el.getAttribute(
-                          'd'
-                        ) || null,
-
-                      outerHTML:
-                        el.outerHTML ||
-                        null
-
-                    };
-
-                  }
-
-
-                  return {
-
-                    tag:
-                      el.tagName
-                        ? el.tagName.toLowerCase()
-                        : null,
-
-                    outerHTML:
-                      el.outerHTML ||
-                      null
-
-                  };
-
-                } catch (e) {
-
-                  return {
-                    error:
-                      String(e)
-                  };
-
-                }
-
+                  outerHTML: el.outerHTML || null,
+                };
               }
-            );
 
+              return {
+                tag: el.tagName ? el.tagName.toLowerCase() : null,
 
-          data.element =
-            outer;
+                outerHTML: el.outerHTML || null,
+              };
+            } catch (e) {
+              return {
+                error: String(e),
+              };
+            }
+          });
 
+          data.element = outer;
         }
-
       }
-
     } catch (e) {
-
-      data.elementCaptureError =
-        String(e);
-
+      data.elementCaptureError = String(e);
     }
 
-
-    const safe =
-      sanitizeFilename(
-        `scene_${sceneId || 'noid'}_outline_${new Date().toISOString()}`
-      );
-
-
-    const filePath =
-      path.join(
-        dir,
-        `${safe}.json`
-      );
-
-
-    fs.writeFileSync(
-      filePath,
-      JSON.stringify(
-        data,
-        null,
-        2
-      ),
-      'utf8'
+    const safe = sanitizeFilename(
+      `scene_${sceneId || "noid"}_outline_${new Date().toISOString()}`,
     );
 
+    const filePath = path.join(dir, `${safe}.json`);
 
-    logInfo(
-      `outline data saved: ${filePath}`,
-      {
-        sceneId
-      }
-    );
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf8");
 
+    logInfo(`outline data saved: ${filePath}`, {
+      sceneId,
+    });
 
     return filePath;
-
   } catch (e) {
-
     addWarning(
-      `Failed to save outline data for ${sceneId}: ${e?.message || e}`
+      `Failed to save outline data for ${sceneId}: ${e?.message || e}`,
     );
 
     return null;
-
   }
-
 }
-
 
 // =========================================================
 // BBOX & OVERLAY DETECTION
 // =========================================================
 
-export async function getBoundingBoxForLocator(
-  page,
-  locator
-) {
-
+export async function getBoundingBoxForLocator(page, locator) {
   try {
+    if (!locator) return null;
 
-    if (!locator)
-      return null;
+    const handle = await locator.elementHandle();
 
+    if (!handle) return null;
 
-    const handle =
-      await locator.elementHandle();
+    const bb = await handle.boundingBox().catch(() => null);
 
-
-    if (!handle)
-      return null;
-
-
-    const bb =
-      await handle
-        .boundingBox()
-        .catch(() => null);
-
-
-    if (
-      bb &&
-      typeof bb.x === 'number'
-    )
-      return bb;
-
+    if (bb && typeof bb.x === "number") return bb;
 
     try {
+      const bb2 = await page.evaluate((el) => {
+        try {
+          if (el.getBBox) {
+            const b = el.getBBox();
 
-      const bb2 =
-        await page.evaluate(
-          el => {
+            return {
+              x: b.x,
 
-            try {
+              y: b.y,
 
-              if (el.getBBox) {
+              width: b.width,
 
-                const b =
-                  el.getBBox();
+              height: b.height,
+            };
+          }
 
+          const r = el.getBoundingClientRect();
 
-                return {
+          return {
+            x: r.x,
 
-                  x:
-                    b.x,
+            y: r.y,
 
-                  y:
-                    b.y,
+            width: r.width,
 
-                  width:
-                    b.width,
-
-                  height:
-                    b.height
-
-                };
-
-              }
-
-
-              const r =
-                el.getBoundingClientRect();
-
-
-              return {
-
-                x:
-                  r.x,
-
-                y:
-                  r.y,
-
-                width:
-                  r.width,
-
-                height:
-                  r.height
-
-              };
-
-            } catch (e) {
-
-              return null;
-
-            }
-
-          },
-          handle
-        );
-
+            height: r.height,
+          };
+        } catch (e) {
+          return null;
+        }
+      }, handle);
 
       return bb2;
-
     } catch (e) {
-
       return null;
-
     }
-
   } catch (e) {
-
     return null;
-
   }
-
 }
 
-
-export function bboxIntersects(
-  a,
-  b,
-  minOverlapRatio = 0.1
-) {
-
-  if (!a || !b)
-    return false;
-
+export function bboxIntersects(a, b, minOverlapRatio = 0.1) {
+  if (!a || !b) return false;
 
   const ax1 = a.x;
 
   const ay1 = a.y;
 
-  const ax2 =
-    a.x + a.width;
+  const ax2 = a.x + a.width;
 
-  const ay2 =
-    a.y + a.height;
-
+  const ay2 = a.y + a.height;
 
   const bx1 = b.x;
 
   const by1 = b.y;
 
-  const bx2 =
-    b.x + b.width;
+  const bx2 = b.x + b.width;
 
-  const by2 =
-    b.y + b.height;
+  const by2 = b.y + b.height;
 
+  const ix1 = Math.max(ax1, bx1);
 
-  const ix1 =
-    Math.max(
-      ax1,
-      bx1
-    );
+  const iy1 = Math.max(ay1, by1);
 
-  const iy1 =
-    Math.max(
-      ay1,
-      by1
-    );
+  const ix2 = Math.min(ax2, bx2);
 
-  const ix2 =
-    Math.min(
-      ax2,
-      bx2
-    );
+  const iy2 = Math.min(ay2, by2);
 
-  const iy2 =
-    Math.min(
-      ay2,
-      by2
-    );
+  const iw = Math.max(0, ix2 - ix1);
 
+  const ih = Math.max(0, iy2 - iy1);
 
-  const iw =
-    Math.max(
-      0,
-      ix2 - ix1
-    );
+  if (iw === 0 || ih === 0) return false;
 
-  const ih =
-    Math.max(
-      0,
-      iy2 - iy1
-    );
+  const interArea = iw * ih;
 
+  const aArea = Math.max(1, a.width * a.height);
 
-  if (
-    iw === 0 ||
-    ih === 0
-  )
-    return false;
+  const bArea = Math.max(1, b.width * b.height);
 
+  const overlapRatio = interArea / Math.min(aArea, bArea);
 
-  const interArea =
-    iw * ih;
-
-
-  const aArea =
-    Math.max(
-      1,
-      a.width * a.height
-    );
-
-
-  const bArea =
-    Math.max(
-      1,
-      b.width * b.height
-    );
-
-
-  const overlapRatio =
-    interArea /
-    Math.min(
-      aArea,
-      bArea
-    );
-
-
-  return (
-    overlapRatio >=
-    minOverlapRatio
-  );
-
+  return overlapRatio >= minOverlapRatio;
 }
-
 
 // =========================================================
 // MAP OVERLAY DETECTION
 // =========================================================
 
-export async function detectMapOverlayWithBBox(
-  page,
-  sceneId
-) {
-
+export async function detectMapOverlayWithBBox(page, sceneId) {
   try {
+    const mapLocator = page.locator("#map");
 
-    const mapLocator =
-      page.locator('#map');
-
-
-    const mapBB =
-      await getBoundingBoxForLocator(
-        page,
-        mapLocator
-      );
-
+    const mapBB = await getBoundingBoxForLocator(page, mapLocator);
 
     if (sceneId) {
+      const imgById = page.locator(`#map img[src*="${sceneId}"]`);
 
-      const imgById =
-        page.locator(
-          `#map img[src*="${sceneId}"]`
-        );
+      if ((await imgById.count()) > 0) {
+        const candidate = imgById.first();
 
+        const src = (await candidate.getAttribute("src")) || "";
 
-      if (
-        await imgById.count() > 0
-      ) {
+        if (!/marker|icon|static/i.test(src)) {
+          const bb = await getBoundingBoxForLocator(page, candidate);
 
-        const candidate =
-          imgById.first();
-
-
-        const src =
-          await candidate.getAttribute(
-            'src'
-          ) || '';
-
-
-        if (
-          !/marker|icon|static/i.test(src)
-        ) {
-
-          const bb =
-            await getBoundingBoxForLocator(
-              page,
-              candidate
-            );
-
-
-          if (
-            bb &&
-            (
-              !mapBB ||
-              bboxIntersects(
-                bb,
-                mapBB,
-                0.05
-              )
-            )
-          ) {
-
+          if (bb && (!mapBB || bboxIntersects(bb, mapBB, 0.05))) {
             return {
+              type: "preview",
 
-              type:
-                'preview',
+              locator: candidate,
 
-              locator:
-                candidate,
-
-              bbox:
-                bb
-
+              bbox: bb,
             };
-
           }
-
         }
-
       }
-
     }
 
+    const svgPath = page.locator("#map svg path, #map svg g path");
 
-    const svgPath =
-      page.locator(
-        '#map svg path, #map svg g path'
-      );
+    if ((await svgPath.count()) > 0) {
+      const candidate = svgPath.first();
 
+      const bb = await getBoundingBoxForLocator(page, candidate);
 
-    if (
-      await svgPath.count() > 0
-    ) {
-
-      const candidate =
-        svgPath.first();
-
-
-      const bb =
-        await getBoundingBoxForLocator(
-          page,
-          candidate
-        );
-
-
-      if (
-        bb &&
-        (
-          !mapBB ||
-          bboxIntersects(
-            bb,
-            mapBB,
-            0.03
-          )
-        )
-      ) {
-
+      if (bb && (!mapBB || bboxIntersects(bb, mapBB, 0.03))) {
         return {
+          type: "outline",
 
-          type:
-            'outline',
+          locator: candidate,
 
-          locator:
-            candidate,
-
-          bbox:
-            bb
-
+          bbox: bb,
         };
-
       }
-
     }
 
+    const canvas = page.locator("#map canvas");
 
-    const canvas =
-      page.locator(
-        '#map canvas'
-      );
+    if ((await canvas.count()) > 0) {
+      const candidate = canvas.first();
 
+      const bb = await getBoundingBoxForLocator(page, candidate);
 
-    if (
-      await canvas.count() > 0
-    ) {
-
-      const candidate =
-        canvas.first();
-
-
-      const bb =
-        await getBoundingBoxForLocator(
-          page,
-          candidate
-        );
-
-
-      if (
-        bb &&
-        (
-          !mapBB ||
-          bboxIntersects(
-            bb,
-            mapBB,
-            0.05
-          )
-        )
-      ) {
-
+      if (bb && (!mapBB || bboxIntersects(bb, mapBB, 0.05))) {
         return {
+          type: "canvas",
 
-          type:
-            'canvas',
+          locator: candidate,
 
-          locator:
-            candidate,
-
-          bbox:
-            bb
-
+          bbox: bb,
         };
-
       }
-
     }
-
   } catch (e) {}
 
-
   return null;
-
 }
-
 
 // =========================================================
 // AOI DETECTION
 // =========================================================
 
-export async function detectAOIOnMap(
-  page
-) {
-
+export async function detectAOIOnMap(page) {
   try {
+    const infoWindow = page.locator(
+      '.gm-style-iw-c:has-text("area"), .gm-style-iw:has-text("area")',
+    );
 
-    const infoWindow =
-      page.locator(
-        '.gm-style-iw-c:has-text("area"), .gm-style-iw:has-text("area")'
-      );
-
-
-    if (
-      await infoWindow.count() > 0
-    ) {
-
-      const bb =
-        await getBoundingBoxForLocator(
-          page,
-          infoWindow.first()
-        );
-
+    if ((await infoWindow.count()) > 0) {
+      const bb = await getBoundingBoxForLocator(page, infoWindow.first());
 
       if (bb) {
-
         return {
+          type: "aoi_info",
 
-          type:
-            'aoi_info',
+          locator: infoWindow.first(),
 
-          locator:
-            infoWindow.first(),
+          bbox: bb,
 
-          bbox:
-            bb,
-
-          selector:
-            'infowindow'
-
+          selector: "infowindow",
         };
-
       }
-
     }
 
+    const candidates = page.locator(
+      "#map svg path, #map svg rect, #map svg polygon",
+    );
 
-    const candidates =
-      page.locator(
-        '#map svg path, #map svg rect, #map svg polygon'
-      );
-
-
-    const count =
-      await candidates.count();
-
+    const count = await candidates.count();
 
     if (count > 0) {
+      for (let i = count - 1; i >= 0; i--) {
+        const candidate = candidates.nth(i);
 
-      for (
-        let i = count - 1;
-        i >= 0;
-        i--
-      ) {
+        const bb = await getBoundingBoxForLocator(page, candidate);
 
-        const candidate =
-          candidates.nth(i);
-
-
-        const bb =
-          await getBoundingBoxForLocator(
-            page,
-            candidate
-          );
-
-
-        if (
-          bb &&
-          bb.width > 30 &&
-          bb.height > 30
-        ) {
-
+        if (bb && bb.width > 30 && bb.height > 30) {
           return {
+            type: "aoi",
 
-            type:
-              'aoi',
+            locator: candidate,
 
-            locator:
-              candidate,
+            bbox: bb,
 
-            bbox:
-              bb,
-
-            selector:
-              'svg_shape'
-
+            selector: "svg_shape",
           };
-
         }
-
       }
-
     }
-
   } catch (e) {
-
-    console.warn(
-      'detectAOIOnMap error',
-      e.message
-    );
-
+    console.warn("detectAOIOnMap error", e.message);
   }
 
-
   return null;
-
 }
 
+export async function waitForAOIOnMap(page, timeout = 20000) {
+  const start = Date.now();
 
-export async function waitForAOIOnMap(
-  page,
-  timeout = 20000
-) {
+  while (Date.now() - start < timeout) {
+    const found = await detectAOIOnMap(page);
 
-  const start =
-    Date.now();
+    if (found) return found;
 
-
-  while (
-    Date.now() - start <
-    timeout
-  ) {
-
-    const found =
-      await detectAOIOnMap(
-        page
-      );
-
-
-    if (found)
-      return found;
-
-
-    await page.waitForTimeout(
-      300
-    );
-
+    await page.waitForTimeout( 300 );
   }
 
-
   return null;
-
 }
-
 
 // =========================================================
 // DIAGNOSTICS SUMMARY
 // =========================================================
 
-export function persistDiagnosticsSummary(
-  extra = {}
-) {
+export function persistDiagnosticsSummary(extra = {}) {
+  const testId = extra.testId || CURRENT_TESTCASE || "unknown";
 
-  const testId =
-    extra.testId ||
-    CURRENT_TESTCASE ||
-    'unknown';
+  const testTitle = extra.testTitle || CURRENT_TESTCASE || "";
 
-
-  const testTitle =
-    extra.testTitle ||
-    CURRENT_TESTCASE ||
-    '';
-
-
-  if (
-    !fs.existsSync(
-      DIAG_DIR
-    )
-  ) {
-
-    fs.mkdirSync(
-      DIAG_DIR,
-      {
-        recursive: true
-      }
-    );
-
+  if (!fs.existsSync(DIAG_DIR)) {
+    fs.mkdirSync(DIAG_DIR, {
+      recursive: true,
+    });
   }
 
+  const currentTest = CURRENT_TESTCASE;
 
-  const currentTest =
-    CURRENT_TESTCASE;
-
-
-  const testInfos =
-    INFOS.filter(
-      info =>
-        !currentTest ||
-        !info.test ||
-        info.test === currentTest
-    );
-
+  const testInfos = INFOS.filter(
+    (info) => !currentTest || !info.test || info.test === currentTest,
+  );
 
   const summary = {
+    timestamp: new Date().toISOString(),
 
-    timestamp:
-      new Date().toISOString(),
+    testcase: CURRENT_TESTCASE,
 
-    testcase:
-      CURRENT_TESTCASE,
+    testFile: CURRENT_TEST_FILE,
 
-    testFile:
-      CURRENT_TEST_FILE,
+    infos: testInfos,
 
-    infos:
-      testInfos,
+    warnings: WARNINGS,
 
-    warnings:
-      WARNINGS,
+    errors: ERRORS,
 
-    errors:
-      ERRORS,
+    skippedSteps: SKIPPED_STEPS,
 
-    skippedSteps:
-      SKIPPED_STEPS,
+    videoPath: extra.videoPath || null,
 
-    videoPath:
-      extra.videoPath ||
-      null,
-
-    extra
-
+    extra,
   };
 
+  const safeId = String(testId)
+    .replace(/[:/\\<>?"|*]/g, "_")
+    .replace(/\s+/g, "_")
+    .replace(/_+/g, "_")
+    .substring(0, 150);
 
-  const safeId =
-    String(testId)
-      .replace(
-        /[:/\\<>?"|*]/g,
-        '_'
-      )
-      .replace(
-        /\s+/g,
-        '_'
-      )
-      .replace(
-        /_+/g,
-        '_'
-      )
-      .substring(
-        0,
-        150
-      );
-
-
-  const primaryPath =
-    path.join(
-      DIAG_DIR,
-      `${safeId}.json`
-    );
-
+  const primaryPath = path.join(DIAG_DIR, `${safeId}.json`);
 
   try {
-
-    fs.writeFileSync(
-      primaryPath,
-      JSON.stringify(
-        summary,
-        null,
-        2
-      )
-    );
-
+    fs.writeFileSync(primaryPath, JSON.stringify(summary, null, 2));
   } catch (e) {
-
-    console.error(
-      '[DIAG] Failed to write primary diagnostics:',
-      e.message
-    );
-
+    console.error("[DIAG] Failed to write primary diagnostics:", e.message);
   }
 
+  if (testTitle && testTitle !== testId) {
+    const safeTitle = String(testTitle)
+      .replace(/[:/\\<>?"|*]/g, "_")
+      .replace(/\s+/g, "_")
+      .replace(/_+/g, "_")
+      .substring(0, 150);
 
-  if (
-    testTitle &&
-    testTitle !== testId
-  ) {
-
-    const safeTitle =
-      String(testTitle)
-        .replace(
-          /[:/\\<>?"|*]/g,
-          '_'
-        )
-        .replace(
-          /\s+/g,
-          '_'
-        )
-        .replace(
-          /_+/g,
-          '_'
-        )
-        .substring(
-          0,
-          150
-        );
-
-
-    const titlePath =
-      path.join(
-        DIAG_DIR,
-        `${safeTitle}.json`
-      );
-
+    const titlePath = path.join(DIAG_DIR, `${safeTitle}.json`);
 
     try {
-
-      fs.writeFileSync(
-        titlePath,
-        JSON.stringify(
-          summary,
-          null,
-          2
-        )
-      );
-
+      fs.writeFileSync(titlePath, JSON.stringify(summary, null, 2));
     } catch (e) {
-
-      console.error(
-        '[DIAG] Failed to write title diagnostics:',
-        e.message
-      );
-
+      console.error("[DIAG] Failed to write title diagnostics:", e.message);
     }
-
   }
-
 }
-
 
 // =========================================================
 // MAP OVERLAY WAIT
@@ -4226,297 +2220,142 @@ export function persistDiagnosticsSummary(
 export async function waitForMapOverlayForScene(
   page,
   sceneId,
-  type = 'any',
-  timeout = 20000
+  type = "any",
+  timeout = 20000,
 ) {
+  const start = Date.now();
 
-  const start =
-    Date.now();
-
-
-  while (
-    Date.now() - start <
-    timeout
-  ) {
-
+  while (Date.now() - start < timeout) {
     try {
+      if (type === "preview" || type === "any") {
+        const imgLocator = page
+          .locator(`#map img[src*="${sceneId}"], #map img[src*="browse"]`)
+          .first();
 
-      if (
-        type === 'preview' ||
-        type === 'any'
-      ) {
-
-        const imgLocator =
-          page.locator(
-            `#map img[src*="${sceneId}"], #map img[src*="browse"]`
-          ).first();
-
-
-        if (
-          await imgLocator.count() > 0
-        ) {
-
-          const src =
-            await imgLocator.getAttribute(
-              'src'
-            );
-
+        if ((await imgLocator.count()) > 0) {
+          const src = await imgLocator.getAttribute("src");
 
           if (
             src &&
-            !/marker|icon|pin|show\.png|hide\.png|preview\.png|details\.png/i.test(src)
+            !/marker|icon|pin|show\.png|hide\.png|preview\.png|details\.png/i.test(
+              src,
+            )
           ) {
-
             return {
+              type: "preview",
 
-              type:
-                'preview',
+              locator: imgLocator,
 
-              locator:
-                imgLocator,
-
-              bbox:
-                await getBoundingBoxForLocator(
-                  page,
-                  imgLocator
-                )
-
+              bbox: await getBoundingBoxForLocator(page, imgLocator),
             };
-
           }
-
         }
-
       }
 
+      if (type === "outline" || type === "any") {
+        const svgLocator = page.locator("#map svg path, #map svg rect").first();
 
-      if (
-        type === 'outline' ||
-        type === 'any'
-      ) {
+        if ((await svgLocator.count()) > 0) {
+          const bb = await getBoundingBoxForLocator(page, svgLocator);
 
-        const svgLocator =
-          page.locator(
-            '#map svg path, #map svg rect'
-          ).first();
-
-
-        if (
-          await svgLocator.count() > 0
-        ) {
-
-          const bb =
-            await getBoundingBoxForLocator(
-              page,
-              svgLocator
-            );
-
-
-          if (
-            bb &&
-            bb.width > 30 &&
-            bb.height > 30
-          ) {
-
+          if (bb && bb.width > 30 && bb.height > 30) {
             return {
+              type: "outline",
 
-              type:
-                'outline',
+              locator: svgLocator,
 
-              locator:
-                svgLocator,
-
-              bbox:
-                bb
-
+              bbox: bb,
             };
-
           }
-
         }
-
       }
-
     } catch (e) {}
 
-
-    await page.waitForTimeout(
-      500
-    );
-
+    await page.waitForTimeout( 500 );
   }
 
-
   return null;
-
 }
-
 
 // =========================================================
 // OUTLINE COORDS
 // =========================================================
 
-export async function getOutlineCoordsFromButton(
-  row
-) {
+export async function getOutlineCoordsFromButton(row) {
+  const btn = row.locator('input[title="show scene outline"]').first();
 
-  const btn =
-    row.locator(
-      'input[title="show scene outline"]'
-    ).first();
+  if ((await btn.count()) === 0) return null;
 
+  const idAttr = await btn.getAttribute("id");
 
-  if (
-    await btn.count() === 0
-  )
-    return null;
-
-
-  const idAttr =
-    await btn.getAttribute(
-      'id'
-    );
-
-
-  if (!idAttr)
-    return null;
-
+  if (!idAttr) return null;
 
   try {
-
-    return JSON.parse(
-      idAttr
-    );
-
+    return JSON.parse(idAttr);
   } catch (e) {
-
     return null;
-
   }
-
 }
-
 
 // =========================================================
 // PREVIEW IMAGE
 // =========================================================
 
-export async function waitForPreviewImageOnMap(
-  page,
-  sceneId,
-  timeout = 20000
-) {
+export async function waitForPreviewImageOnMap(page, sceneId, timeout = 20000) {
+  const start = Date.now();
 
-  const start =
-    Date.now();
-
-
-  while (
-    Date.now() - start <
-    timeout
-  ) {
-
+  while (Date.now() - start < timeout) {
     try {
+      const img = page.locator(`#map img[src*="${sceneId}"]`).first();
 
-      const img =
-        page.locator(
-          `#map img[src*="${sceneId}"]`
-        ).first();
+      if ((await img.count()) > 0) return img;
 
+      const genericImg = page
+        .locator('#map img[src*="browse"], #map img[src*="maxar"]')
+        .first();
 
-      if (
-        await img.count() > 0
-      )
-        return img;
-
-
-      const genericImg =
-        page.locator(
-          '#map img[src*="browse"], #map img[src*="maxar"]'
-        ).first();
-
-
-      if (
-        await genericImg.count() > 0
-      )
-        return genericImg;
-
+      if ((await genericImg.count()) > 0) return genericImg;
     } catch (e) {}
 
-
-    await page.waitForTimeout(
-      500
-    );
-
+    await page.waitForTimeout( 500 );
   }
 
-
   return null;
-
 }
-
 
 // =========================================================
 // ELEMENT METRICS
 // =========================================================
 
-export async function getElementMetrics(
-  locator
-) {
-
+export async function getElementMetrics(locator) {
   try {
+    if (!(await locator.count())) return null;
 
-    if (
-      !await locator.count()
-    )
-      return null;
+    const box = await locator.boundingBox();
 
-
-    const box =
-      await locator.boundingBox();
-
-
-    if (!box)
-      return null;
-
+    if (!box) return null;
 
     return {
+      x: Math.round(box.x),
 
-      x:
-        Math.round(box.x),
+      y: Math.round(box.y),
 
-      y:
-        Math.round(box.y),
+      width: Math.round(box.width),
 
-      width:
-        Math.round(box.width),
+      height: Math.round(box.height),
 
-      height:
-        Math.round(box.height),
-
-      area:
-        Math.round(
-          box.width *
-          box.height
-        )
-
+      area: Math.round(box.width * box.height),
     };
-
   } catch (e) {
-
     return null;
-
   }
-
 }
-
 
 // =========================================================
 // DEFAULT EXPORT
 // =========================================================
 
 export default {
-
   setContext,
   clearContext,
 
@@ -4607,6 +2446,5 @@ export default {
 
   getElementMetrics,
 
-  removeFailureMessage
-
+  removeFailureMessage,
 };
