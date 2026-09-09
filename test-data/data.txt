@@ -1,0 +1,410 @@
+ PS C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\playwright> npx playwright test specs/map.spec.js --workers=1 --headed 
+
+Running 7 tests using 1 worker
+
+🧹 Diagnostics cleared: 2 stale files from previous run
+     1 [chromium] › specs\map.spec.js:31:5 › [P0] 1 - Map Search: search and select a valid location
+[INFO] 2026-09-07T16:06:55.725Z ([P0] 1 - Map Search: search and select a valid location)  - Context set
+[INFO] 2026-09-07T16:06:55.736Z ([P0] 1 - Map Search: search and select a valid location)  - Step 1: Navigate to the DataStore URL
+[INFO] 2026-09-07T16:07:20.952Z ([P0] 1 - Map Search: search and select a valid location)  - DataStore root returned HTTP 200
+[INFO] 2026-09-07T16:07:20.952Z ([P0] 1 - Map Search: search and select a valid location)  - DataStore URL opened successfully
+[INFO] 2026-09-07T16:07:20.952Z ([P0] 1 - Map Search: search and select a valid location)  - Step 2: Wait for page loader and highlight the loader/logo
+[INFO] 2026-09-07T16:07:25.546Z ([P0] 1 - Map Search: search and select a valid location)  - Page loader became hidden
+[INFO] 2026-09-07T16:07:25.546Z ([P0] 1 - Map Search: search and select a valid location)  - Page loader/logo processed successfully
+[INFO] 2026-09-07T16:07:25.546Z ([P0] 1 - Map Search: search and select a valid location)  - Step 3: Close the tutorial
+[INFO] 2026-09-07T16:07:27.799Z ([P0] 1 - Map Search: search and select a valid location)  - robustClick succeeded
+[INFO] 2026-09-07T16:07:29.006Z ([P0] 1 - Map Search: search and select a valid location)  - Tutorial modal closed
+[INFO] 2026-09-07T16:07:29.007Z ([P0] 1 - Map Search: search and select a valid location)  - Tutorial closed successfully
+[INFO] 2026-09-07T16:07:29.007Z ([P0] 1 - Map Search: search and select a valid location)  - Step 4: Wait for the map to load
+[INFO] 2026-09-07T16:07:31.697Z ([P0] 1 - Map Search: search and select a valid location)  - World map is visible and loaded
+[INFO] 2026-09-07T16:07:31.697Z ([P0] 1 - Map Search: search and select a valid location)  - Map loaded successfully
+[INFO] 2026-09-07T16:07:31.697Z ([P0] 1 - Map Search: search and select a valid location)  - Step 5: Locate and highlight the Search icon
+[INFO] 2026-09-07T16:07:34.099Z ([P0] 1 - Map Search: search and select a valid location)  - Search icon located successfully
+[INFO] 2026-09-07T16:07:34.099Z ([P0] 1 - Map Search: search and select a valid location)  - Step 6: Click the Search icon
+[INFO] 2026-09-07T16:07:36.891Z ([P0] 1 - Map Search: search and select a valid location)  - Search icon clicked successfully
+[INFO] 2026-09-07T16:07:36.891Z ([P0] 1 - Map Search: search and select a valid location)  - Step 7: Enter a valid location: Indore and validate Search API
+[INFO] 2026-09-07T16:07:40.488Z ([P0] 1 - Map Search: search and select a valid location)  - Location "Indore" entered successfully
+[INFO] 2026-09-07T16:07:40.488Z ([P0] 1 - Map Search: search and select a valid location)  - Search Autocomplete API returned HTTP 200
+[INFO] 2026-09-07T16:07:40.488Z ([P0] 1 - Map Search: search and select a valid location)  - Search Autocomplete API method: GET
+[INFO] 2026-09-07T16:07:40.488Z ([P0] 1 - Map Search: search and select a valid location)  - Search Autocomplete API URL: https://maps.googleapis.com/maps/api/place/js/AutocompletionService.GetPredictions?1sIndore&4sen-US&6m6&1m2&1d-63.29994323148397&2d-180&2m2&1d76.72673601323714&2d180&15e3&20s42BA61333A894350A63C488A622FD903jqgq&21m1&2e1&r_url=https%3A%2F%2Fdatastore.geowgs84.com%2F&callback=_xdc_._rhablt&key=***&token=34446
+
+
+Method : GET
+Status : 200
+URL    : https://maps.googleapis.com/maps/api/place/js/AutocompletionService.GetPredictions?1sIndore&4sen-US&6m6&1m2&1d-63.29994323148397&2d-180&2m2&1d76.72673601323714&2d180&15e3&20s42BA61333A894350A63C488A622FD903jqgq&21m1&2e1&r_url=https%3A%2F%2Fdatastore.geowgs84.com%2F&callback=_xdc_._rhablt&key=***&token=34446
+[INFO] 2026-09-07T16:07:40.488Z ([P0] 1 - Map Search: search and select a valid location)  - Step 8: Select the Indore, Madhya Pradesh, India suggestion
+[INFO] 2026-09-07T16:07:43.248Z ([P0] 1 - Map Search: search and select a valid location)  - Indore location suggestion selectedsuccessfully
+[INFO] 2026-09-07T16:07:43.248Z ([P0] 1 - Map Search: search and select a valid location)  - Step 9: Wait for the map to move tothe selected location
+[INFO] 2026-09-07T16:07:45.967Z ([P0] 1 - Map Search: search and select a valid location)  - World map is visible and loaded
+[INFO] 2026-09-07T16:07:47.485Z ([P0] 1 - Map Search: search and select a valid location)  - Map moved to the selected location
+[INFO] 2026-09-07T16:07:47.485Z ([P0] 1 - Map Search: search and select a valid location)  - Step 10: Verify the selected location marker
+[INFO] 2026-09-07T16:07:50.215Z ([P0] 1 - Map Search: search and select a valid location)  - Map marker is visible
+[INFO] 2026-09-07T16:07:51.519Z ([P0] 1 - Map Search: search and select a valid location)  - Selected location marker is visibleon the map
+[INFO] 2026-09-07T16:07:51.519Z ([P0] 1 - Map Search: search and select a valid location)  - Step 11: Review browser/network diagnostics
+[INFO] 2026-09-07T16:07:52.642Z ([P0] 1 - Map Search: search and select a valid location)  - Total API/network responses captured: 50
+[INFO] 2026-09-07T16:07:52.642Z ([P0] 1 - Map Search: search and select a valid location)  - Total failed network requests: 0
+[INFO] 2026-09-07T16:07:52.642Z ([P0] 1 - Map Search: search and select a valid location)  - Total browser console errors: 0
+[INFO] 2026-09-07T16:07:52.642Z ([P0] 1 - Map Search: search and select a valid location)  - Search Autocomplete API validation completed successfully
+[INFO] 2026-09-07T16:07:52.642Z ([P0] 1 - Map Search: search and select a valid location)  - P0 Map Search test completed successfully
+[DIAG-DEBUG] testId="02fa0fb0324b7043b31f-09eac5a41f817ac08f57" title="[P0] 1 - Map Search: search and select a valid location" warnings=0 errors=0 skipped=0 status=passed
+[DIAG-DEBUG] File EXISTS: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\playwright\diagnostics\02fa0fb0324b7043b31f-09eac5a41f817ac08f57.json
+[DIAG-DEBUG] File contains: warnings=0 errors=0 skippedSteps=0
+  ✓  1 [chromium] › specs\map.spec.js:31:5 › [P0] 1 - Map Search: search and select a valid location (57.8s)
+     2 [chromium] › specs\map.spec.js:457:6 › [P0] 2 - Locate Me: locate me icon is visible and clickable
+[INFO] 2026-09-07T16:07:53.366Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Context set
+[INFO] 2026-09-07T16:07:53.370Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 1: Navigate to the DataStore URL
+[INFO] 2026-09-07T16:08:06.184Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - DataStore root returned HTTP 200
+[INFO] 2026-09-07T16:08:06.184Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 2: Wait for page loader and highlight the loader/logo
+[INFO] 2026-09-07T16:08:10.479Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Page loader became hidden
+[INFO] 2026-09-07T16:08:10.479Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 3: Close the tutorial
+[INFO] 2026-09-07T16:08:12.730Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - robustClick succeeded
+[INFO] 2026-09-07T16:08:13.923Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Tutorial modal closed
+[INFO] 2026-09-07T16:08:13.923Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 4: Wait for the map to load
+[INFO] 2026-09-07T16:08:16.587Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - World map is visible and loaded
+[INFO] 2026-09-07T16:08:16.587Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Map loading completed
+[INFO] 2026-09-07T16:08:16.587Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 5: Locate and highlight the Locate Me icon
+[INFO] 2026-09-07T16:08:18.856Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Locate Me icon located
+[INFO] 2026-09-07T16:08:18.856Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 6: Highlight the Locate Meaction
+[INFO] 2026-09-07T16:08:21.137Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Locate Me action ready
+[INFO] 2026-09-07T16:08:21.137Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 7: Simulate geolocation failure and click Locate Me
+[INFO] 2026-09-07T16:08:22.294Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Geolocation failure simulation enabled
+[INFO] 2026-09-07T16:08:23.558Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Browser dialog detected. Type: alert
+[INFO] 2026-09-07T16:08:23.559Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Browser dialog message: "Pleasetry again Later"
+[INFO] 2026-09-07T16:08:23.612Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Browser alert accepted successfully
+[INFO] 2026-09-07T16:08:23.929Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Locate Me link clicked successfully
+[INFO] 2026-09-07T16:08:23.929Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 8: Verify the Locate Me browser alert
+[INFO] 2026-09-07T16:08:25.076Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Locate Me browser alert verified successfully: "Please try again Later"
+[INFO] 2026-09-07T16:08:25.076Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 9: Complete the Locate Me alert flow
+[INFO] 2026-09-07T16:08:26.767Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Locate Me browser alert was accepted using OK
+[INFO] 2026-09-07T16:08:26.768Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 10: Verify the map remainsvisible after closing the alert
+[INFO] 2026-09-07T16:08:29.098Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Map remains visible after closing Locate Me alert
+[INFO] 2026-09-07T16:08:29.098Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 11: Complete the Locate Meflow
+[INFO] 2026-09-07T16:08:31.386Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Locate Me flow completed
+[INFO] 2026-09-07T16:08:31.386Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 12: Complete the final mapstate
+[INFO] 2026-09-07T16:08:32.500Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Final map state completed successfully
+[INFO] 2026-09-07T16:08:32.500Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 13: Verify network and console diagnostics
+[INFO] 2026-09-07T16:08:33.610Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - No non-ignored network requestsfailed
+[INFO] 2026-09-07T16:08:33.610Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - No browser console errors detected
+[INFO] 2026-09-07T16:08:33.611Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Locate Me test flow completed successfully
+[DIAG-DEBUG] testId="02fa0fb0324b7043b31f-b286faaa659c7b7768ce" title="[P0] 2 - Locate Me: locate me icon is visible and clickable" warnings=0 errors=0 skipped=0 status=passed
+[DIAG-DEBUG] File EXISTS: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\playwright\diagnostics\02fa0fb0324b7043b31f-b286faaa659c7b7768ce.json
+[DIAG-DEBUG] File contains: warnings=0 errors=0 skippedSteps=0
+  ✓  2 [chromium] › specs\map.spec.js:457:6 › [P0] 2 - Locate Me: locate me icon is visible and clickable (40.9s)
+     3 [chromium] › specs\map.spec.js:922:7 › [P0] 3 - Upload KML: verify KML upload and Core Services flow
+[INFO] 2026-09-07T16:08:34.265Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Context set
+[INFO] 2026-09-07T16:08:34.267Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 1: Navigate to the DataStore URL
+[INFO] 2026-09-07T16:08:44.870Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - DataStore root returned HTTP 200
+[INFO] 2026-09-07T16:08:44.870Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 2: Wait for page loader and highlight the loader/logo
+[INFO] 2026-09-07T16:08:49.150Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Page loader became hidden
+[INFO] 2026-09-07T16:08:49.150Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 3: Close the tutorial
+[INFO] 2026-09-07T16:08:51.394Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - robustClick succeeded
+[INFO] 2026-09-07T16:08:52.612Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Tutorial modal closed
+[INFO] 2026-09-07T16:08:52.612Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 4: Wait for the map to load
+[INFO] 2026-09-07T16:08:55.327Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - World map is visible and loaded
+[INFO] 2026-09-07T16:08:55.327Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 5: Locate the Upload KMLicon
+[INFO] 2026-09-07T16:08:58.085Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 6: Prepare to click the Upload KML icon
+[INFO] 2026-09-07T16:09:00.830Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 7: Click Upload KML and verify Upload File popup opens
+[INFO] 2026-09-07T16:09:04.353Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - robustClick succeeded
+[INFO] 2026-09-07T16:09:04.389Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Upload File popup opened successfully
+[INFO] 2026-09-07T16:09:04.440Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 8: Close Upload File popup using top-right X
+[INFO] 2026-09-07T16:09:09.985Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - robustClick succeeded
+[INFO] 2026-09-07T16:09:10.024Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Upload File popup closed successfully using top-right X
+[INFO] 2026-09-07T16:09:10.057Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 9: Click Upload KML again
+[INFO] 2026-09-07T16:09:13.511Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - robustClick succeeded
+[INFO] 2026-09-07T16:09:13.542Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Upload File popup opened successfully
+[INFO] 2026-09-07T16:09:13.542Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 10: Close Upload File popup using inner Close button
+[INFO] 2026-09-07T16:09:19.186Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - robustClick succeeded
+[INFO] 2026-09-07T16:09:19.219Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Upload File popup closed successfully using Close button
+[INFO] 2026-09-07T16:09:19.251Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 11: Click Upload KML again for KML file selection
+[INFO] 2026-09-07T16:09:22.750Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - robustClick succeeded
+[INFO] 2026-09-07T16:09:22.796Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Upload File popup opened successfully
+[INFO] 2026-09-07T16:09:22.796Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 12: Locate Choose File control
+[INFO] 2026-09-07T16:09:25.590Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 13: Prepare Choose File control
+[INFO] 2026-09-07T16:09:26.723Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 14: Select downloaded.kml from test data
+[INFO] 2026-09-07T16:09:29.012Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - KML file selected: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\playwright\test-data\downloaded.kml
+[INFO] 2026-09-07T16:09:29.012Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 15: Verify downloaded.kml was selected
+[INFO] 2026-09-07T16:09:30.175Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 16: Locate Upload button
+[INFO] 2026-09-07T16:09:33.217Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 17: Click Upload and upload the selected KML
+[INFO] 2026-09-07T16:09:37.196Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - robustClick succeeded
+[INFO] 2026-09-07T16:09:37.196Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - KML Upload button clicked
+[INFO] 2026-09-07T16:09:37.196Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 18: Wait for the selected KML to be processed
+[INFO] 2026-09-07T16:09:42.871Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 19: Verify Core Servicespopup/panel opens
+[INFO] 2026-09-07T16:09:45.905Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 20: Verify KML File Active status
+[INFO] 2026-09-07T16:09:49.374Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 21: Final KML upload state
+[INFO] 2026-09-07T16:09:52.843Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 22: Click Upload KML/KMZicon and open upload popup
+[INFO] 2026-09-07T16:09:57.917Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - robustClick succeeded
+[INFO] 2026-09-07T16:09:57.953Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Upload File popup opened successfully
+[INFO] 2026-09-07T16:09:57.997Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 23: Locate Choose File control for KMZ upload
+[INFO] 2026-09-07T16:10:00.703Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 24: Select MadhyaPradesh.kmz from test data
+[INFO] 2026-09-07T16:10:02.913Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - KML file selected: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\playwright\test-data\MadhyaPradesh.kmz
+[INFO] 2026-09-07T16:10:02.913Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 25: Verify MadhyaPradesh.kmz was selected
+[INFO] 2026-09-07T16:10:04.047Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 26: Locate Upload buttonfor KMZ
+[INFO] 2026-09-07T16:10:07.056Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 27: Click Upload and upload MadhyaPradesh.kmz
+[INFO] 2026-09-07T16:10:10.942Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - robustClick succeeded
+[INFO] 2026-09-07T16:10:10.943Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - KML Upload button clicked
+[INFO] 2026-09-07T16:10:10.943Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 28: Wait for MadhyaPradesh.kmz to be processed on the map
+[INFO] 2026-09-07T16:10:16.600Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 29: Verify uploaded MadhyaPradesh.kmz appears on the map
+[INFO] 2026-09-07T16:10:20.791Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 30: Verify uploaded KMZ is active and Core Services is available
+[INFO] 2026-09-07T16:10:24.296Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 31: Final map state after MadhyaPradesh.kmz upload
+[INFO] 2026-09-07T16:10:28.504Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 32: Click the uploaded MadhyaPradesh.kmz area on the map
+[INFO] 2026-09-07T16:10:36.020Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 33: Verify information box opens after clicking uploaded KMZ
+[INFO] 2026-09-07T16:10:39.489Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 34: Click X on KMZ information box and verify it closes
+[INFO] 2026-09-07T16:10:42.859Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 35: Final KMZ map state after closing information box
+[INFO] 2026-09-07T16:10:46.322Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 36: Review network and browser diagnostics
+[INFO] 2026-09-07T16:10:47.427Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - No non-ignored network requests failed
+[INFO] 2026-09-07T16:10:47.427Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - No browser console errors detected
+[INFO] 2026-09-07T16:10:47.427Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - KML and KMZ upload test flow completed successfully
+[DIAG-DEBUG] testId="02fa0fb0324b7043b31f-fed4ce47768955bb71e0" title="[P0] 3 - Upload KML: verify KML upload and Core Services flow" warnings=0 errors=0 skipped=0 status=passed
+[DIAG-DEBUG] File EXISTS: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\playwright\diagnostics\02fa0fb0324b7043b31f-fed4ce47768955bb71e0.json
+[DIAG-DEBUG] File contains: warnings=0 errors=0 skippedSteps=0
+  ✓  3 [chromium] › specs\map.spec.js:922:7 › [P0] 3 - Upload KML: verify KML upload and Core Services flow (2.2m)
+     4 [chromium] › specs\map.spec.js:1800:6 › [P0] 4 - Coordinates navigation should work correctly
+[INFO] 2026-09-07T16:10:48.389Z ([P0] 4 - Coordinates navigation should work correctly)  - Context set
+[INFO] 2026-09-07T16:10:48.392Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 1: Navigate to the DataStore URL
+[INFO] 2026-09-07T16:11:10.303Z ([P0] 4 - Coordinates navigation should work correctly)  - DataStore root returned HTTP 200
+[INFO] 2026-09-07T16:11:10.303Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 2: Wait for page loader and highlight the loader/logo
+[INFO] 2026-09-07T16:11:14.470Z ([P0] 4 - Coordinates navigation should work correctly)  - Page loader became hidden
+[INFO] 2026-09-07T16:11:14.470Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 3: Close the tutorial
+[INFO] 2026-09-07T16:11:16.605Z ([P0] 4 - Coordinates navigation should work correctly)  - robustClick succeeded
+[INFO] 2026-09-07T16:11:17.779Z ([P0] 4 - Coordinates navigation should work correctly)  - Tutorial modal closed
+[INFO] 2026-09-07T16:11:17.779Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 4: Wait for the map to load
+[INFO] 2026-09-07T16:11:20.422Z ([P0] 4 - Coordinates navigation should work correctly)  - World map is visible and loaded
+[INFO] 2026-09-07T16:11:20.423Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 5: Locate the Coordinates icon
+[INFO] 2026-09-07T16:11:23.146Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 6: Click the Coordinates icon
+[INFO] 2026-09-07T16:11:26.786Z ([P0] 4 - Coordinates navigation should work correctly)  - robustClick succeeded
+[INFO] 2026-09-07T16:11:26.858Z ([P0] 4 - Coordinates navigation should work correctly)  - Enter Coordinates popup opened successfully
+[INFO] 2026-09-07T16:11:26.858Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 7: Verify the Enter Coordinates popup opens
+[INFO] 2026-09-07T16:11:28.023Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 8: Close the Coordinates popup using top-right X
+[INFO] 2026-09-07T16:11:30.669Z ([P0] 4 - Coordinates navigation should work correctly)  - Clicking Enter Coordinates popup top-right X
+[INFO] 2026-09-07T16:11:31.785Z ([P0] 4 - Coordinates navigation should work correctly)  - robustClick succeeded
+[INFO] 2026-09-07T16:11:31.819Z ([P0] 4 - Coordinates navigation should work correctly)  - Enter Coordinates popup closed successfully using X
+[INFO] 2026-09-07T16:11:31.819Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 9: Open Coordinates popup again
+[INFO] 2026-09-07T16:11:35.505Z ([P0] 4 - Coordinates navigation should work correctly)  - robustClick succeeded
+[INFO] 2026-09-07T16:11:35.567Z ([P0] 4 - Coordinates navigation should work correctly)  - Enter Coordinates popup opened successfully
+[INFO] 2026-09-07T16:11:35.567Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 10: Close the Coordinates popup using inner Close button
+[INFO] 2026-09-07T16:11:38.217Z ([P0] 4 - Coordinates navigation should work correctly)  - Clicking Enter Coordinates inner Close button
+[INFO] 2026-09-07T16:11:39.394Z ([P0] 4 - Coordinates navigation should work correctly)  - robustClick succeeded
+[INFO] 2026-09-07T16:11:39.422Z ([P0] 4 - Coordinates navigation should work correctly)  - Enter Coordinates popup closed successfully using inner Close button
+[INFO] 2026-09-07T16:11:39.423Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 11: Open Coordinates popup againfor coordinate entry
+[INFO] 2026-09-07T16:11:43.053Z ([P0] 4 - Coordinates navigation should work correctly)  - robustClick succeeded
+[INFO] 2026-09-07T16:11:43.113Z ([P0] 4 - Coordinates navigation should work correctly)  - Enter Coordinates popup opened successfully
+[INFO] 2026-09-07T16:11:43.114Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 12: Enter latitude 10.2
+[INFO] 2026-09-07T16:11:46.222Z ([P0] 4 - Coordinates navigation should work correctly)  - Latitude entered successfully: 10.2
+[INFO] 2026-09-07T16:11:46.222Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 13: Enter longitude 8.2
+[INFO] 2026-09-07T16:11:49.347Z ([P0] 4 - Coordinates navigation should work correctly)  - Longitude entered successfully: 8.2
+[INFO] 2026-09-07T16:11:49.348Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 14: Click Take Me
+[INFO] 2026-09-07T16:11:52.093Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 15: Click Take Me and verify successful API response
+[INFO] 2026-09-07T16:11:58.145Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 16: Verify the map navigates to the exact location and marker appears
+[INFO] 2026-09-07T16:12:00.901Z ([P0] 4 - Coordinates navigation should work correctly)  - Map marker is visible
+[INFO] 2026-09-07T16:12:00.902Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 17: Locate the AOI draw option
+[INFO] 2026-09-07T16:12:02.021Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 18: Final map state after coordinate navigation
+[INFO] 2026-09-07T16:12:05.523Z ([P0] 4 - Coordinates navigation should work correctly)  - No non-ignored network requests failed
+[INFO] 2026-09-07T16:12:05.524Z ([P0] 4 - Coordinates navigation should work correctly)  - No browser console errors detected
+[INFO] 2026-09-07T16:12:05.524Z ([P0] 4 - Coordinates navigation should work correctly)  - Coordinates navigation test flow completed successfully
+[DIAG-DEBUG] testId="02fa0fb0324b7043b31f-9963068504d2d2fb417a" title="[P0] 4 - Coordinates navigation should work correctly" warnings=0 errors=0 skipped=0 status=passed
+[DIAG-DEBUG] File EXISTS: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\playwright\diagnostics\02fa0fb0324b7043b31f-9963068504d2d2fb417a.json
+[DIAG-DEBUG] File contains: warnings=0 errors=0 skippedSteps=0
+  ✓  4 [chromium] › specs\map.spec.js:1800:6 › [P0] 4 - Coordinates navigation should work correctly (1.3m)
+     5 [chromium] › specs\map.spec.js:2251:6 › [P0] 5 - User Guide: verify tutorial popup opens and closes successfully
+[INFO] 2026-09-07T16:12:06.144Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Context set
+[INFO] 2026-09-07T16:12:06.147Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Step 1: Navigate to the DataStore URL
+[INFO] 2026-09-07T16:12:27.149Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - DataStore root returned HTTP 200
+[INFO] 2026-09-07T16:12:27.149Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Step 2: Wait for page loader and highlight the loader/logo
+[INFO] 2026-09-07T16:12:31.358Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Page loader becamehidden
+[INFO] 2026-09-07T16:12:31.358Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Step 3: Close the tutorial
+[INFO] 2026-09-07T16:12:33.637Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - robustClick succeeded
+[INFO] 2026-09-07T16:12:34.905Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Tutorial modal closed
+[INFO] 2026-09-07T16:12:34.906Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Step 4: Wait for the map to load
+[INFO] 2026-09-07T16:12:37.577Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - World map is visible and loaded
+[INFO] 2026-09-07T16:12:37.577Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Map loading completed
+[INFO] 2026-09-07T16:12:37.577Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Step 5: Locate andhighlight the User Guide icon
+[INFO] 2026-09-07T16:12:40.336Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - User Guide icon located
+[INFO] 2026-09-07T16:12:40.336Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Step 6: Click the User Guide icon
+[INFO] 2026-09-07T16:12:44.325Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - robustClick succeeded
+[INFO] 2026-09-07T16:12:44.365Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - User Guide tutorial popup opened successfully
+[INFO] 2026-09-07T16:12:44.365Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - User Guide icon clicked
+[INFO] 2026-09-07T16:12:44.366Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Step 7: Verify theUser Guide tutorial popup opened
+[INFO] 2026-09-07T16:12:45.562Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - User Guide tutorial popup opened successfully
+[INFO] 2026-09-07T16:12:45.562Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Step 8: Highlight the User Guide popup top-right X
+[INFO] 2026-09-07T16:12:48.274Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - User Guide popup close button highlighted
+[INFO] 2026-09-07T16:12:48.274Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Step 9: Click the top-right X and verify the popup closes
+[INFO] 2026-09-07T16:12:51.053Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Clicking User Guide tutorial popup top-right X
+[INFO] 2026-09-07T16:12:52.190Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - robustClick succeeded
+[INFO] 2026-09-07T16:12:52.219Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - User Guide tutorial popup closed successfully using X
+[INFO] 2026-09-07T16:12:52.254Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - User Guide tutorial popup closed successfully
+[INFO] 2026-09-07T16:12:52.255Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Step 10: Complete the User Guide flow
+[INFO] 2026-09-07T16:12:55.752Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - User Guide popup flow completed successfully
+[INFO] 2026-09-07T16:12:55.752Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - No non-ignored network requests failed
+[INFO] 2026-09-07T16:12:55.752Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - No browser consoleerrors detected
+[INFO] 2026-09-07T16:12:55.752Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - User Guide tutorial popup test flow completed successfully
+[DIAG-DEBUG] testId="02fa0fb0324b7043b31f-a61e6d4aac717bcd6daf" title="[P0] 5 - User Guide: verify tutorial popup opens and closes successfully" warnings=0 errors=0 skipped=0 status=passed
+[DIAG-DEBUG] File EXISTS: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\playwright\diagnostics\02fa0fb0324b7043b31f-a61e6d4aac717bcd6daf.json
+[DIAG-DEBUG] File contains: warnings=0 errors=0 skippedSteps=0
+  ✓  5 [chromium] › specs\map.spec.js:2251:6 › [P0] 5 - User Guide: verify tutorial popup opens and closes successfully (50.2s)
+     6 … › specs\map.spec.js:2568:6 › [P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly
+[INFO] 2026-09-07T16:12:56.346Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Context set
+[INFO] 2026-09-07T16:12:56.349Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 1: Navigate to the DataStore URL
+[INFO] 2026-09-07T16:13:09.106Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -DataStore root returned HTTP 200
+[INFO] 2026-09-07T16:13:09.106Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 2: Wait for page loader and highlight the loader/logo
+[INFO] 2026-09-07T16:13:13.551Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Page loader became hidden
+[INFO] 2026-09-07T16:13:13.551Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 3: Close the tutorial
+[INFO] 2026-09-07T16:13:15.817Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
+[INFO] 2026-09-07T16:13:17.024Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Tutorial modal closed
+[INFO] 2026-09-07T16:13:17.024Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 4: Wait for the map to load
+[INFO] 2026-09-07T16:13:19.707Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -World map is visible and loaded
+[INFO] 2026-09-07T16:13:19.707Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Map loading completed
+[INFO] 2026-09-07T16:13:19.707Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 5: Locate and highlight Map Camera Control
+[INFO] 2026-09-07T16:13:22.440Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Map Camera Control located
+[INFO] 2026-09-07T16:13:22.440Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 6: Open Map Camera Control
+[INFO] 2026-09-07T16:13:24.722Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
+[INFO] 2026-09-07T16:13:25.837Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Map Camera Control expanded successfully
+[INFO] 2026-09-07T16:13:25.837Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 7: Click Zoom (+) repeatedly until AOI draw option appears
+[INFO] 2026-09-07T16:13:28.168Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
+[INFO] 2026-09-07T16:13:30.856Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
+[INFO] 2026-09-07T16:13:33.565Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
+[INFO] 2026-09-07T16:13:36.248Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
+[INFO] 2026-09-07T16:13:39.006Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
+[INFO] 2026-09-07T16:13:41.717Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
+[INFO] 2026-09-07T16:13:44.424Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
+[INFO] 2026-09-07T16:13:47.159Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
+[INFO] 2026-09-07T16:13:49.910Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
+[INFO] 2026-09-07T16:13:52.537Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
+[INFO] 2026-09-07T16:13:54.102Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -AOI Draw option appeared after 10 zoom clicks
+[INFO] 2026-09-07T16:13:56.240Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Draw Shape option clicked successfully
+[INFO] 2026-09-07T16:13:56.240Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 8: Select the Rectangle AOI draw tool
+[INFO] 2026-09-07T16:14:01.856Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Rectangle AOI draw tool selected successfully
+[INFO] 2026-09-07T16:14:01.856Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 9: Draw one rectangle AOI on the map
+[INFO] 2026-09-07T16:14:03.044Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Drawing ONE rectangle AOI: 300px x 146px
+[INFO] 2026-09-07T16:14:12.507Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -AOI was drawn on the map
+[INFO] 2026-09-07T16:14:12.507Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -ONE AOI rectangle drawn successfully: 300px x 146px
+[INFO] 2026-09-07T16:14:12.507Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 10: Verify Core Services popup appears after AOI drawing
+[INFO] 2026-09-07T16:14:16.745Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Core Services popup opened successfully
+[INFO] 2026-09-07T16:14:16.745Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 11: Verify AOI Active status
+[INFO] 2026-09-07T16:14:20.974Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -AOI Active status verified successfully
+[INFO] 2026-09-07T16:14:20.974Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 12: Click World View
+[INFO] 2026-09-07T16:14:26.094Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
+[INFO] 2026-09-07T16:14:27.625Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Switched to World View
+[INFO] 2026-09-07T16:14:29.901Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -World View action completed
+[INFO] 2026-09-07T16:14:29.901Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 13: Verify global World View map
+[INFO] 2026-09-07T16:14:32.611Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Global World View action completed successfully
+[INFO] 2026-09-07T16:14:32.611Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 14: Click AOI View
+[INFO] 2026-09-07T16:14:37.708Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
+[INFO] 2026-09-07T16:14:39.241Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Switched to AOI View
+[INFO] 2026-09-07T16:14:41.517Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -AOI View action completed
+[INFO] 2026-09-07T16:14:41.517Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 15: Verify previously drawn AOI and area
+[INFO] 2026-09-07T16:14:44.279Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Previously drawn AOI and its area are displayed in AOI View
+[INFO] 2026-09-07T16:14:44.280Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 16: Click Reset
+[INFO] 2026-09-07T16:14:47.028Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Reset icon located
+[INFO] 2026-09-07T16:14:47.028Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 17: Click Reset and verify the map is reset
+[INFO] 2026-09-07T16:14:49.264Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
+[INFO] 2026-09-07T16:14:53.182Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Reset completed and map is visible again
+[INFO] 2026-09-07T16:14:53.182Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -TC-6 completed successfully
+[INFO] 2026-09-07T16:14:53.182Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -TC-6 network diagnostics: No application/network request failures detected
+[INFO] 2026-09-07T16:14:53.182Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -TC-6 console diagnostics: No browser console errors detected
+[DIAG-DEBUG] testId="02fa0fb0324b7043b31f-745347e0c3970a15ea89" title="[P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly" warnings=0 errors=0 skipped=0 status=passed
+[DIAG-DEBUG] File EXISTS: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\playwright\diagnostics\02fa0fb0324b7043b31f-745347e0c3970a15ea89.json
+[DIAG-DEBUG] File contains: warnings=0 errors=0 skippedSteps=0
+  ✓  6 …s\map.spec.js:2568:6 › [P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly (2.0m)
+     7 [chromium] › specs\map.spec.js:3397:6 › [P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle
+[INFO] 2026-09-07T16:14:53.870Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Context set
+[INFO] 2026-09-07T16:14:53.877Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 1: Navigate to the DataStore URL
+[INFO] 2026-09-07T16:15:05.771Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - DataStore root returned HTTP 200
+[INFO] 2026-09-07T16:15:05.771Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 2: Wait for page loader and highlight the loader/logo
+[INFO] 2026-09-07T16:15:10.103Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Page loader became hidden
+[INFO] 2026-09-07T16:15:10.103Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 3: Close the tutorial
+[INFO] 2026-09-07T16:15:12.285Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - robustClick succeeded
+[INFO] 2026-09-07T16:15:13.463Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Tutorial modal closed
+[INFO] 2026-09-07T16:15:13.463Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 4: Wait for the map to load
+[INFO] 2026-09-07T16:15:16.118Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - World map is visible and loaded
+[INFO] 2026-09-07T16:15:16.118Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 5: Locate and highlight the Search icon
+[INFO] 2026-09-07T16:15:18.546Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 6: Click the Search icon
+[INFO] 2026-09-07T16:15:21.339Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 7: Enter Indore and validate Search API
+[INFO] 2026-09-07T16:15:24.664Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Search Autocomplete API returned HTTP 200
+[INFO] 2026-09-07T16:15:24.664Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Search Autocomplete API method: GET
+[INFO] 2026-09-07T16:15:24.664Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Search Autocomplete API URL: https://maps.googleapis.com/maps/api/place/js/AutocompletionService.GetPredictions?1sIndore&4sen-US&6m6&1m2&1d-63.29994323148397&2d-180&2m2&1d76.72673601323714&2d180&15e3&20sEB52C9133FFE401DA24F6E7053A33A98pqn5&21m1&2e1&r_url=https%3A%2F%2Fdatastore.geowgs84.com%2F&callback=_xdc_._2nuu7q&key=***&token=36728
+[INFO] 2026-09-07T16:15:24.664Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 8: Select the Indore, Madhya Pradesh, India suggestion
+[INFO] 2026-09-07T16:15:27.397Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Indore location suggestion selected successfully
+[INFO] 2026-09-07T16:15:27.397Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 9: Wait for the map to move to the selected location
+[INFO] 2026-09-07T16:15:30.065Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - World map is visible and loaded
+[INFO] 2026-09-07T16:15:31.587Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Selected location processed successfully
+[INFO] 2026-09-07T16:15:31.587Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 10: Verify the selected location marker
+[INFO] 2026-09-07T16:15:34.338Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Map marker is visible
+[INFO] 2026-09-07T16:15:35.643Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 11: Open Map Camera Control
+[INFO] 2026-09-07T16:15:40.199Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - robustClick succeeded
+[INFO] 2026-09-07T16:15:41.281Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Map Camera Control opened successfully
+[INFO] 2026-09-07T16:15:41.281Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 12: Click Zoom (+) once
+[INFO] 2026-09-07T16:15:45.121Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - robustClick succeeded
+[INFO] 2026-09-07T16:15:47.401Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Zoom (+) clicked exactly once
+[INFO] 2026-09-07T16:15:47.401Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 13: Open AOI DrawTool
+[INFO] 2026-09-07T16:15:50.361Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - AOI Draw Tool opened successfully
+[INFO] 2026-09-07T16:15:50.361Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 14: Select Hand tool and verify map movement
+[INFO] 2026-09-07T16:15:58.087Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Hand tool map movementcompleted successfully
+[INFO] 2026-09-07T16:15:58.087Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 15: Select CircleAOI tool
+[INFO] 2026-09-07T16:16:02.651Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 16: Draw one Circle AOI
+[INFO] 2026-09-07T16:16:06.432Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Circle AOI drawing completed with radius 100px
+[INFO] 2026-09-07T16:16:06.432Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 17: Verify CircleAOI popup and Active status
+[INFO] 2026-09-07T16:16:11.453Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 18: Match Circle popup area with AOI Active map area
+[INFO] 2026-09-07T16:16:17.461Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - CIRCLE AREA MATCHED: Popup=40.25 km² | Map=40.25 km²
+[INFO] 2026-09-07T16:16:17.462Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 19: Select Rectangle AOI draw tool
+[INFO] 2026-09-07T16:16:21.853Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Rectangle AOI draw tool selected successfully
+[INFO] 2026-09-07T16:16:21.853Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 25: Draw one Rectangle AOI
+[INFO] 2026-09-07T16:16:24.395Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Rectangle AOI drawing completed
+[INFO] 2026-09-07T16:16:25.471Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Rectangle AOI drawn successfully on the map
+[INFO] 2026-09-07T16:16:25.471Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 26: Verify Rectangle Service popup and AOI Active status
+[INFO] 2026-09-07T16:16:31.338Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Rectangle AOI Active map area: 14.62 km²
+[INFO] 2026-09-07T16:16:31.338Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 27: Match Rectangle map area with popup area
+[INFO] 2026-09-07T16:16:37.324Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - RECTANGLE AREA MATCHED: Popup=14.62 km² | Map=14.62 km²
+[INFO] 2026-09-07T16:16:37.324Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 28: Select Polygon AOI draw tool
+[INFO] 2026-09-07T16:16:40.824Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - robustClick succeeded
+[INFO] 2026-09-07T16:16:44.320Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - robustClick succeeded
+[INFO] 2026-09-07T16:16:45.353Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Polygon AOI draw tool selected successfully
+[INFO] 2026-09-07T16:16:45.354Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 29: Draw one Polygon AOI
+[INFO] 2026-09-07T16:16:53.372Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Polygon AOI drawn successfully on the map
+[INFO] 2026-09-07T16:16:53.372Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 30: Verify Polygon Service popup and AOI Active status
+[INFO] 2026-09-07T16:16:59.269Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Polygon AOI Active maparea: 5.43 km²
+[INFO] 2026-09-07T16:16:59.269Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 31: Match Polygonmap area with popup area
+[INFO] 2026-09-07T16:17:05.255Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - POLYGON AREA MATCHED: Popup=5.43 km² | Map=5.43 km²
+[INFO] 2026-09-07T16:17:05.255Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 32: Open AOI DrawTool again
+[INFO] 2026-09-07T16:17:08.770Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - robustClick succeeded
+[INFO] 2026-09-07T16:17:09.816Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 33: Highlight Marker Tool
+[INFO] 2026-09-07T16:17:12.229Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 34: Select MarkerTool
+[INFO] 2026-09-07T16:17:14.419Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - robustClick succeeded
+[INFO] 2026-09-07T16:17:15.454Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 35: Place Marker on Searched Location
+[INFO] 2026-09-07T16:17:18.494Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Marker placed on searched location
+[INFO] 2026-09-07T16:17:18.494Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 36: Verify Area of Marker
+[INFO] 2026-09-07T16:17:20.676Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Area of the Marker = 400.00 sq meters
+[INFO] 2026-09-07T16:17:23.144Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - robustClick succeeded
+[INFO] 2026-09-07T16:17:24.195Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - STEP 36 COMPLETED: Marker area = 400.00 sq meters and popup closed successfully
+[INFO] 2026-09-07T16:17:24.195Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Total API/network responses captured: 185
+[INFO] 2026-09-07T16:17:24.195Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Total failed network requests: 0
+[INFO] 2026-09-07T16:17:24.195Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Total browser console errors: 0
+[INFO] 2026-09-07T16:17:24.195Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Map Camera Control andAOI Hand/Circle/Rectangle validation completed successfully
+[INFO] 2026-09-07T16:17:24.195Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - P0 TC-7 completed successfully
+[DIAG-DEBUG] testId="02fa0fb0324b7043b31f-e495e97c3884a890d7e5" title="[P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle" warnings=0 errors=0 skipped=0 status=passed
+[DIAG-DEBUG] File EXISTS: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\playwright\diagnostics\02fa0fb0324b7043b31f-e495e97c3884a890d7e5.json
+[DIAG-DEBUG] File contains: warnings=0 errors=0 skippedSteps=0
+  ✓  7 [chromium] › specs\map.spec.js:3397:6 › [P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle (2.5m)
+
+  Slow test file: [chromium] › specs\map.spec.js (10.5m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  7 passed (10.5m)
+[REPORTER] Diagnostics found by title: [P0]_1_-_Map_Search_search_and_select_a_valid_location (warnings=0, skipped=0)
+[REPORTER] [P0] 1 - Map Search: search and select a valid location: failure=false hasWarning=false(0) hasSkippedLogic=false(0) diag=found
+[REPORTER] Diagnostics found by title: [P0]_2_-_Locate_Me_locate_me_icon_is_visible_and_clickable (warnings=0, skipped=0)
+[REPORTER] [P0] 2 - Locate Me: locate me icon is visible and clickable: failure=false hasWarning=false(0) hasSkippedLogic=false(0) diag=found
+[REPORTER] Diagnostics found by title: [P0]_3_-_Upload_KML_verify_KML_upload_and_Core_Services_flow (warnings=0, skipped=0)
+[REPORTER] [P0] 3 - Upload KML: verify KML upload and Core Services flow: failure=false hasWarning=false(0) hasSkippedLogic=false(0) diag=found
+[REPORTER] Diagnostics found by title: [P0]_4_-_Coordinates_navigation_should_work_correctly (warnings=0, skipped=0)
+[REPORTER] [P0] 4 - Coordinates navigation should work correctly: failure=false hasWarning=false(0) hasSkippedLogic=false(0) diag=found
+[REPORTER] Diagnostics found by title: [P0]_5_-_User_Guide_verify_tutorial_popup_opens_and_closes_successfully (warnings=0, skipped=0)
+[REPORTER] [P0] 5 - User Guide: verify tutorial popup opens and closes successfully: failure=false hasWarning=false(0) hasSkippedLogic=false(0) diag=found
+[REPORTER] Diagnostics found by title: [P0]_6_-_Map_Camera_Control,_AOI_draw,_World_View,_AOI_View_and_Reset_should_work_correctly (warnings=0, skipped=0)
+[REPORTER] [P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly: failure=false hasWarning=false(0) hasSkippedLogic=false(0) diag=found
+[REPORTER] Diagnostics found by title: [P0]_7_-_Map_Camera_Control_and_AOI_Draw_Hand,_Circle_and_Rectangle (warnings=0, skipped=0)
+[REPORTER] [P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle: failure=false hasWarning=false(0) hasSkippedLogic=false(0) diag=found
+
+To open last HTML report run:
+
+  npx playwright show-report
+
+PS C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\playwright> 
