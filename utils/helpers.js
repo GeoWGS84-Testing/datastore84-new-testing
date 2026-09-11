@@ -2096,7 +2096,7 @@ export async function detectAOIOnMap(page) {
     }
 
     const candidates = page.locator(
-      "#map svg path, #map svg rect, #map svg polygon",
+      "#map svg path, #map svg rect, #map svg polygon", 
     );
 
     const count = await candidates.count();

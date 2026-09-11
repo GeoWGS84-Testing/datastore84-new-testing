@@ -4,6 +4,7 @@ const PREVIEW_HIGHLIGHT_COLOR = "#FF1493";
 const KML_HIGHLIGHT_COLOR = "#39FF14";
 const EXTENT_HIGHLIGHT_COLOR = "#FFD400";
 
+
 export async function highlightAoiOnMap(page) {
   return page.evaluate((color) => {
     const map = window.gwMapInstance;
@@ -29,7 +30,8 @@ export async function highlightAoiOnMap(page) {
 
     return true;
   }, AOI_HIGHLIGHT_COLOR);
-}
+}   
+ 
 
 export async function highlightOutlineOnMap(page, outlineButton) {
   const rawCoordinates = await outlineButton.getAttribute("id");

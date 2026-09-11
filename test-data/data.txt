@@ -1,410 +1,165 @@
- PS C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\playwright> npx playwright test specs/map.spec.js --workers=1 --headed 
+ PS C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright>  npx playwright test specs/cart.spec.js -g "\[P0\] 2" --headed --workers=1
 
-Running 7 tests using 1 worker
+Running 1 test using 1 worker
 
 🧹 Diagnostics cleared: 2 stale files from previous run
-     1 [chromium] › specs\map.spec.js:31:5 › [P0] 1 - Map Search: search and select a valid location
-[INFO] 2026-09-07T16:06:55.725Z ([P0] 1 - Map Search: search and select a valid location)  - Context set
-[INFO] 2026-09-07T16:06:55.736Z ([P0] 1 - Map Search: search and select a valid location)  - Step 1: Navigate to the DataStore URL
-[INFO] 2026-09-07T16:07:20.952Z ([P0] 1 - Map Search: search and select a valid location)  - DataStore root returned HTTP 200
-[INFO] 2026-09-07T16:07:20.952Z ([P0] 1 - Map Search: search and select a valid location)  - DataStore URL opened successfully
-[INFO] 2026-09-07T16:07:20.952Z ([P0] 1 - Map Search: search and select a valid location)  - Step 2: Wait for page loader and highlight the loader/logo
-[INFO] 2026-09-07T16:07:25.546Z ([P0] 1 - Map Search: search and select a valid location)  - Page loader became hidden
-[INFO] 2026-09-07T16:07:25.546Z ([P0] 1 - Map Search: search and select a valid location)  - Page loader/logo processed successfully
-[INFO] 2026-09-07T16:07:25.546Z ([P0] 1 - Map Search: search and select a valid location)  - Step 3: Close the tutorial
-[INFO] 2026-09-07T16:07:27.799Z ([P0] 1 - Map Search: search and select a valid location)  - robustClick succeeded
-[INFO] 2026-09-07T16:07:29.006Z ([P0] 1 - Map Search: search and select a valid location)  - Tutorial modal closed
-[INFO] 2026-09-07T16:07:29.007Z ([P0] 1 - Map Search: search and select a valid location)  - Tutorial closed successfully
-[INFO] 2026-09-07T16:07:29.007Z ([P0] 1 - Map Search: search and select a valid location)  - Step 4: Wait for the map to load
-[INFO] 2026-09-07T16:07:31.697Z ([P0] 1 - Map Search: search and select a valid location)  - World map is visible and loaded
-[INFO] 2026-09-07T16:07:31.697Z ([P0] 1 - Map Search: search and select a valid location)  - Map loaded successfully
-[INFO] 2026-09-07T16:07:31.697Z ([P0] 1 - Map Search: search and select a valid location)  - Step 5: Locate and highlight the Search icon
-[INFO] 2026-09-07T16:07:34.099Z ([P0] 1 - Map Search: search and select a valid location)  - Search icon located successfully
-[INFO] 2026-09-07T16:07:34.099Z ([P0] 1 - Map Search: search and select a valid location)  - Step 6: Click the Search icon
-[INFO] 2026-09-07T16:07:36.891Z ([P0] 1 - Map Search: search and select a valid location)  - Search icon clicked successfully
-[INFO] 2026-09-07T16:07:36.891Z ([P0] 1 - Map Search: search and select a valid location)  - Step 7: Enter a valid location: Indore and validate Search API
-[INFO] 2026-09-07T16:07:40.488Z ([P0] 1 - Map Search: search and select a valid location)  - Location "Indore" entered successfully
-[INFO] 2026-09-07T16:07:40.488Z ([P0] 1 - Map Search: search and select a valid location)  - Search Autocomplete API returned HTTP 200
-[INFO] 2026-09-07T16:07:40.488Z ([P0] 1 - Map Search: search and select a valid location)  - Search Autocomplete API method: GET
-[INFO] 2026-09-07T16:07:40.488Z ([P0] 1 - Map Search: search and select a valid location)  - Search Autocomplete API URL: https://maps.googleapis.com/maps/api/place/js/AutocompletionService.GetPredictions?1sIndore&4sen-US&6m6&1m2&1d-63.29994323148397&2d-180&2m2&1d76.72673601323714&2d180&15e3&20s42BA61333A894350A63C488A622FD903jqgq&21m1&2e1&r_url=https%3A%2F%2Fdatastore.geowgs84.com%2F&callback=_xdc_._rhablt&key=***&token=34446
+     1 [chromium] › specs\cart.spec.js:1131:5 › [P0] 2 - verify the checkout popup sections 
+[INFO] 2026-09-09T22:09:29.980Z ([P0] 2 - verify the checkout popup sections )  - Context set
+[INFO] 2026-09-09T22:09:29.991Z ([P0] 2 - verify the checkout popup sections )  - Step 1: Navigate to the DataStore URL
+[INFO] 2026-09-09T22:09:38.423Z ([P0] 2 - verify the checkout popup sections )  - DataStore root returned HTTP 200
+[INFO] 2026-09-09T22:09:38.423Z ([P0] 2 - verify the checkout popup sections )  - DataStore URL opened successfully
+[INFO] 2026-09-09T22:09:38.423Z ([P0] 2 - verify the checkout popup sections )  - Step 2: Wait for page loader and highlight the loader/logo
+[INFO] 2026-09-09T22:09:43.170Z ([P0] 2 - verify the checkout popup sections )  - Page loader became hidden
+[INFO] 2026-09-09T22:09:43.170Z ([P0] 2 - verify the checkout popup sections )  - Page loader/logo processed successfully
+[INFO] 2026-09-09T22:09:43.171Z ([P0] 2 - verify the checkout popup sections )  - Step 3: Close the tutorial
+[INFO] 2026-09-09T22:09:45.846Z ([P0] 2 - verify the checkout popup sections )  - robustClick succeeded
+[INFO] 2026-09-09T22:09:47.272Z ([P0] 2 - verify the checkout popup sections )  - Tutorial modal closed
+[INFO] 2026-09-09T22:09:47.273Z ([P0] 2 - verify the checkout popup sections )  - Tutorial closed successfully
+[INFO] 2026-09-09T22:09:47.273Z ([P0] 2 - verify the checkout popup sections )  - Step 4: Wait for the map to load
+[INFO] 2026-09-09T22:09:50.229Z ([P0] 2 - verify the checkout popup sections )  - World map is visible and loaded
+[INFO] 2026-09-09T22:09:50.229Z ([P0] 2 - verify the checkout popup sections )  - Map loaded successfully
+[INFO] 2026-09-09T22:09:50.230Z ([P0] 2 - verify the checkout popup sections )  - Step 5: Locate and highlight the Search icon
+[INFO] 2026-09-09T22:09:52.860Z ([P0] 2 - verify the checkout popup sections )  - Search icon located successfully
+[INFO] 2026-09-09T22:09:52.860Z ([P0] 2 - verify the checkout popup sections )  - Step 6: Click the Search icon
+[INFO] 2026-09-09T22:09:56.089Z ([P0] 2 - verify the checkout popup sections )  - Search icon clicked successfully
+[INFO] 2026-09-09T22:09:56.090Z ([P0] 2 - verify the checkout popup sections )  - Step 7: Search Denver, select the location, wait for map movement and verify the selected marker
+[INFO] 2026-09-09T22:10:00.538Z ([P0] 2 - verify the checkout popup sections )  - Denver Search API response status: 200
+[INFO] 2026-09-09T22:10:02.818Z ([P0] 2 - verify the checkout popup sections )  - Denver, CO, USA location suggestion selected successfully
+[INFO] 2026-09-09T22:10:04.551Z ([P0] 2 - verify the checkout popup sections )  - World map is visible and loaded
+[INFO] 2026-09-09T22:10:06.147Z ([P0] 2 - verify the checkout popup sections )  - Map moved to selected Denver location
+[INFO] 2026-09-09T22:10:07.996Z ([P0] 2 - verify the checkout popup sections )  - Map marker is visible
+[INFO] 2026-09-09T22:10:10.074Z ([P0] 2 - verify the checkout popup sections )  - Selected Denver location marker verified successfully
+[INFO] 2026-09-09T22:10:10.075Z ([P0] 2 - verify the checkout popup sections )  - Step 8: Open Map Camera Control, click Zoom + once and open AOI Draw Tool
+[INFO] 2026-09-09T22:10:14.476Z ([P0] 2 - verify the checkout popup sections )  - robustClick succeeded
+[INFO] 2026-09-09T22:10:15.587Z ([P0] 2 - verify the checkout popup sections )  - Map Camera Control opened successfully
+[INFO] 2026-09-09T22:10:18.774Z ([P0] 2 - verify the checkout popup sections )  - robustClick succeeded
+[INFO] 2026-09-09T22:10:21.089Z ([P0] 2 - verify the checkout popup sections )  - Zoom (+) clicked exactly once
+[INFO] 2026-09-09T22:10:24.866Z ([P0] 2 - verify the checkout popup sections )  - AOI Draw Tool opened successfully
+[INFO] 2026-09-09T22:10:24.866Z ([P0] 2 - verify the checkout popup sections )  - Step 9: Select Rectangle AOI, draw the AOI and verify Service popup with AOI Active status
+[INFO] 2026-09-09T22:10:28.782Z ([P0] 2 - verify the checkout popup sections )  - Rectangle AOI draw tool selected successfully
+[INFO] 2026-09-09T22:10:31.931Z ([P0] 2 - verify the checkout popup sections )  - Rectangle AOI drawn successfully
+[INFO] 2026-09-09T22:10:34.022Z ([P0] 2 - verify the checkout popup sections )  - Service popup is visible
+[INFO] 2026-09-09T22:10:36.145Z ([P0] 2 - verify the checkout popup sections )  - AOI Active status verified successfully
+[INFO] 2026-09-09T22:10:36.145Z ([P0] 2 - verify the checkout popup sections )  - Step 10: Verify Satellite Service, Resolution, Satellite Filter, Date Range, Cloud Coverage and Search Imagery
+[INFO] 2026-09-09T22:10:41.621Z ([P0] 2 - verify the checkout popup sections )  - Satellite service selected successfully
+[INFO] 2026-09-09T22:10:45.632Z ([P0] 2 - verify the checkout popup sections )  - robustClick succeeded
+[INFO] 2026-09-09T22:10:45.633Z ([P0] 2 - verify the checkout popup sections )  - Search Imagery button clicked successfully
+[INFO] 2026-09-09T22:10:45.633Z ([P0] 2 - verify the checkout popup sections )  - Step 10.3: Wait for imagery scenes to load
+[INFO] 2026-09-09T22:10:55.724Z ([P0] 2 - verify the checkout popup sections )  - Imagery scenes loaded successfully. Add to Cart icons found: 10
+[INFO] 2026-09-09T22:10:55.725Z ([P0] 2 - verify the checkout popup sections )  - Step 10.4: Add scene to cart and proceed to cart
+[INFO] 2026-09-09T22:11:00.916Z ([P0] 2 - verify the checkout popup sections )  - robustClick succeeded
+[INFO] 2026-09-09T22:11:00.916Z ([P0] 2 - verify the checkout popup sections )  - First available scene Add to Cart icon clicked successfully
+[INFO] 2026-09-09T22:11:25.020Z ([P0] 2 - verify the checkout popup sections )  - Item added to cart !! confirmation detected successfully
+[INFO] 2026-09-09T22:11:25.023Z ([P0] 2 - verify the checkout popup sections )  - Item added to cart confirmation validated successfully
+[INFO] 2026-09-09T22:11:29.362Z ([P0] 2 - verify the checkout popup sections )  - View Cart and Proceed option verified successfully
+[INFO] 2026-09-09T22:11:30.702Z ([P0] 2 - verify the checkout popup sections )  - robustClick succeeded
+[INFO] 2026-09-09T22:11:34.504Z ([P0] 2 - verify the checkout popup sections )  - View Cart and Proceed clicked successfully
+[INFO] 2026-09-09T22:11:34.504Z ([P0] 2 - verify the checkout popup sections )  - Step 10.4 completed successfully: scene added to cart, confirmation validated, and cart page opened
+[INFO] 2026-09-09T22:11:34.504Z ([P0] 2 - verify the checkout popup sections )  - Step 11.1: Verify Data Query, Imagery and Order steps
+[INFO] 2026-09-09T22:11:35.799Z ([P0] 2 - verify the checkout popup sections )  - Data Query step verified successfully
+[INFO] 2026-09-09T22:11:35.893Z ([P0] 2 - verify the checkout popup sections )  - Imagery step verified successfully
+[INFO] 2026-09-09T22:11:35.977Z ([P0] 2 - verify the checkout popup sections )  - Order step verified successfully
+[INFO] 2026-09-09T22:11:35.977Z ([P0] 2 - verify the checkout popup sections )  - Step 11.2: Verify Export Options section
+[INFO] 2026-09-09T22:11:37.196Z ([P0] 2 - verify the checkout popup sections )  - Export Options section exists in DOM
+[INFO] 2026-09-09T22:11:37.281Z ([P0] 2 - verify the checkout popup sections )  - Projection export option verified successfully
+[INFO] 2026-09-09T22:11:37.383Z ([P0] 2 - verify the checkout popup sections )  - Datum export option verified successfully
+[INFO] 2026-09-09T22:11:37.425Z ([P0] 2 - verify the checkout popup sections )  - Format export option verified successfully
+[INFO] 2026-09-09T22:11:37.426Z ([P0] 2 - verify the checkout popup sections )  - Export Options verified successfully: Projection, Datum and Format
+[INFO] 2026-09-09T22:11:37.426Z ([P0] 2 - verify the checkout popup sections )  - Step 11.3: Verify cart table Product, Price, Resolution and Date
+[INFO] 2026-09-09T22:11:38.623Z ([P0] 2 - verify the checkout popup sections )  - Satellite cart table found successfully
+[ERROR] 2026-09-09T22:11:53.712Z ([P0] 2 - verify the checkout popup sections )  - TC-2 failed: Product column should be visible
+
+expect(locator).toBeVisible() failed
+
+Locator:  locator('#tbl_satellite_scenes').locator('thead th').filter({ hasText: 'Product' }).first()
+Expected: visible
+Received: hidden
+Timeout:  15000ms
+
+Call log:
+  - Product column should be visible with timeout 15000ms
+  - waiting for locator('#tbl_satellite_scenes').locator('thead th').filter({ hasText: 'Product' }).first()
+    18 × locator resolved to <th rowspan="1" colspan="1" tabindex="0" class="sorting" aria-controls="tbl_satellite_scenes" aria-label="Product: activate to sort column ascending">Product</th>
+       - unexpected value "hidden"
+
+[INFO] 2026-09-09T22:11:53.719Z ([P0] 2 - verify the checkout popup sections )  - Failed Requests: []
+[INFO] 2026-09-09T22:11:53.719Z ([P0] 2 - verify the checkout popup sections )  - Console Errors: []
+[INFO] 2026-09-09T22:11:53.720Z ([P0] 2 - verify the checkout popup sections )  - API Responses: [{"url":"https://maps.googleapis.com/maps/api/js?key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&callback=initMap&libraries=drawing,places&v=3.64","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/common.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/util.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/map.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/onion.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/kml.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/geocoder.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/maxzoom.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/drawing_impl.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/controls.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/places_impl.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/log.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/marker.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/infowindow.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/api/mapsjs/gen_204?csp_test=true","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/$rpc/google.internal.maps.mapsjs.v1.MapsJsInternalService/GetViewportInfo","status":200,"method":"POST"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i2!2i3!3i0!4i256!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=130983","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i2!2i2!3i0!4i256!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=34512","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i2!2i1!3i1!4i256!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=1802","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i2!2i1!3i0!4i256!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=69112","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i2!2i2!3i1!4i256!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=98273","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i2!2i3!3i2!4i256!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=127434","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i2!2i0!3i0!4i256!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=103712","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i2!2i2!3i2!4i256!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=30963","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i2!2i3!3i1!4i256!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=63673","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i2!2i1!3i2!4i256!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=65563","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i2!2i0!3i2!4i256!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=100163","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i2!2i0!3i1!4i256!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=36402","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m4!1m3!1i2!2i0!3i0!1m4!1m3!1i2!2i0!3i1!1m4!1m3!1i2!2i1!3i0!1m4!1m3!1i2!2i1!3i1!1m4!1m3!1i2!2i0!3i2!1m4!1m3!1i2!2i1!3i2!1m4!1m3!1i2!2i2!3i0!1m4!1m3!1i2!2i2!3i1!1m4!1m3!1i2!2i3!3i0!1m4!1m3!1i2!2i3!3i1!1m4!1m3!1i2!2i2!3i2!1m4!1m3!1i2!2i3!3i2!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e3!12m2!5b1!6b1!23i46991212!23i47054750&callback=_xdc_._m42msi&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=59290","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/api/js/AuthenticationService.Authenticate?1shttps%3A%2F%2Fdatastore.geowgs84.com%2F&4sAIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&8b0&callback=_xdc_._vplqnn&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=94838","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/api/place/js/AutocompletionService.GetPredictions?1sDenver&4sen-US&6m6&1m2&1d-63.29994323148397&2d-180&2m2&1d76.72673601323714&2d180&15e3&20s16512D60A35143A593C99C6DACE3EC4926o7&21m1&2e1&r_url=https%3A%2F%2Fdatastore.geowgs84.com%2F&callback=_xdc_._dpqo1u&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=47496","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/api/place/js/PlaceService.GetPlaceDetails?2sen-US&10e3&14m1&1sChIJzxcfI6qAa4cR1jaKJ_j0jhE&15s16512D60A35143A593C99C6DACE3EC4926o7&16m1&1saddress_components%2Cgeometry%2Cicon%2Cname&17m1&2e1&r_url=https%3A%2F%2Fdatastore.geowgs84.com%2F&callback=_xdc_._o0xojw&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=126047","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/$rpc/google.internal.maps.mapsjs.v1.MapsJsInternalService/GetViewportInfo","status":200,"method":"POST"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m4!1m3!1i10!2i211!3i387!1m4!1m3!1i10!2i211!3i388!1m4!1m3!1i10!2i211!3i389!1m4!1m3!1i10!2i212!3i387!1m4!1m3!1i10!2i213!3i387!1m4!1m3!1i10!2i214!3i387!1m4!1m3!1i10!2i215!3i387!1m4!1m3!1i10!2i212!3i388!1m4!1m3!1i10!2i212!3i389!1m4!1m3!1i10!2i213!3i388!1m4!1m3!1i10!2i213!3i389!1m4!1m3!1i10!2i214!3i388!1m4!1m3!1i10!2i214!3i389!1m4!1m3!1i10!2i215!3i388!1m4!1m3!1i10!2i215!3i389!1m4!1m3!1i10!2i216!3i387!1m4!1m3!1i10!2i216!3i388!1m4!1m3!1i10!2i216!3i389!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e3!12m2!5b1!6b1!23i46991212!23i47054750&callback=_xdc_._6kgmnq&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=97554","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i214!3i388!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=100122","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i213!3i387!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=88984","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i213!3i388!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=79072","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i215!3i389!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=53862","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i214!3i387!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=110034","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i215!3i387!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=13","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i215!3i388!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=121172","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i214!3i389!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=32812","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i213!3i389!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=11762","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i216!3i387!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=78461","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i212!3i387!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=67934","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i212!3i388!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=58022","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i212!3i389!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=121783","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i216!3i389!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=74912","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i211!3i389!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=100733","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i216!3i388!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=11151","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i211!3i388!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=36972","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i211!3i387!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=46884","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m4!1m3!1i10!2i211!3i387!1m4!1m3!1i10!2i211!3i388!1m4!1m3!1i10!2i211!3i389!1m4!1m3!1i10!2i212!3i387!1m4!1m3!1i10!2i213!3i387!1m4!1m3!1i10!2i214!3i387!1m4!1m3!1i10!2i215!3i387!1m4!1m3!1i10!2i212!3i388!1m4!1m3!1i10!2i212!3i389!1m4!1m3!1i10!2i213!3i388!1m4!1m3!1i10!2i213!3i389!1m4!1m3!1i10!2i214!3i388!1m4!1m3!1i10!2i214!3i389!1m4!1m3!1i10!2i215!3i388!1m4!1m3!1i10!2i215!3i389!1m4!1m3!1i10!2i216!3i387!1m4!1m3!1i10!2i216!3i388!1m4!1m3!1i10!2i216!3i389!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e3!12m2!5b1!6b1!23i46991212!23i47054750&callback=_xdc_._gvj0bs&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=75895","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i427!3i777!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=101735","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i427!3i776!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=37974","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i426!3i777!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=80685","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i426!3i776!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=16924","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/$rpc/google.internal.maps.mapsjs.v1.MapsJsInternalService/GetViewportInfo","status":200,"method":"POST"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i428!3i776!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=59024","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i428!3i777!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=122785","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i428!3i778!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=55475","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i426!3i778!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=13375","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i427!3i778!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=34425","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i425!3i778!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=123396","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i426!3i775!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=84234","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i425!3i776!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=126945","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i425!3i777!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=59635","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i428!3i775!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=126334","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i427!3i775!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=105284","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i429!3i775!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=16313","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i425!3i775!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=63184","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i429!3i776!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=80074","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i429!3i778!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=76525","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i429!3i777!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=12764","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m4!1m3!1i11!2i425!3i775!1m4!1m3!1i11!2i426!3i775!1m4!1m3!1i11!2i427!3i775!1m4!1m3!1i11!2i428!3i775!1m4!1m3!1i11!2i429!3i775!1m4!1m3!1i11!2i425!3i776!1m4!1m3!1i11!2i425!3i777!1m4!1m3!1i11!2i425!3i778!1m4!1m3!1i11!2i426!3i776!1m4!1m3!1i11!2i426!3i777!1m4!1m3!1i11!2i427!3i776!1m4!1m3!1i11!2i427!3i777!1m4!1m3!1i11!2i426!3i778!1m4!1m3!1i11!2i427!3i778!1m4!1m3!1i11!2i428!3i776!1m4!1m3!1i11!2i428!3i777!1m4!1m3!1i11!2i429!3i776!1m4!1m3!1i11!2i429!3i777!1m4!1m3!1i11!2i428!3i778!1m4!1m3!1i11!2i429!3i778!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e3!12m2!5b1!6b1!23i46991212!23i47054750&callback=_xdc_._fb1t98&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=64911","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/geometry.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/poly.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i854!3i1553!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=92972","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i853!3i1552!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=71499","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i856!3i1552!4i256!2m3!1e0!2sm!3i794559964!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=16274","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i853!3i1553!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=4189","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i854!3i1552!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=29211","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i856!3i1553!4i256!2m3!1e0!2sm!3i794559964!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=80035","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i854!3i1554!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=25662","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i855!3i1554!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=114445","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i853!3i1554!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=67950","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/$rpc/google.internal.maps.mapsjs.v1.MapsJsInternalService/GetViewportInfo","status":200,"method":"POST"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i852!3i1554!4i256!2m3!1e0!2sm!3i794560234!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=7866","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i852!3i1553!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=46477","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i852!3i1552!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=113787","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i851!3i1554!4i256!2m3!1e0!2sm!3i794560234!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=50154","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i851!3i1552!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=25004","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i851!3i1553!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=88765","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i856!3i1554!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=129555","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i855!3i1553!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=50684","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i855!3i1552!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=117994","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m4!1m3!1i12!2i852!3i1552!1m4!1m3!1i12!2i852!3i1553!1m4!1m3!1i12!2i853!3i1552!1m4!1m3!1i12!2i853!3i1553!1m4!1m3!1i12!2i852!3i1554!1m4!1m3!1i12!2i853!3i1554!1m4!1m3!1i12!2i854!3i1552!1m4!1m3!1i12!2i854!3i1553!1m4!1m3!1i12!2i855!3i1552!1m4!1m3!1i12!2i855!3i1553!1m4!1m3!1i12!2i854!3i1554!1m4!1m3!1i12!2i855!3i1554!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e3!12m2!5b1!6b1!23i46991212!23i47054750&callback=_xdc_._gyg072&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=112553","status":200,"method":"GET"}]
+[INFO] 2026-09-09T22:11:53.720Z ([P0] 2 - verify the checkout popup sections )  - TC-2 execution finished
+[DIAG-DEBUG] testId="b254acef562a5fc632e0-dbf7c94f40b38b5d267f" title="[P0] 2 - verify the checkout popup sections " warnings=0 errors=1 skipped=0 status=failed
+[INFO] 2026-09-09T22:11:54.646Z ([P0] 2 - verify the checkout popup sections )  - Screenshot captured
+[INFO] 2026-09-09T22:11:55.125Z ([P0] 2 - verify the checkout popup sections )  - Screenshot captured
+[WARNING] 2026-09-09T22:11:55.517Z ([P0] 2 - verify the checkout popup sections )  - screenshot saved: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\test-results\scene__P0__2_-_verify_the_checkout_popup_sections__final_state_2026-09-09T22-11-55.126Z.png
+[DIAG-DEBUG] File EXISTS: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\diagnostics\b254acef562a5fc632e0-dbf7c94f40b38b5d267f.json
+[DIAG-DEBUG] File contains: warnings=1 errors=1 skippedSteps=0
+[INFO] 2026-09-09T22:11:56.056Z   - Screenshot captured
+  ✘  1 [chromium] › specs\cart.spec.js:1131:5 › [P0] 2 - verify the checkout popup sections  (2.5m)
 
 
-Method : GET
-Status : 200
-URL    : https://maps.googleapis.com/maps/api/place/js/AutocompletionService.GetPredictions?1sIndore&4sen-US&6m6&1m2&1d-63.29994323148397&2d-180&2m2&1d76.72673601323714&2d180&15e3&20s42BA61333A894350A63C488A622FD903jqgq&21m1&2e1&r_url=https%3A%2F%2Fdatastore.geowgs84.com%2F&callback=_xdc_._rhablt&key=***&token=34446
-[INFO] 2026-09-07T16:07:40.488Z ([P0] 1 - Map Search: search and select a valid location)  - Step 8: Select the Indore, Madhya Pradesh, India suggestion
-[INFO] 2026-09-07T16:07:43.248Z ([P0] 1 - Map Search: search and select a valid location)  - Indore location suggestion selectedsuccessfully
-[INFO] 2026-09-07T16:07:43.248Z ([P0] 1 - Map Search: search and select a valid location)  - Step 9: Wait for the map to move tothe selected location
-[INFO] 2026-09-07T16:07:45.967Z ([P0] 1 - Map Search: search and select a valid location)  - World map is visible and loaded
-[INFO] 2026-09-07T16:07:47.485Z ([P0] 1 - Map Search: search and select a valid location)  - Map moved to the selected location
-[INFO] 2026-09-07T16:07:47.485Z ([P0] 1 - Map Search: search and select a valid location)  - Step 10: Verify the selected location marker
-[INFO] 2026-09-07T16:07:50.215Z ([P0] 1 - Map Search: search and select a valid location)  - Map marker is visible
-[INFO] 2026-09-07T16:07:51.519Z ([P0] 1 - Map Search: search and select a valid location)  - Selected location marker is visibleon the map
-[INFO] 2026-09-07T16:07:51.519Z ([P0] 1 - Map Search: search and select a valid location)  - Step 11: Review browser/network diagnostics
-[INFO] 2026-09-07T16:07:52.642Z ([P0] 1 - Map Search: search and select a valid location)  - Total API/network responses captured: 50
-[INFO] 2026-09-07T16:07:52.642Z ([P0] 1 - Map Search: search and select a valid location)  - Total failed network requests: 0
-[INFO] 2026-09-07T16:07:52.642Z ([P0] 1 - Map Search: search and select a valid location)  - Total browser console errors: 0
-[INFO] 2026-09-07T16:07:52.642Z ([P0] 1 - Map Search: search and select a valid location)  - Search Autocomplete API validation completed successfully
-[INFO] 2026-09-07T16:07:52.642Z ([P0] 1 - Map Search: search and select a valid location)  - P0 Map Search test completed successfully
-[DIAG-DEBUG] testId="02fa0fb0324b7043b31f-09eac5a41f817ac08f57" title="[P0] 1 - Map Search: search and select a valid location" warnings=0 errors=0 skipped=0 status=passed
-[DIAG-DEBUG] File EXISTS: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\playwright\diagnostics\02fa0fb0324b7043b31f-09eac5a41f817ac08f57.json
-[DIAG-DEBUG] File contains: warnings=0 errors=0 skippedSteps=0
-  ✓  1 [chromium] › specs\map.spec.js:31:5 › [P0] 1 - Map Search: search and select a valid location (57.8s)
-     2 [chromium] › specs\map.spec.js:457:6 › [P0] 2 - Locate Me: locate me icon is visible and clickable
-[INFO] 2026-09-07T16:07:53.366Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Context set
-[INFO] 2026-09-07T16:07:53.370Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 1: Navigate to the DataStore URL
-[INFO] 2026-09-07T16:08:06.184Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - DataStore root returned HTTP 200
-[INFO] 2026-09-07T16:08:06.184Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 2: Wait for page loader and highlight the loader/logo
-[INFO] 2026-09-07T16:08:10.479Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Page loader became hidden
-[INFO] 2026-09-07T16:08:10.479Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 3: Close the tutorial
-[INFO] 2026-09-07T16:08:12.730Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - robustClick succeeded
-[INFO] 2026-09-07T16:08:13.923Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Tutorial modal closed
-[INFO] 2026-09-07T16:08:13.923Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 4: Wait for the map to load
-[INFO] 2026-09-07T16:08:16.587Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - World map is visible and loaded
-[INFO] 2026-09-07T16:08:16.587Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Map loading completed
-[INFO] 2026-09-07T16:08:16.587Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 5: Locate and highlight the Locate Me icon
-[INFO] 2026-09-07T16:08:18.856Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Locate Me icon located
-[INFO] 2026-09-07T16:08:18.856Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 6: Highlight the Locate Meaction
-[INFO] 2026-09-07T16:08:21.137Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Locate Me action ready
-[INFO] 2026-09-07T16:08:21.137Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 7: Simulate geolocation failure and click Locate Me
-[INFO] 2026-09-07T16:08:22.294Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Geolocation failure simulation enabled
-[INFO] 2026-09-07T16:08:23.558Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Browser dialog detected. Type: alert
-[INFO] 2026-09-07T16:08:23.559Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Browser dialog message: "Pleasetry again Later"
-[INFO] 2026-09-07T16:08:23.612Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Browser alert accepted successfully
-[INFO] 2026-09-07T16:08:23.929Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Locate Me link clicked successfully
-[INFO] 2026-09-07T16:08:23.929Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 8: Verify the Locate Me browser alert
-[INFO] 2026-09-07T16:08:25.076Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Locate Me browser alert verified successfully: "Please try again Later"
-[INFO] 2026-09-07T16:08:25.076Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 9: Complete the Locate Me alert flow
-[INFO] 2026-09-07T16:08:26.767Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Locate Me browser alert was accepted using OK
-[INFO] 2026-09-07T16:08:26.768Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 10: Verify the map remainsvisible after closing the alert
-[INFO] 2026-09-07T16:08:29.098Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Map remains visible after closing Locate Me alert
-[INFO] 2026-09-07T16:08:29.098Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 11: Complete the Locate Meflow
-[INFO] 2026-09-07T16:08:31.386Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Locate Me flow completed
-[INFO] 2026-09-07T16:08:31.386Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 12: Complete the final mapstate
-[INFO] 2026-09-07T16:08:32.500Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Final map state completed successfully
-[INFO] 2026-09-07T16:08:32.500Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Step 13: Verify network and console diagnostics
-[INFO] 2026-09-07T16:08:33.610Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - No non-ignored network requestsfailed
-[INFO] 2026-09-07T16:08:33.610Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - No browser console errors detected
-[INFO] 2026-09-07T16:08:33.611Z ([P0] 2 - Locate Me: locate me icon is visible and clickable)  - Locate Me test flow completed successfully
-[DIAG-DEBUG] testId="02fa0fb0324b7043b31f-b286faaa659c7b7768ce" title="[P0] 2 - Locate Me: locate me icon is visible and clickable" warnings=0 errors=0 skipped=0 status=passed
-[DIAG-DEBUG] File EXISTS: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\playwright\diagnostics\02fa0fb0324b7043b31f-b286faaa659c7b7768ce.json
-[DIAG-DEBUG] File contains: warnings=0 errors=0 skippedSteps=0
-  ✓  2 [chromium] › specs\map.spec.js:457:6 › [P0] 2 - Locate Me: locate me icon is visible and clickable (40.9s)
-     3 [chromium] › specs\map.spec.js:922:7 › [P0] 3 - Upload KML: verify KML upload and Core Services flow
-[INFO] 2026-09-07T16:08:34.265Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Context set
-[INFO] 2026-09-07T16:08:34.267Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 1: Navigate to the DataStore URL
-[INFO] 2026-09-07T16:08:44.870Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - DataStore root returned HTTP 200
-[INFO] 2026-09-07T16:08:44.870Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 2: Wait for page loader and highlight the loader/logo
-[INFO] 2026-09-07T16:08:49.150Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Page loader became hidden
-[INFO] 2026-09-07T16:08:49.150Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 3: Close the tutorial
-[INFO] 2026-09-07T16:08:51.394Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - robustClick succeeded
-[INFO] 2026-09-07T16:08:52.612Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Tutorial modal closed
-[INFO] 2026-09-07T16:08:52.612Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 4: Wait for the map to load
-[INFO] 2026-09-07T16:08:55.327Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - World map is visible and loaded
-[INFO] 2026-09-07T16:08:55.327Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 5: Locate the Upload KMLicon
-[INFO] 2026-09-07T16:08:58.085Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 6: Prepare to click the Upload KML icon
-[INFO] 2026-09-07T16:09:00.830Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 7: Click Upload KML and verify Upload File popup opens
-[INFO] 2026-09-07T16:09:04.353Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - robustClick succeeded
-[INFO] 2026-09-07T16:09:04.389Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Upload File popup opened successfully
-[INFO] 2026-09-07T16:09:04.440Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 8: Close Upload File popup using top-right X
-[INFO] 2026-09-07T16:09:09.985Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - robustClick succeeded
-[INFO] 2026-09-07T16:09:10.024Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Upload File popup closed successfully using top-right X
-[INFO] 2026-09-07T16:09:10.057Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 9: Click Upload KML again
-[INFO] 2026-09-07T16:09:13.511Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - robustClick succeeded
-[INFO] 2026-09-07T16:09:13.542Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Upload File popup opened successfully
-[INFO] 2026-09-07T16:09:13.542Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 10: Close Upload File popup using inner Close button
-[INFO] 2026-09-07T16:09:19.186Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - robustClick succeeded
-[INFO] 2026-09-07T16:09:19.219Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Upload File popup closed successfully using Close button
-[INFO] 2026-09-07T16:09:19.251Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 11: Click Upload KML again for KML file selection
-[INFO] 2026-09-07T16:09:22.750Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - robustClick succeeded
-[INFO] 2026-09-07T16:09:22.796Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Upload File popup opened successfully
-[INFO] 2026-09-07T16:09:22.796Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 12: Locate Choose File control
-[INFO] 2026-09-07T16:09:25.590Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 13: Prepare Choose File control
-[INFO] 2026-09-07T16:09:26.723Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 14: Select downloaded.kml from test data
-[INFO] 2026-09-07T16:09:29.012Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - KML file selected: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\playwright\test-data\downloaded.kml
-[INFO] 2026-09-07T16:09:29.012Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 15: Verify downloaded.kml was selected
-[INFO] 2026-09-07T16:09:30.175Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 16: Locate Upload button
-[INFO] 2026-09-07T16:09:33.217Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 17: Click Upload and upload the selected KML
-[INFO] 2026-09-07T16:09:37.196Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - robustClick succeeded
-[INFO] 2026-09-07T16:09:37.196Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - KML Upload button clicked
-[INFO] 2026-09-07T16:09:37.196Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 18: Wait for the selected KML to be processed
-[INFO] 2026-09-07T16:09:42.871Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 19: Verify Core Servicespopup/panel opens
-[INFO] 2026-09-07T16:09:45.905Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 20: Verify KML File Active status
-[INFO] 2026-09-07T16:09:49.374Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 21: Final KML upload state
-[INFO] 2026-09-07T16:09:52.843Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 22: Click Upload KML/KMZicon and open upload popup
-[INFO] 2026-09-07T16:09:57.917Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - robustClick succeeded
-[INFO] 2026-09-07T16:09:57.953Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Upload File popup opened successfully
-[INFO] 2026-09-07T16:09:57.997Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 23: Locate Choose File control for KMZ upload
-[INFO] 2026-09-07T16:10:00.703Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 24: Select MadhyaPradesh.kmz from test data
-[INFO] 2026-09-07T16:10:02.913Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - KML file selected: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\playwright\test-data\MadhyaPradesh.kmz
-[INFO] 2026-09-07T16:10:02.913Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 25: Verify MadhyaPradesh.kmz was selected
-[INFO] 2026-09-07T16:10:04.047Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 26: Locate Upload buttonfor KMZ
-[INFO] 2026-09-07T16:10:07.056Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 27: Click Upload and upload MadhyaPradesh.kmz
-[INFO] 2026-09-07T16:10:10.942Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - robustClick succeeded
-[INFO] 2026-09-07T16:10:10.943Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - KML Upload button clicked
-[INFO] 2026-09-07T16:10:10.943Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 28: Wait for MadhyaPradesh.kmz to be processed on the map
-[INFO] 2026-09-07T16:10:16.600Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 29: Verify uploaded MadhyaPradesh.kmz appears on the map
-[INFO] 2026-09-07T16:10:20.791Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 30: Verify uploaded KMZ is active and Core Services is available
-[INFO] 2026-09-07T16:10:24.296Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 31: Final map state after MadhyaPradesh.kmz upload
-[INFO] 2026-09-07T16:10:28.504Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 32: Click the uploaded MadhyaPradesh.kmz area on the map
-[INFO] 2026-09-07T16:10:36.020Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 33: Verify information box opens after clicking uploaded KMZ
-[INFO] 2026-09-07T16:10:39.489Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 34: Click X on KMZ information box and verify it closes
-[INFO] 2026-09-07T16:10:42.859Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 35: Final KMZ map state after closing information box
-[INFO] 2026-09-07T16:10:46.322Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - Step 36: Review network and browser diagnostics
-[INFO] 2026-09-07T16:10:47.427Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - No non-ignored network requests failed
-[INFO] 2026-09-07T16:10:47.427Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - No browser console errors detected
-[INFO] 2026-09-07T16:10:47.427Z ([P0] 3 - Upload KML: verify KML upload and Core Services flow)  - KML and KMZ upload test flow completed successfully
-[DIAG-DEBUG] testId="02fa0fb0324b7043b31f-fed4ce47768955bb71e0" title="[P0] 3 - Upload KML: verify KML upload and Core Services flow" warnings=0 errors=0 skipped=0 status=passed
-[DIAG-DEBUG] File EXISTS: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\playwright\diagnostics\02fa0fb0324b7043b31f-fed4ce47768955bb71e0.json
-[DIAG-DEBUG] File contains: warnings=0 errors=0 skippedSteps=0
-  ✓  3 [chromium] › specs\map.spec.js:922:7 › [P0] 3 - Upload KML: verify KML upload and Core Services flow (2.2m)
-     4 [chromium] › specs\map.spec.js:1800:6 › [P0] 4 - Coordinates navigation should work correctly
-[INFO] 2026-09-07T16:10:48.389Z ([P0] 4 - Coordinates navigation should work correctly)  - Context set
-[INFO] 2026-09-07T16:10:48.392Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 1: Navigate to the DataStore URL
-[INFO] 2026-09-07T16:11:10.303Z ([P0] 4 - Coordinates navigation should work correctly)  - DataStore root returned HTTP 200
-[INFO] 2026-09-07T16:11:10.303Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 2: Wait for page loader and highlight the loader/logo
-[INFO] 2026-09-07T16:11:14.470Z ([P0] 4 - Coordinates navigation should work correctly)  - Page loader became hidden
-[INFO] 2026-09-07T16:11:14.470Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 3: Close the tutorial
-[INFO] 2026-09-07T16:11:16.605Z ([P0] 4 - Coordinates navigation should work correctly)  - robustClick succeeded
-[INFO] 2026-09-07T16:11:17.779Z ([P0] 4 - Coordinates navigation should work correctly)  - Tutorial modal closed
-[INFO] 2026-09-07T16:11:17.779Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 4: Wait for the map to load
-[INFO] 2026-09-07T16:11:20.422Z ([P0] 4 - Coordinates navigation should work correctly)  - World map is visible and loaded
-[INFO] 2026-09-07T16:11:20.423Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 5: Locate the Coordinates icon
-[INFO] 2026-09-07T16:11:23.146Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 6: Click the Coordinates icon
-[INFO] 2026-09-07T16:11:26.786Z ([P0] 4 - Coordinates navigation should work correctly)  - robustClick succeeded
-[INFO] 2026-09-07T16:11:26.858Z ([P0] 4 - Coordinates navigation should work correctly)  - Enter Coordinates popup opened successfully
-[INFO] 2026-09-07T16:11:26.858Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 7: Verify the Enter Coordinates popup opens
-[INFO] 2026-09-07T16:11:28.023Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 8: Close the Coordinates popup using top-right X
-[INFO] 2026-09-07T16:11:30.669Z ([P0] 4 - Coordinates navigation should work correctly)  - Clicking Enter Coordinates popup top-right X
-[INFO] 2026-09-07T16:11:31.785Z ([P0] 4 - Coordinates navigation should work correctly)  - robustClick succeeded
-[INFO] 2026-09-07T16:11:31.819Z ([P0] 4 - Coordinates navigation should work correctly)  - Enter Coordinates popup closed successfully using X
-[INFO] 2026-09-07T16:11:31.819Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 9: Open Coordinates popup again
-[INFO] 2026-09-07T16:11:35.505Z ([P0] 4 - Coordinates navigation should work correctly)  - robustClick succeeded
-[INFO] 2026-09-07T16:11:35.567Z ([P0] 4 - Coordinates navigation should work correctly)  - Enter Coordinates popup opened successfully
-[INFO] 2026-09-07T16:11:35.567Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 10: Close the Coordinates popup using inner Close button
-[INFO] 2026-09-07T16:11:38.217Z ([P0] 4 - Coordinates navigation should work correctly)  - Clicking Enter Coordinates inner Close button
-[INFO] 2026-09-07T16:11:39.394Z ([P0] 4 - Coordinates navigation should work correctly)  - robustClick succeeded
-[INFO] 2026-09-07T16:11:39.422Z ([P0] 4 - Coordinates navigation should work correctly)  - Enter Coordinates popup closed successfully using inner Close button
-[INFO] 2026-09-07T16:11:39.423Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 11: Open Coordinates popup againfor coordinate entry
-[INFO] 2026-09-07T16:11:43.053Z ([P0] 4 - Coordinates navigation should work correctly)  - robustClick succeeded
-[INFO] 2026-09-07T16:11:43.113Z ([P0] 4 - Coordinates navigation should work correctly)  - Enter Coordinates popup opened successfully
-[INFO] 2026-09-07T16:11:43.114Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 12: Enter latitude 10.2
-[INFO] 2026-09-07T16:11:46.222Z ([P0] 4 - Coordinates navigation should work correctly)  - Latitude entered successfully: 10.2
-[INFO] 2026-09-07T16:11:46.222Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 13: Enter longitude 8.2
-[INFO] 2026-09-07T16:11:49.347Z ([P0] 4 - Coordinates navigation should work correctly)  - Longitude entered successfully: 8.2
-[INFO] 2026-09-07T16:11:49.348Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 14: Click Take Me
-[INFO] 2026-09-07T16:11:52.093Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 15: Click Take Me and verify successful API response
-[INFO] 2026-09-07T16:11:58.145Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 16: Verify the map navigates to the exact location and marker appears
-[INFO] 2026-09-07T16:12:00.901Z ([P0] 4 - Coordinates navigation should work correctly)  - Map marker is visible
-[INFO] 2026-09-07T16:12:00.902Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 17: Locate the AOI draw option
-[INFO] 2026-09-07T16:12:02.021Z ([P0] 4 - Coordinates navigation should work correctly)  - Step 18: Final map state after coordinate navigation
-[INFO] 2026-09-07T16:12:05.523Z ([P0] 4 - Coordinates navigation should work correctly)  - No non-ignored network requests failed
-[INFO] 2026-09-07T16:12:05.524Z ([P0] 4 - Coordinates navigation should work correctly)  - No browser console errors detected
-[INFO] 2026-09-07T16:12:05.524Z ([P0] 4 - Coordinates navigation should work correctly)  - Coordinates navigation test flow completed successfully
-[DIAG-DEBUG] testId="02fa0fb0324b7043b31f-9963068504d2d2fb417a" title="[P0] 4 - Coordinates navigation should work correctly" warnings=0 errors=0 skipped=0 status=passed
-[DIAG-DEBUG] File EXISTS: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\playwright\diagnostics\02fa0fb0324b7043b31f-9963068504d2d2fb417a.json
-[DIAG-DEBUG] File contains: warnings=0 errors=0 skippedSteps=0
-  ✓  4 [chromium] › specs\map.spec.js:1800:6 › [P0] 4 - Coordinates navigation should work correctly (1.3m)
-     5 [chromium] › specs\map.spec.js:2251:6 › [P0] 5 - User Guide: verify tutorial popup opens and closes successfully
-[INFO] 2026-09-07T16:12:06.144Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Context set
-[INFO] 2026-09-07T16:12:06.147Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Step 1: Navigate to the DataStore URL
-[INFO] 2026-09-07T16:12:27.149Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - DataStore root returned HTTP 200
-[INFO] 2026-09-07T16:12:27.149Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Step 2: Wait for page loader and highlight the loader/logo
-[INFO] 2026-09-07T16:12:31.358Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Page loader becamehidden
-[INFO] 2026-09-07T16:12:31.358Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Step 3: Close the tutorial
-[INFO] 2026-09-07T16:12:33.637Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - robustClick succeeded
-[INFO] 2026-09-07T16:12:34.905Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Tutorial modal closed
-[INFO] 2026-09-07T16:12:34.906Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Step 4: Wait for the map to load
-[INFO] 2026-09-07T16:12:37.577Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - World map is visible and loaded
-[INFO] 2026-09-07T16:12:37.577Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Map loading completed
-[INFO] 2026-09-07T16:12:37.577Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Step 5: Locate andhighlight the User Guide icon
-[INFO] 2026-09-07T16:12:40.336Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - User Guide icon located
-[INFO] 2026-09-07T16:12:40.336Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Step 6: Click the User Guide icon
-[INFO] 2026-09-07T16:12:44.325Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - robustClick succeeded
-[INFO] 2026-09-07T16:12:44.365Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - User Guide tutorial popup opened successfully
-[INFO] 2026-09-07T16:12:44.365Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - User Guide icon clicked
-[INFO] 2026-09-07T16:12:44.366Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Step 7: Verify theUser Guide tutorial popup opened
-[INFO] 2026-09-07T16:12:45.562Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - User Guide tutorial popup opened successfully
-[INFO] 2026-09-07T16:12:45.562Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Step 8: Highlight the User Guide popup top-right X
-[INFO] 2026-09-07T16:12:48.274Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - User Guide popup close button highlighted
-[INFO] 2026-09-07T16:12:48.274Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Step 9: Click the top-right X and verify the popup closes
-[INFO] 2026-09-07T16:12:51.053Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Clicking User Guide tutorial popup top-right X
-[INFO] 2026-09-07T16:12:52.190Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - robustClick succeeded
-[INFO] 2026-09-07T16:12:52.219Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - User Guide tutorial popup closed successfully using X
-[INFO] 2026-09-07T16:12:52.254Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - User Guide tutorial popup closed successfully
-[INFO] 2026-09-07T16:12:52.255Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - Step 10: Complete the User Guide flow
-[INFO] 2026-09-07T16:12:55.752Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - User Guide popup flow completed successfully
-[INFO] 2026-09-07T16:12:55.752Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - No non-ignored network requests failed
-[INFO] 2026-09-07T16:12:55.752Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - No browser consoleerrors detected
-[INFO] 2026-09-07T16:12:55.752Z ([P0] 5 - User Guide: verify tutorial popup opens and closes successfully)  - User Guide tutorial popup test flow completed successfully
-[DIAG-DEBUG] testId="02fa0fb0324b7043b31f-a61e6d4aac717bcd6daf" title="[P0] 5 - User Guide: verify tutorial popup opens and closes successfully" warnings=0 errors=0 skipped=0 status=passed
-[DIAG-DEBUG] File EXISTS: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\playwright\diagnostics\02fa0fb0324b7043b31f-a61e6d4aac717bcd6daf.json
-[DIAG-DEBUG] File contains: warnings=0 errors=0 skippedSteps=0
-  ✓  5 [chromium] › specs\map.spec.js:2251:6 › [P0] 5 - User Guide: verify tutorial popup opens and closes successfully (50.2s)
-     6 … › specs\map.spec.js:2568:6 › [P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly
-[INFO] 2026-09-07T16:12:56.346Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Context set
-[INFO] 2026-09-07T16:12:56.349Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 1: Navigate to the DataStore URL
-[INFO] 2026-09-07T16:13:09.106Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -DataStore root returned HTTP 200
-[INFO] 2026-09-07T16:13:09.106Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 2: Wait for page loader and highlight the loader/logo
-[INFO] 2026-09-07T16:13:13.551Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Page loader became hidden
-[INFO] 2026-09-07T16:13:13.551Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 3: Close the tutorial
-[INFO] 2026-09-07T16:13:15.817Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
-[INFO] 2026-09-07T16:13:17.024Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Tutorial modal closed
-[INFO] 2026-09-07T16:13:17.024Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 4: Wait for the map to load
-[INFO] 2026-09-07T16:13:19.707Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -World map is visible and loaded
-[INFO] 2026-09-07T16:13:19.707Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Map loading completed
-[INFO] 2026-09-07T16:13:19.707Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 5: Locate and highlight Map Camera Control
-[INFO] 2026-09-07T16:13:22.440Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Map Camera Control located
-[INFO] 2026-09-07T16:13:22.440Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 6: Open Map Camera Control
-[INFO] 2026-09-07T16:13:24.722Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
-[INFO] 2026-09-07T16:13:25.837Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Map Camera Control expanded successfully
-[INFO] 2026-09-07T16:13:25.837Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 7: Click Zoom (+) repeatedly until AOI draw option appears
-[INFO] 2026-09-07T16:13:28.168Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
-[INFO] 2026-09-07T16:13:30.856Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
-[INFO] 2026-09-07T16:13:33.565Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
-[INFO] 2026-09-07T16:13:36.248Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
-[INFO] 2026-09-07T16:13:39.006Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
-[INFO] 2026-09-07T16:13:41.717Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
-[INFO] 2026-09-07T16:13:44.424Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
-[INFO] 2026-09-07T16:13:47.159Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
-[INFO] 2026-09-07T16:13:49.910Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
-[INFO] 2026-09-07T16:13:52.537Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
-[INFO] 2026-09-07T16:13:54.102Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -AOI Draw option appeared after 10 zoom clicks
-[INFO] 2026-09-07T16:13:56.240Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Draw Shape option clicked successfully
-[INFO] 2026-09-07T16:13:56.240Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 8: Select the Rectangle AOI draw tool
-[INFO] 2026-09-07T16:14:01.856Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Rectangle AOI draw tool selected successfully
-[INFO] 2026-09-07T16:14:01.856Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 9: Draw one rectangle AOI on the map
-[INFO] 2026-09-07T16:14:03.044Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Drawing ONE rectangle AOI: 300px x 146px
-[INFO] 2026-09-07T16:14:12.507Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -AOI was drawn on the map
-[INFO] 2026-09-07T16:14:12.507Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -ONE AOI rectangle drawn successfully: 300px x 146px
-[INFO] 2026-09-07T16:14:12.507Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 10: Verify Core Services popup appears after AOI drawing
-[INFO] 2026-09-07T16:14:16.745Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Core Services popup opened successfully
-[INFO] 2026-09-07T16:14:16.745Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 11: Verify AOI Active status
-[INFO] 2026-09-07T16:14:20.974Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -AOI Active status verified successfully
-[INFO] 2026-09-07T16:14:20.974Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 12: Click World View
-[INFO] 2026-09-07T16:14:26.094Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
-[INFO] 2026-09-07T16:14:27.625Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Switched to World View
-[INFO] 2026-09-07T16:14:29.901Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -World View action completed
-[INFO] 2026-09-07T16:14:29.901Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 13: Verify global World View map
-[INFO] 2026-09-07T16:14:32.611Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Global World View action completed successfully
-[INFO] 2026-09-07T16:14:32.611Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 14: Click AOI View
-[INFO] 2026-09-07T16:14:37.708Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
-[INFO] 2026-09-07T16:14:39.241Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Switched to AOI View
-[INFO] 2026-09-07T16:14:41.517Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -AOI View action completed
-[INFO] 2026-09-07T16:14:41.517Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 15: Verify previously drawn AOI and area
-[INFO] 2026-09-07T16:14:44.279Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Previously drawn AOI and its area are displayed in AOI View
-[INFO] 2026-09-07T16:14:44.280Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 16: Click Reset
-[INFO] 2026-09-07T16:14:47.028Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Reset icon located
-[INFO] 2026-09-07T16:14:47.028Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Step 17: Click Reset and verify the map is reset
-[INFO] 2026-09-07T16:14:49.264Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -robustClick succeeded
-[INFO] 2026-09-07T16:14:53.182Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -Reset completed and map is visible again
-[INFO] 2026-09-07T16:14:53.182Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -TC-6 completed successfully
-[INFO] 2026-09-07T16:14:53.182Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -TC-6 network diagnostics: No application/network request failures detected
-[INFO] 2026-09-07T16:14:53.182Z ([P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly)  -TC-6 console diagnostics: No browser console errors detected
-[DIAG-DEBUG] testId="02fa0fb0324b7043b31f-745347e0c3970a15ea89" title="[P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly" warnings=0 errors=0 skipped=0 status=passed
-[DIAG-DEBUG] File EXISTS: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\playwright\diagnostics\02fa0fb0324b7043b31f-745347e0c3970a15ea89.json
-[DIAG-DEBUG] File contains: warnings=0 errors=0 skippedSteps=0
-  ✓  6 …s\map.spec.js:2568:6 › [P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly (2.0m)
-     7 [chromium] › specs\map.spec.js:3397:6 › [P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle
-[INFO] 2026-09-07T16:14:53.870Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Context set
-[INFO] 2026-09-07T16:14:53.877Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 1: Navigate to the DataStore URL
-[INFO] 2026-09-07T16:15:05.771Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - DataStore root returned HTTP 200
-[INFO] 2026-09-07T16:15:05.771Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 2: Wait for page loader and highlight the loader/logo
-[INFO] 2026-09-07T16:15:10.103Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Page loader became hidden
-[INFO] 2026-09-07T16:15:10.103Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 3: Close the tutorial
-[INFO] 2026-09-07T16:15:12.285Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - robustClick succeeded
-[INFO] 2026-09-07T16:15:13.463Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Tutorial modal closed
-[INFO] 2026-09-07T16:15:13.463Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 4: Wait for the map to load
-[INFO] 2026-09-07T16:15:16.118Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - World map is visible and loaded
-[INFO] 2026-09-07T16:15:16.118Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 5: Locate and highlight the Search icon
-[INFO] 2026-09-07T16:15:18.546Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 6: Click the Search icon
-[INFO] 2026-09-07T16:15:21.339Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 7: Enter Indore and validate Search API
-[INFO] 2026-09-07T16:15:24.664Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Search Autocomplete API returned HTTP 200
-[INFO] 2026-09-07T16:15:24.664Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Search Autocomplete API method: GET
-[INFO] 2026-09-07T16:15:24.664Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Search Autocomplete API URL: https://maps.googleapis.com/maps/api/place/js/AutocompletionService.GetPredictions?1sIndore&4sen-US&6m6&1m2&1d-63.29994323148397&2d-180&2m2&1d76.72673601323714&2d180&15e3&20sEB52C9133FFE401DA24F6E7053A33A98pqn5&21m1&2e1&r_url=https%3A%2F%2Fdatastore.geowgs84.com%2F&callback=_xdc_._2nuu7q&key=***&token=36728
-[INFO] 2026-09-07T16:15:24.664Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 8: Select the Indore, Madhya Pradesh, India suggestion
-[INFO] 2026-09-07T16:15:27.397Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Indore location suggestion selected successfully
-[INFO] 2026-09-07T16:15:27.397Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 9: Wait for the map to move to the selected location
-[INFO] 2026-09-07T16:15:30.065Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - World map is visible and loaded
-[INFO] 2026-09-07T16:15:31.587Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Selected location processed successfully
-[INFO] 2026-09-07T16:15:31.587Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 10: Verify the selected location marker
-[INFO] 2026-09-07T16:15:34.338Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Map marker is visible
-[INFO] 2026-09-07T16:15:35.643Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 11: Open Map Camera Control
-[INFO] 2026-09-07T16:15:40.199Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - robustClick succeeded
-[INFO] 2026-09-07T16:15:41.281Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Map Camera Control opened successfully
-[INFO] 2026-09-07T16:15:41.281Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 12: Click Zoom (+) once
-[INFO] 2026-09-07T16:15:45.121Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - robustClick succeeded
-[INFO] 2026-09-07T16:15:47.401Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Zoom (+) clicked exactly once
-[INFO] 2026-09-07T16:15:47.401Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 13: Open AOI DrawTool
-[INFO] 2026-09-07T16:15:50.361Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - AOI Draw Tool opened successfully
-[INFO] 2026-09-07T16:15:50.361Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 14: Select Hand tool and verify map movement
-[INFO] 2026-09-07T16:15:58.087Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Hand tool map movementcompleted successfully
-[INFO] 2026-09-07T16:15:58.087Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 15: Select CircleAOI tool
-[INFO] 2026-09-07T16:16:02.651Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 16: Draw one Circle AOI
-[INFO] 2026-09-07T16:16:06.432Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Circle AOI drawing completed with radius 100px
-[INFO] 2026-09-07T16:16:06.432Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 17: Verify CircleAOI popup and Active status
-[INFO] 2026-09-07T16:16:11.453Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 18: Match Circle popup area with AOI Active map area
-[INFO] 2026-09-07T16:16:17.461Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - CIRCLE AREA MATCHED: Popup=40.25 km² | Map=40.25 km²
-[INFO] 2026-09-07T16:16:17.462Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 19: Select Rectangle AOI draw tool
-[INFO] 2026-09-07T16:16:21.853Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Rectangle AOI draw tool selected successfully
-[INFO] 2026-09-07T16:16:21.853Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 25: Draw one Rectangle AOI
-[INFO] 2026-09-07T16:16:24.395Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Rectangle AOI drawing completed
-[INFO] 2026-09-07T16:16:25.471Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Rectangle AOI drawn successfully on the map
-[INFO] 2026-09-07T16:16:25.471Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 26: Verify Rectangle Service popup and AOI Active status
-[INFO] 2026-09-07T16:16:31.338Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Rectangle AOI Active map area: 14.62 km²
-[INFO] 2026-09-07T16:16:31.338Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 27: Match Rectangle map area with popup area
-[INFO] 2026-09-07T16:16:37.324Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - RECTANGLE AREA MATCHED: Popup=14.62 km² | Map=14.62 km²
-[INFO] 2026-09-07T16:16:37.324Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 28: Select Polygon AOI draw tool
-[INFO] 2026-09-07T16:16:40.824Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - robustClick succeeded
-[INFO] 2026-09-07T16:16:44.320Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - robustClick succeeded
-[INFO] 2026-09-07T16:16:45.353Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Polygon AOI draw tool selected successfully
-[INFO] 2026-09-07T16:16:45.354Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 29: Draw one Polygon AOI
-[INFO] 2026-09-07T16:16:53.372Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Polygon AOI drawn successfully on the map
-[INFO] 2026-09-07T16:16:53.372Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 30: Verify Polygon Service popup and AOI Active status
-[INFO] 2026-09-07T16:16:59.269Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Polygon AOI Active maparea: 5.43 km²
-[INFO] 2026-09-07T16:16:59.269Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 31: Match Polygonmap area with popup area
-[INFO] 2026-09-07T16:17:05.255Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - POLYGON AREA MATCHED: Popup=5.43 km² | Map=5.43 km²
-[INFO] 2026-09-07T16:17:05.255Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 32: Open AOI DrawTool again
-[INFO] 2026-09-07T16:17:08.770Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - robustClick succeeded
-[INFO] 2026-09-07T16:17:09.816Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 33: Highlight Marker Tool
-[INFO] 2026-09-07T16:17:12.229Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 34: Select MarkerTool
-[INFO] 2026-09-07T16:17:14.419Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - robustClick succeeded
-[INFO] 2026-09-07T16:17:15.454Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 35: Place Marker on Searched Location
-[INFO] 2026-09-07T16:17:18.494Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Marker placed on searched location
-[INFO] 2026-09-07T16:17:18.494Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Step 36: Verify Area of Marker
-[INFO] 2026-09-07T16:17:20.676Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Area of the Marker = 400.00 sq meters
-[INFO] 2026-09-07T16:17:23.144Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - robustClick succeeded
-[INFO] 2026-09-07T16:17:24.195Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - STEP 36 COMPLETED: Marker area = 400.00 sq meters and popup closed successfully
-[INFO] 2026-09-07T16:17:24.195Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Total API/network responses captured: 185
-[INFO] 2026-09-07T16:17:24.195Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Total failed network requests: 0
-[INFO] 2026-09-07T16:17:24.195Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Total browser console errors: 0
-[INFO] 2026-09-07T16:17:24.195Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - Map Camera Control andAOI Hand/Circle/Rectangle validation completed successfully
-[INFO] 2026-09-07T16:17:24.195Z ([P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle)  - P0 TC-7 completed successfully
-[DIAG-DEBUG] testId="02fa0fb0324b7043b31f-e495e97c3884a890d7e5" title="[P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle" warnings=0 errors=0 skipped=0 status=passed
-[DIAG-DEBUG] File EXISTS: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\playwright\diagnostics\02fa0fb0324b7043b31f-e495e97c3884a890d7e5.json
-[DIAG-DEBUG] File contains: warnings=0 errors=0 skippedSteps=0
-  ✓  7 [chromium] › specs\map.spec.js:3397:6 › [P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle (2.5m)
+  1) [chromium] › specs\cart.spec.js:1131:5 › [P0] 2 - verify the checkout popup sections  ─────────
 
-  Slow test file: [chromium] › specs\map.spec.js (10.5m)
-  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
-  7 passed (10.5m)
-[REPORTER] Diagnostics found by title: [P0]_1_-_Map_Search_search_and_select_a_valid_location (warnings=0, skipped=0)
-[REPORTER] [P0] 1 - Map Search: search and select a valid location: failure=false hasWarning=false(0) hasSkippedLogic=false(0) diag=found
-[REPORTER] Diagnostics found by title: [P0]_2_-_Locate_Me_locate_me_icon_is_visible_and_clickable (warnings=0, skipped=0)
-[REPORTER] [P0] 2 - Locate Me: locate me icon is visible and clickable: failure=false hasWarning=false(0) hasSkippedLogic=false(0) diag=found
-[REPORTER] Diagnostics found by title: [P0]_3_-_Upload_KML_verify_KML_upload_and_Core_Services_flow (warnings=0, skipped=0)
-[REPORTER] [P0] 3 - Upload KML: verify KML upload and Core Services flow: failure=false hasWarning=false(0) hasSkippedLogic=false(0) diag=found
-[REPORTER] Diagnostics found by title: [P0]_4_-_Coordinates_navigation_should_work_correctly (warnings=0, skipped=0)
-[REPORTER] [P0] 4 - Coordinates navigation should work correctly: failure=false hasWarning=false(0) hasSkippedLogic=false(0) diag=found
-[REPORTER] Diagnostics found by title: [P0]_5_-_User_Guide_verify_tutorial_popup_opens_and_closes_successfully (warnings=0, skipped=0)
-[REPORTER] [P0] 5 - User Guide: verify tutorial popup opens and closes successfully: failure=false hasWarning=false(0) hasSkippedLogic=false(0) diag=found
-[REPORTER] Diagnostics found by title: [P0]_6_-_Map_Camera_Control,_AOI_draw,_World_View,_AOI_View_and_Reset_should_work_correctly (warnings=0, skipped=0)
-[REPORTER] [P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset should work correctly: failure=false hasWarning=false(0) hasSkippedLogic=false(0) diag=found
-[REPORTER] Diagnostics found by title: [P0]_7_-_Map_Camera_Control_and_AOI_Draw_Hand,_Circle_and_Rectangle (warnings=0, skipped=0)
-[REPORTER] [P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle: failure=false hasWarning=false(0) hasSkippedLogic=false(0) diag=found
+    Error: Product column should be visible
+
+    expect(locator).toBeVisible() failed
+
+    Locator:  locator('#tbl_satellite_scenes').locator('thead th').filter({ hasText: 'Product' }).first()
+    Expected: visible
+    Received: hidden
+    Timeout:  15000ms
+
+    Call log:
+      - Product column should be visible with timeout 15000ms
+      - waiting for locator('#tbl_satellite_scenes').locator('thead th').filter({ hasText: 'Product' }).first()
+        18 × locator resolved to <th rowspan="1" colspan="1" tabindex="0" class="sorting" aria-controls="tbl_satellite_scenes" aria-label="Product: activate to sort column ascending">Product</th>
+           - unexpected value "hidden"
+
+
+      2424 |   productColumn,
+      2425 |   'Product column should be visible'
+    > 2426 | ).toBeVisible({
+           |   ^
+      2427 |   timeout: 15000,
+      2428 | });
+      2429 |
+        at C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\specs\cart.spec.js:2426:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\specs-cart--P0-2---verify-the-checkout-popup-sections--chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\specs-cart--P0-2---verify-the-checkout-popup-sections--chromium\attachments\screenshot-f0c3171ce7def357c04e1c2cb36e2bba40a8986a.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\specs-cart--P0-2---verify-the-checkout-popup-sections--chromium\attachments\screenshot-4d2f4794f8aca51fa1e65611e4a84908da7933e8.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #4: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\specs-cart--P0-2---verify-the-checkout-popup-sections--chromium\attachments\video-16d4cc76d3cf26df4b345fe9108514d8b21de244.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #5: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\specs-cart--P0-2---verify-the-checkout-popup-sections--chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\specs-cart--P0-2---verify-the-checkout-popup-sections--chromium\error-context.md
+
+    attachment #7: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\specs-cart--P0-2---verify-the-checkout-popup-sections--chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\specs-cart--P0-2---verify-the-checkout-popup-sections--chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › specs\cart.spec.js:1131:5 › [P0] 2 - verify the checkout popup sections  ──────────
+[REPORTER] Diagnostics found by title: [P0]_2_-_verify_the_checkout_popup_sections_ (warnings=1, skipped=0)
+[REPORTER] [P0] 2 - verify the checkout popup sections : failure=true hasWarning=true(1) hasSkippedLogic=false(0) diag=found
 
 To open last HTML report run:
 
   npx playwright show-report
 
-PS C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\playwright> 
+PS C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright> 

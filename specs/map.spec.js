@@ -945,10 +945,64 @@ test("[P0] 3 - Upload KML: verify KML upload and Core Services flow", async ({
     // NO MAP VALIDATION
     // =========================================================
 
-    await showStep(page, "Step 18: Wait for the selected KML to be processed");
+    /*await showStep(page, "Step 18: Wait for the selected KML to be processed");
 
-    await fastWait(page, 3000);
+    await fastWait(page, 3000); */
+ // =========================================================
+// STEP 18
+// WAIT FOR PROCESSING + VERIFY KML ON MAP
+// =========================================================
 
+await showStep(
+  page,
+  "Step 18: Wait for the selected KML to be processed and verify KML on map"
+);
+
+// ------------------------------------------------------------
+// 18.1 WAIT FOR KML PROCESSING
+// ------------------------------------------------------------
+
+await fastWait(page, 3000);
+
+// ------------------------------------------------------------
+// 18.2 MAP SHOULD REMAIN VISIBLE
+// ------------------------------------------------------------
+
+await expect(
+  mapPage.mapContainer,
+  "Map should remain visible after KML upload"
+).toBeVisible({
+  timeout: 15000,
+});
+
+// ------------------------------------------------------------
+// 18.3 HIGHLIGHT UPLOADED KML GEOMETRY ON MAP
+// ------------------------------------------------------------
+
+expect(
+  await mapPage.highlightKmlDataOnMap(),
+  "Uploaded KML geometry should be highlighted on map"
+).toBe(true);
+
+// ------------------------------------------------------------
+// 18.4 VERIFY AOI ACTIVE STATUS
+// ------------------------------------------------------------
+
+const kmlAoiActive =
+  page.locator("#gw-aoi-label").first();
+
+await expect(
+  kmlAoiActive,
+  "AOI Active status should be visible after KML upload"
+).toBeVisible({
+  timeout: 15000,
+});
+
+await mapPage.highlight(kmlAoiActive, {
+  label: "STEP 18: AOI ACTIVE",
+  pause: 1200,
+});
+ 
     // =========================================================
     // STEP 19
     // CORE SERVICES
@@ -2121,122 +2175,60 @@ test("[P0] 6 - Map Camera Control, AOI draw, World View, AOI View and Reset shou
 
     logInfo("Rectangle AOI draw tool selected successfully");
 
-    // =======================================================
-    // STEP 9
-    // DRAW RECTANGLE AOI
-    // =======================================================
+       
+ // =======================================================================
+// STEP 9
+// DRAW AND VALIDATE RECTANGLE AOI
+// =======================================================================
 
-    await showStep(page, "Step 9: Draw one rectangle AOI on the map");
+await showStep(
+  page,
+  "Step 9: Draw and validate Rectangle AOI"
+);
 
-    const mapBox = await mapPage.mapContainer.boundingBox();
-    expect(
-      mapBox,
-      "Map bounding box should be available for AOI drawing",
-    ).not.toBeNull();
+// ------------------------------------------------------------
+// DRAW RECTANGLE AOI
+// ------------------------------------------------------------
 
-    const rectangleWidth = Math.min(300, mapBox.width * 0.25);
-    const rectangleHeight = Math.min(200, mapBox.height * 0.25);
-    const padding = 120;
-    const startX =
-      mapBox.x +
-      padding +
-      Math.random() * Math.max(1, mapBox.width - rectangleWidth - padding * 2);
-    const startY =
-      mapBox.y +
-      padding +
-      Math.random() *
-        Math.max(1, mapBox.height - rectangleHeight - padding * 2);
-    const endX = startX + rectangleWidth;
-    const endY = startY + rectangleHeight;
+const rectangle =
+  await mapPage.drawRectangleAOIByRatio({
+    steps: 15,
+    waitMs: 1000,
+  });
 
-    logInfo(
-      `Drawing ONE rectangle AOI: ${Math.round(rectangleWidth)}px x ${Math.round(rectangleHeight)}px`,
-    );
+logInfo(
+  `Rectangle AOI drawn successfully: ${rectangle.width} x ${rectangle.height}`
+);
 
-    await mapPage.drawRectangleAOI({
-      startX,
-      startY,
-      endX,
-      endY,
-      steps: 25,
-      waitMs: 2500,
-    });
+// ------------------------------------------------------------
+// VALIDATE DRAWN RECTANGLE AOI
+// ------------------------------------------------------------
 
-    await mapPage.validateDrawnAOI({
-      expectedWidth: rectangleWidth,
-      expectedHeight: rectangleHeight,
-    });
+await mapPage.validateDrawnAOI({
+  expectedWidth: rectangle.width,
+  expectedHeight: rectangle.height,
+});
 
-    expect(
-      await mapPage.highlightDrawnAOIOnMap(),
-      "AOI should be visibly highlighted on the map",
-    ).toBe(true);
+logInfo(
+  "Rectangle AOI dimensions validated successfully"
+);
 
-    logInfo("AOI geometry is visible, highlighted, and validated");
+// ------------------------------------------------------------
+// HIGHLIGHT DRAWN RECTANGLE AOI ON MAP
+// ------------------------------------------------------------
 
-    // -------------------------------------------------------
-    // Highlight actual AOI if possible
-    // -------------------------------------------------------
+const rectangleHighlighted =
+  await mapPage.highlightDrawnAOIOnMap();
 
-    const svgPaths = page.locator("svg path");
+expect(
+  rectangleHighlighted,
+  "Rectangle AOI should be highlighted"
+).toBe(true);
 
-    let actualAoi = null;
-    let actualAoiIndex = -1;
+logInfo(
+  "Rectangle AOI highlighted successfully on the map"
+);
 
-    const pathCount = await svgPaths.count();
-
-    for (let i = pathCount - 1; i >= 0; i--) {
-      const candidate = svgPaths.nth(i);
-
-      if (!(await candidate.isVisible().catch(() => false))) {
-        continue;
-      }
-
-      const box = await candidate.boundingBox().catch(() => null);
-
-      if (!box) {
-        continue;
-      }
-
-      const widthDiff = Math.abs(box.width - rectangleWidth);
-
-      const heightDiff = Math.abs(box.height - rectangleHeight);
-
-      if (
-        widthDiff < rectangleWidth * 0.35 &&
-        heightDiff < rectangleHeight * 0.35
-      ) {
-        actualAoi = candidate;
-
-        actualAoiIndex = i;
-
-        break;
-      }
-    }
-
-    if (actualAoi) {
-      await mapPage.highlight(actualAoi, {
-        borderColor: "#00FF00",
-        label: "STEP 9: AOI RECTANGLE",
-        pause: 2500,
-      });
-
-      logInfo(
-        `Actual AOI rectangle found on map (SVG path index: ${actualAoiIndex})`,
-      );
-    } else {
-      await mapPage.highlight(mapPage.mapContainer, {
-        borderColor: "#22C55E",
-        label: "STEP 9: AOI DRAWN ON MAP",
-        pause: 2500,
-      });
-
-      logInfo("AOI was drawn on the map");
-    }
-
-    logInfo(
-      `ONE AOI rectangle drawn successfully: ${Math.round(rectangleWidth)}px x ${Math.round(rectangleHeight)}px`,
-    );
 
     // =======================================================
     // STEP 10
@@ -2796,108 +2788,6 @@ test("[P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle", asy
     await fastWait(page, 1000);
 
     logInfo("AOI Draw Tool opened successfully");
-
-    // =======================================================================
-    // STEP 14
-    // HAND TOOL + MAP PAN
-    // =======================================================================
-
-    /* await showStep(
-        page,
-        'Step 14: Select Hand tool and verify map movement'
-      );
-
-      const handTool =
-        page
-          .getByRole(
-            'menuitemradio',
-            {
-              name: 'Stop drawing'
-            }
-          )
-          .first();
-
-
-      await mapPage.highlight(
-        handTool,
-        {
-          borderColor: '#FFD700',
-          label: 'STEP 14: HAND TOOL',
-          pause: 1500
-        }
-      );
-
-
-      await handTool.click({
-        timeout: 10000
-      });
-
-
-      await fastWait(
-        page,
-        700
-      );
-
-
-      const mapContainer =
-        page
-          .locator('.gm-style')
-          .first();
-
-
-      const mapBoxBefore =
-        await mapContainer.boundingBox();
-
-
-      if (!mapBoxBefore) {
-        throw new Error(
-          'Map bounding box is unavailable for Hand tool pan'
-        );
-      }
-
-
-      const startX =
-        mapBoxBefore.x +
-        mapBoxBefore.width * 0.50;
-
-      const startY =
-        mapBoxBefore.y +
-        mapBoxBefore.height * 0.50;
-
-      const endX =
-        startX + 150;
-
-      const endY =
-        startY + 80;
-
-
-      await page.mouse.move(
-        startX,
-        startY
-      );
-
-      await page.mouse.down();
-
-      await page.mouse.move(
-        endX,
-        endY,
-        {
-          steps: 10
-        }
-      );
-
-      await page.mouse.up();
-
-
-      await fastWait(
-        page,
-        1000
-      );
-
-
-      logInfo(
-        'Hand tool map movement completed successfully'
-      );  */
     // =======================================================================
     // STEP 14
     // HAND TOOL + MAP PAN
@@ -2966,16 +2856,7 @@ test("[P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle", asy
     const aoiDrawTool = page
       .locator('button[title="Draw a shape"]:visible')
       .first();
-
-    await highlight(page, aoiDrawTool, {
-      label: "AOI DRAW TOOL",
-      border: "#00aa00",
-      bg: "rgba(0, 255, 0, 0.15)",
-    });
-
-    await robustClick(page, aoiDrawTool);
-
-    await page.waitForTimeout( 1000 );
+ 
 
     // =======================================================================
     // STEP 16
@@ -3059,39 +2940,70 @@ test("[P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle", asy
     });
 
     await fastWait(page, 500);
+ 
+  // =======================================================================
+// STEP 20
+// DRAW CIRCLE
+// =======================================================================
 
-    // =======================================================================
-    // STEP 20
-    // DRAW CIRCLE
-    // =======================================================================
+await showStep(page, "Step 20: Draw one Circle AOI");
 
-    await showStep(page, "Step 20: Draw one Circle AOI");
+const circleMapBox = await mapContainer.boundingBox();
 
-    const circleMapBox = await mapContainer.boundingBox();
+if (!circleMapBox) {
+  throw new Error("Map bounding box is unavailable for Circle AOI");
+}
 
-    if (!circleMapBox) {
-      throw new Error("Map bounding box is unavailable for Circle AOI");
-    }
+const circleCenterX =
+  circleMapBox.x + circleMapBox.width * 0.5;
 
-    const circleCenterX = circleMapBox.x + circleMapBox.width * 0.5;
+const circleCenterY =
+  circleMapBox.y + circleMapBox.height * 0.5;
 
-    const circleCenterY = circleMapBox.y + circleMapBox.height * 0.5;
+const circleRadius = 100;
 
-    const circleRadius = 100;
+// ------------------------------------------------------------
+// DRAW CIRCLE AOI
+// ------------------------------------------------------------
 
-    await page.mouse.move(circleCenterX, circleCenterY);
+await page.mouse.move(
+  circleCenterX,
+  circleCenterY
+);
 
-    await page.mouse.down();
+await page.mouse.down();
 
-    await page.mouse.move(circleCenterX + circleRadius, circleCenterY, {
-      steps: 10,
-    });
+await page.mouse.move(
+  circleCenterX + circleRadius,
+  circleCenterY,
+  {
+    steps: 10,
+  }
+);
 
-    await page.mouse.up();
+await page.mouse.up();
 
-    await fastWait(page, 800);
+await fastWait(page, 800);
 
-    logInfo(`Circle AOI drawing completed with radius ${circleRadius}px`);
+logInfo(
+  `Circle AOI drawing completed with radius ${circleRadius}px`
+);
+
+// ------------------------------------------------------------
+// HIGHLIGHT DRAWN CIRCLE AOI ON MAP
+// ------------------------------------------------------------
+
+ const circleHighlighted =
+  await mapPage.highlightDrawnAOIOnMap();
+
+expect(
+  circleHighlighted,
+  "Circle AOI should be highlighted"
+).toBe(true);
+
+logInfo(
+  "Circle AOI highlighted successfully on the map"
+);
 
     // =======================================================================
     // STEP 21
@@ -3290,11 +3202,11 @@ test("[P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle", asy
     // HIGHLIGHT ONLY POLYGON
     // -----------------------------------------------------------------------
 
-    await highlight(page, polygonDrawButton, {
+    /*await highlight(page, polygonDrawButton, {
       label: "POLYGON",
       border: "#00aa00",
       bg: "rgba(0, 255, 0, 0.15)",
-    });
+    }); */
 
     // -----------------------------------------------------------------------
     // SELECT POLYGON
@@ -3306,75 +3218,111 @@ test("[P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle", asy
 
     logInfo("Polygon AOI draw tool selected successfully");
 
-    // =======================================================================
-    // STEP 24 DRAW ONE POLYGON AOI
-    // =======================================================================
+     // =======================================================================
+// STEP 24 DRAW ONE POLYGON AOI
+// =======================================================================
 
-    await showStep(page, "Step 24: Draw one Polygon AOI");
+await showStep(page, "Step 24: Draw one Polygon AOI");
 
-    await page.waitForTimeout( 1000 );
+await page.waitForTimeout(1000);
 
-    const polygonMapBox = await mapContainer.boundingBox();
+const polygonMapBox = await mapContainer.boundingBox();
 
-    if (!polygonMapBox) {
-      throw new Error("Map bounding box is unavailable for Polygon AOI");
-    }
+if (!polygonMapBox) {
+  throw new Error("Map bounding box is unavailable for Polygon AOI");
+}
 
-    const polygonPointA = {
-      x: polygonMapBox.x + polygonMapBox.width * 0.3,
+const polygonPointA = {
+  x: polygonMapBox.x + polygonMapBox.width * 0.3,
+  y: polygonMapBox.y + polygonMapBox.height * 0.3,
+};
 
-      y: polygonMapBox.y + polygonMapBox.height * 0.3,
-    };
+const polygonPointB = {
+  x: polygonMapBox.x + polygonMapBox.width * 0.52,
+  y: polygonMapBox.y + polygonMapBox.height * 0.25,
+};
 
-    const polygonPointB = {
-      x: polygonMapBox.x + polygonMapBox.width * 0.52,
+const polygonPointC = {
+  x: polygonMapBox.x + polygonMapBox.width * 0.68,
+  y: polygonMapBox.y + polygonMapBox.height * 0.42,
+};
 
-      y: polygonMapBox.y + polygonMapBox.height * 0.25,
-    };
+const polygonPointD = {
+  x: polygonMapBox.x + polygonMapBox.width * 0.6,
+  y: polygonMapBox.y + polygonMapBox.height * 0.62,
+};
 
-    const polygonPointC = {
-      x: polygonMapBox.x + polygonMapBox.width * 0.68,
+const polygonPointE = {
+  x: polygonMapBox.x + polygonMapBox.width * 0.38,
+  y: polygonMapBox.y + polygonMapBox.height * 0.6,
+};
 
-      y: polygonMapBox.y + polygonMapBox.height * 0.42,
-    };
+// ------------------------------------------------------------
+// DRAW POLYGON AOI
+// ------------------------------------------------------------
 
-    const polygonPointD = {
-      x: polygonMapBox.x + polygonMapBox.width * 0.6,
+await page.mouse.click(
+  polygonPointA.x,
+  polygonPointA.y
+);
 
-      y: polygonMapBox.y + polygonMapBox.height * 0.62,
-    };
+await page.waitForTimeout(500);
 
-    const polygonPointE = {
-      x: polygonMapBox.x + polygonMapBox.width * 0.38,
+await page.mouse.click(
+  polygonPointB.x,
+  polygonPointB.y
+);
 
-      y: polygonMapBox.y + polygonMapBox.height * 0.6,
-    };
+await page.waitForTimeout(500);
 
-    await page.mouse.click(polygonPointA.x, polygonPointA.y);
+await page.mouse.click(
+  polygonPointC.x,
+  polygonPointC.y
+);
 
-    await page.waitForTimeout( 500 );
+await page.waitForTimeout(500);
 
-    await page.mouse.click(polygonPointB.x, polygonPointB.y);
+await page.mouse.click(
+  polygonPointD.x,
+  polygonPointD.y
+);
 
-    await page.waitForTimeout( 500 );
+await page.waitForTimeout(500);
 
-    await page.mouse.click(polygonPointC.x, polygonPointC.y);
+await page.mouse.click(
+  polygonPointE.x,
+  polygonPointE.y
+);
 
-    await page.waitForTimeout( 500 );
+await page.waitForTimeout(500);
 
-    await page.mouse.click(polygonPointD.x, polygonPointD.y);
+// Close polygon
+await page.mouse.click(
+  polygonPointA.x,
+  polygonPointA.y
+);
 
-    await page.waitForTimeout( 500 );
+await page.waitForTimeout(1500);
 
-    await page.mouse.click(polygonPointE.x, polygonPointE.y);
+logInfo(
+  "Polygon AOI drawn successfully on the map"
+);
 
-    await page.waitForTimeout( 500 );
+// ------------------------------------------------------------
+// HIGHLIGHT DRAWN POLYGON AOI ON MAP
+// ------------------------------------------------------------
 
-    await page.mouse.click(polygonPointA.x, polygonPointA.y);
+const polygonHighlighted =
+  await mapPage.highlightDrawnAOIOnMap();
 
-    await page.waitForTimeout( 1500 );
+expect(
+  polygonHighlighted,
+  "Polygon AOI should be highlighted"
+).toBe(true);
 
-    logInfo("Polygon AOI drawn successfully on the map");
+logInfo(
+  "Polygon AOI highlighted successfully on the map"
+);
 
     // =======================================================================
     // STEP 25 POLYGON POPUP + ACTIVE
@@ -3527,51 +3475,70 @@ test("[P0] 7 - Map Camera Control and AOI Draw: Hand, Circle and Rectangle", asy
 
     logInfo("Rectangle AOI draw tool selected successfully");
 
-    // =======================================================================
-    // STEP 28
-    // DRAW RECTANGLE AOI
-    // =======================================================================
+    
+ // =======================================================================
+// STEP 28
+// DRAW AND VALIDATE RECTANGLE AOI
+// =======================================================================
 
-    await showStep(page, "Step 28: Draw one Rectangle AOI");
+await showStep(
+  page,
+  "Step 28: Draw and validate Rectangle AOI"
+);
 
-    const rectangleMapBox = await mapContainer.boundingBox();
+// ------------------------------------------------------------
+// DRAW RECTANGLE AOI
+// ------------------------------------------------------------
 
-    expect(
-      rectangleMapBox,
-      "Map bounding box should be available for Rectangle AOI",
-    ).not.toBeNull();
+const rectangle =
+  await mapPage.drawRectangleAOIByRatio({
+    steps: 15,
+    waitMs: 1000,
+  });
 
-    const rectStartX = rectangleMapBox.x + rectangleMapBox.width * 0.25;
+logInfo(
+  `Rectangle AOI drawn successfully: ${rectangle.width} x ${rectangle.height}`
+);
 
-    const rectStartY = rectangleMapBox.y + rectangleMapBox.height * 0.25;
+// ------------------------------------------------------------
+// VALIDATE DRAWN RECTANGLE AOI
+// ------------------------------------------------------------
 
-    const rectEndX = rectangleMapBox.x + rectangleMapBox.width * 0.525;
+await mapPage.validateDrawnAOI({
+  expectedWidth: rectangle.width,
+  expectedHeight: rectangle.height,
+});
 
-    const rectEndY = rectangleMapBox.y + rectangleMapBox.height * 0.525;
+logInfo(
+  "Rectangle AOI dimensions validated successfully"
+);
 
-    await page.mouse.move(rectStartX, rectStartY);
+// ------------------------------------------------------------
+// HIGHLIGHT DRAWN RECTANGLE AOI ON MAP
+// ------------------------------------------------------------
 
-    await page.mouse.down();
+const rectangleHighlighted =
+  await mapPage.highlightDrawnAOIOnMap();
 
-    await page.mouse.move(rectEndX, rectEndY, {
-      steps: 15,
-    });
+expect(
+  rectangleHighlighted,
+  "Rectangle AOI should be highlighted"
+).toBe(true);
 
-    await page.mouse.up();
+logInfo(
+  "Rectangle AOI highlighted successfully on the map"
+);
 
-    logInfo("Rectangle AOI drawing completed");
+// ------------------------------------------------------------
+// VALIDATE MAP
+// ------------------------------------------------------------
 
-    await page.waitForTimeout( 1000 );
-
-    await expect(
-      mapContainer,
-      "Map should remain visible after Rectangle AOI drawing",
-    ).toBeVisible({
-      timeout: 10000,
-    });
-
-    logInfo("Rectangle AOI drawn successfully on the map");
-
+await expect(
+  mapContainer,
+  "Map should remain visible after Rectangle AOI drawing"
+).toBeVisible({
+  timeout: 10000,
+});
     // =======================================================================
     // STEP 29
     // RECTANGLE POPUP + ACTIVE
@@ -4893,7 +4860,9 @@ test("[P0] 9 - Map and Satellite View Toggle with API Request/Response Validatio
   }
 });
 
+
 //     npx playwright test specs/map.spec.js --workers=1 --headed
 //     npx playwright test specs/map.spec.js -g "\[P0\] 3" --headed --workers=1
 //      npx playwright test specs/map.spec.js -g "\[P0\] [1-6]" --headed --workers=1
 //     npx playwright test specs/map.spec.js specs/launch.spec.js --headed --workers=1
+

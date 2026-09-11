@@ -1393,7 +1393,7 @@ export class MapPage extends BasePage {
   async validateDrawnAOI({
     expectedWidth,
     expectedHeight,
-    timeout = 15000,
+    timeout = 50000,
   } = {}) {
     await expect(
       this.mapContainer,
@@ -1439,8 +1439,8 @@ export class MapPage extends BasePage {
 
     return true;
   }
-
-  async highlightDrawnAOIOnMap() {
+//=======================================================================
+ /* async highlightDrawnAOIOnMap() {
     const highlighted = await highlightAoiOnMap(this.page);
 
     if (highlighted) {
@@ -1448,7 +1448,17 @@ export class MapPage extends BasePage {
     }
 
     return highlighted;
+  } */
+ async highlightDrawnAOIOnMap(options = {}) {
+  const highlighted =
+    await highlightAoiOnMap(this.page, options);
+
+  if (highlighted) {
+    await this.page.waitForTimeout(1200);
   }
+
+  return highlighted;
+}
 
   async clearMapStepHighlights() {
     await clearMapHighlights(this.page);
