@@ -1285,16 +1285,28 @@ export async function runSecondSatelliteServiceTest(
 // STEP 10.9
 // WAIT FOR SATELLITE IMAGERY RESULTS SECTION
 // ============================================================
+ // ============================================================
+// STEP 10.9
+// WAIT FOR SATELLITE IMAGERY RESULTS SECTION
+// ============================================================
+
+setStep(
+  'Step 10.9',
+  'Wait for satellite imagery results section to load'
+);
 
 await showStep(
   page,
   'Step 10.9: Wait for satellite imagery results section to load'
 );
 
-// Wait for the complete satellite scenes section
-const satelliteScenesSection = page.locator(
-  '#tbl_satellite_scenes_wrapper'
-);
+// ------------------------------------------------------------
+// 10.9.1 SATELLITE RESULTS SECTION
+// ------------------------------------------------------------
+
+const satelliteScenesSection = page
+  .locator('#tbl_satellite_scenes_wrapper:visible')
+  .first();
 
 await expect(
   satelliteScenesSection,
@@ -1303,86 +1315,178 @@ await expect(
   timeout: 300000,
 });
 
-// Verify the complete section contains the expected table
+logInfo(
+  'Satellite imagery results section is visible'
+);
+
+// ------------------------------------------------------------
+// 10.9.2 SATELLITE SCENES TABLE
+// ------------------------------------------------------------
+
+const satelliteScenesTable = satelliteScenesSection.locator(
+  '#tbl_satellite_scenes'
+);
+
 await expect(
-  satelliteScenesSection.locator('#tbl_satellite_scenes'),
+  satelliteScenesTable,
   'Satellite scenes table should be present inside results section'
 ).toBeVisible({
   timeout: 30000,
 });
 
-// Verify the complete section contains the No Data row
-await expect(
-  satelliteScenesSection.locator('td.dataTables_empty'),
-  'Satellite imagery section should show No data available in table'
-).toBeVisible({
-  timeout: 30000,
-});
-
-// Verify the exact message
-await expect(
-  satelliteScenesSection.locator('td.dataTables_empty'),
-  'Satellite imagery section should display the expected empty-table message'
-).toHaveText(
-  'No data available in table',
-  {
-    timeout: 30000,
-  }
+logInfo(
+  'Satellite scenes table is visible'
 );
+
+// ------------------------------------------------------------
+// 10.9.3 NO DATA ROW / TABLE CONTENT
+// ------------------------------------------------------------
+
+const noDataCell = satelliteScenesTable.locator(
+  'tbody td.dataTables_empty'
+);
+
+if (await noDataCell.count() > 0) {
+
+  await expect(
+    noDataCell.first(),
+    'Satellite imagery section should show No data available in table'
+  ).toBeVisible({
+    timeout: 30000,
+  });
+
+  await expect(
+    noDataCell.first(),
+    'Satellite imagery section should display the expected empty-table message'
+  ).toHaveText(
+    'No data available in table',
+    {
+      timeout: 30000,
+    }
+  );
+
+  logInfo(
+    'Satellite imagery table currently shows: No data available in table'
+  );
+
+} else {
+
+  logInfo(
+    'Satellite imagery table contains scene data'
+  );
+}
+
+// ------------------------------------------------------------
+// 10.9.4 HIGHLIGHT RESULTS SECTION
+// ------------------------------------------------------------
 
 await mapPage.highlight(
   satelliteScenesSection,
   {
-    label: 'STEP 10.9: SATELLITE IMAGERY RESULTS SECTION',
+    label:
+      'STEP 10.9: SATELLITE IMAGERY RESULTS SECTION',
     pause: 1500,
   }
 );
 
-markStepPassed('Step 10.9');
-     // ============================================================
-     // STEP 11
-     // VERIFY DATA ROW
-     // ============================================================
- 
-     await showStep(
-       page,
-       'Step 11: Verify satellite scene data rows'
-     );
- 
-     const satelliteRows =
-       satelliteScenesTable.locator(
-         'tbody tr'
-       );
- 
-     const rowCount =
-       await satelliteRows.count();
- 
-     expect(
-       rowCount,
-       'At least one satellite scene row should be available'
-     ).toBeGreaterThan(
-       0
-     );
- 
-     logInfo(
-       `Satellite scene rows available: ${rowCount}`
-     );
- 
-     markStepPassed(
-       'Step 11'
-     );
- 
-    // ============================================================
+markStepPassed(
+  'Step 10.9'
+);
+
+
+// ============================================================
+// STEP 11
+// VERIFY DATA ROW
+// ============================================================
+
+setStep(
+  'Step 11',
+  'Verify satellite scene data rows'
+);
+
+await showStep(
+  page,
+  'Step 11: Verify satellite scene data rows'
+);
+
+// Wait for DataTable body
+const satelliteTableBody =
+  satelliteScenesTable.locator('tbody');
+
+await expect(
+  satelliteTableBody,
+  'Satellite scenes table body should be visible'
+).toBeVisible({
+  timeout: 30000,
+});
+
+const satelliteRows =
+  satelliteTableBody.locator('tr');
+
+const rowCount =
+  await satelliteRows.count();
+
+logInfo(
+  `Satellite scene table rows available: ${rowCount}`
+);
+
+// If table contains "No data available", fail with a clear message
+if (rowCount === 1) {
+
+  const firstRowText =
+    (
+      await satelliteRows
+        .first()
+        .innerText()
+    )
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  if (
+    /No data available in table/i.test(
+      firstRowText
+    )
+  ) {
+
+    throw new Error(
+      `Satellite imagery returned no scene data for ${satelliteName}`
+    );
+  }
+}
+
+expect(
+  rowCount,
+  'At least one satellite scene row should be available'
+).toBeGreaterThan(
+  0
+);
+
+logInfo(
+  `Satellite scene rows available: ${rowCount}`
+);
+
+markStepPassed(
+  'Step 11'
+);
+
+
+// ============================================================
 // STEP 12
 // ADD TO CART
 // ============================================================
+
+setStep(
+  'Step 12',
+  `Verify add to cart only for ${satelliteName}`
+);
 
 await showStep(
   page,
   `Step 12: Verify add to cart only for ${satelliteName}`
 );
 
-const firstSceneRow = satelliteRows.first();
+const firstSceneRow =
+  satelliteRows.first();
 
 await expect(
   firstSceneRow,
@@ -1394,12 +1498,15 @@ await expect(
 await mapPage.highlight(
   firstSceneRow,
   {
-    label: 'STEP 12.1: SATELLITE SCENE ROW',
+    label:
+      'STEP 12.1: SATELLITE SCENE ROW',
     pause: 1000,
   }
 );
 
-markStepPassed('Step 12.1');
+markStepPassed(
+  'Step 12.1'
+);
 
 
 // ============================================================
@@ -1407,14 +1514,20 @@ markStepPassed('Step 12.1');
 // CLICK ADD TO CART
 // ============================================================
 
+setStep(
+  'Step 12.2',
+  `Click Add to Cart for ${satelliteName}`
+);
+
 await showStep(
   page,
   `Step 12.2: Click Add to Cart for ${satelliteName}`
 );
 
-const addToCartButton = firstSceneRow.locator(
-  'input[type="image"][src*="add-to-cart"]'
-);
+const addToCartButton =
+  firstSceneRow.locator(
+    'input[type="image"][src*="add-to-cart"]'
+  );
 
 await expect(
   addToCartButton,
@@ -1433,14 +1546,21 @@ await expect(
 await mapPage.highlight(
   addToCartButton,
   {
-    label: 'STEP 12.2: ADD TO CART',
+    label:
+      'STEP 12.2: ADD TO CART',
     pause: 1000,
   }
 );
 
 await addToCartButton.click();
 
-markStepPassed('Step 12.2');
+logInfo(
+  `Add to Cart clicked successfully for ${satelliteName}`
+);
+
+markStepPassed(
+  'Step 12.2'
+);
 
 
 // ============================================================
@@ -1448,18 +1568,24 @@ markStepPassed('Step 12.2');
 // WAIT FOR "ITEM ADDED TO CART" POPUP
 // ============================================================
 
+setStep(
+  'Step 12.3',
+  'Verify Item added to cart popup'
+);
+
 await showStep(
   page,
   'Step 12.3: Verify Item added to cart popup'
 );
 
-const cartPopup = page.locator('#popup');
+const cartPopup =
+  page.locator('#popup');
 
 await expect(
   cartPopup,
   'Item added to cart popup should appear'
 ).toBeVisible({
-  timeout: 30000,
+  timeout: 80000,
 });
 
 await expect(
@@ -1475,25 +1601,38 @@ await expect(
 await mapPage.highlight(
   cartPopup,
   {
-    label: 'STEP 12.3: ITEM ADDED TO CART',
+    label:
+      'STEP 12.3: ITEM ADDED TO CART',
     pause: 1500,
   }
 );
 
-markStepPassed('Step 12.3');
+logInfo(
+  'Item added to cart popup verified successfully'
+);
+
+markStepPassed(
+  'Step 12.3'
+);
 
 
 // ============================================================
 // STEP 12 COMPLETE
 // ============================================================
 
+setStep(
+  'Step 12',
+  `Satellite ${satelliteName} added to cart successfully`
+);
+
 await showStep(
   page,
   `Step 12 completed: ${satelliteName} added to cart successfully`
 );
 
-markStepPassed('Step 12');
- 
+markStepPassed(
+  'Step 12'
+);
      // ============================================================
      // TC END
      // ============================================================

@@ -5,16 +5,16 @@
 import { HomePage } from '../pages/HomePage';
 import { MapPage } from '../pages/MapPage';
 
-import {
+ import {
   addWarning,
   addError,
   logInfo,
-  markStepPassed,
   showStep,
   fastWait,
   clearDiagnostics,
-    robustClick,
-      highlight,
+  robustClick,
+  highlight,
+ // saveMapScreenshot,
 } from './helpers';
  
 export async function runThirdSatelliteServiceTest(
@@ -954,7 +954,8 @@ export async function runThirdSatelliteServiceTest(
  
      logInfo(
        `Satellite service selected successfully: ${satelliteServiceText}`
-     );
+     ); 
+  
  
      // ============================================================
      // 10.3 REMOVE ALL EXISTING FILTERS
@@ -1133,7 +1134,7 @@ export async function runThirdSatelliteServiceTest(
      // ============================================================
      // 10.6 SELECT REQUIRED SATELLITE
      // ============================================================
- 
+ /*
      await showStep(
        page,
        `Step 10.6: Select satellite ${satelliteName}`
@@ -1187,7 +1188,123 @@ export async function runThirdSatelliteServiceTest(
      markStepPassed(
        'Step 10.6'
      );
- 
+ */
+ // ============================================================
+// STEP 10.6 - SELECT REQUIRED SATELLITE
+// ============================================================
+
+setStep(
+  'Step 10.6',
+  `Select satellite ${satelliteName}`
+);
+
+await showStep(
+  page,
+  `Step 10.6: Select satellite ${satelliteName}`
+);
+
+// ------------------------------------------------------------
+// WAIT FOR ADD SATELLITE DROPDOWN/PANEL
+// ------------------------------------------------------------
+
+const satelliteDropdown =
+  page.locator('#gw-sat-dropdown-panel');
+
+await expect(
+  satelliteDropdown,
+  'Satellite dropdown panel should be visible'
+).toBeVisible({
+  timeout: 15000,
+});
+
+// ------------------------------------------------------------
+// LOCATE SATELLITE BY VISIBLE NAME
+// ------------------------------------------------------------
+
+const satelliteOption =
+  satelliteDropdown
+    .locator('label.gw-sat-check-item')
+    .filter({
+      hasText: satelliteName,
+    })
+    .first();
+
+await expect(
+  satelliteOption,
+  `${satelliteName} satellite option should be visible`
+).toBeVisible({
+  timeout: 15000,
+});
+
+// ------------------------------------------------------------
+// HIGHLIGHT COMPLETE SATELLITE OPTION
+// ------------------------------------------------------------
+
+await highlight(
+  page,
+  satelliteOption,
+  {
+    label: `STEP 10.6: ${satelliteName}`,
+    pause: 1000,
+  }
+);
+
+// ------------------------------------------------------------
+// GET CHECKBOX INSIDE SATELLITE OPTION
+// ------------------------------------------------------------
+
+const satelliteCheckbox =
+  satelliteOption.locator(
+    'input[type="checkbox"]'
+  );
+
+await expect(
+  satelliteCheckbox,
+  `${satelliteName} satellite checkbox should exist`
+).toBeAttached({
+  timeout: 10000,
+});
+
+// ------------------------------------------------------------
+// VERIFY INITIALLY UNCHECKED
+// ------------------------------------------------------------
+
+await expect(
+  satelliteCheckbox,
+  `${satelliteName} checkbox should initially be unchecked`
+).not.toBeChecked({
+  timeout: 10000,
+});
+
+// ------------------------------------------------------------
+// SELECT SATELLITE
+// ------------------------------------------------------------
+
+await satelliteCheckbox.check();
+
+await fastWait(
+  page,
+  1200
+);
+
+// ------------------------------------------------------------
+// VERIFY SATELLITE SELECTED
+// ------------------------------------------------------------
+
+await expect(
+  satelliteCheckbox,
+  `${satelliteName} checkbox should be selected`
+).toBeChecked({
+  timeout: 10000,
+});
+
+logInfo(
+  `${satelliteName} checkbox selected successfully`
+);
+
+markStepPassed(
+  'Step 10.6'
+);
      // ============================================================
      // 10.7 CLOSE ADD SATELLITE PANEL
      // ============================================================

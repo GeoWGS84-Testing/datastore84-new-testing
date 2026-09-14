@@ -4861,8 +4861,9 @@ test("[P0] 9 - Map and Satellite View Toggle with API Request/Response Validatio
 });
 
 
-//     npx playwright test specs/map.spec.js --workers=1 --headed
-//     npx playwright test specs/map.spec.js -g "\[P0\] 3" --headed --workers=1
+//     npx playwright test specs/map.spec.js --workers=1 --headed 
+//
+//    npx playwright test specs/map.spec.js -g "\[P0\] 8" --headed --workers=1
 //      npx playwright test specs/map.spec.js -g "\[P0\] [1-6]" --headed --workers=1
 //     npx playwright test specs/map.spec.js specs/launch.spec.js --headed --workers=1
 

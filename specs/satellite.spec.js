@@ -602,7 +602,7 @@ test(
   }
 );
 
-
+ 
 // ============================================================
 // TC-27 - SATELLITE SERVICE - OSE-GF01
 // ============================================================
@@ -953,53 +953,30 @@ test(
 
   }
 );
+  
 
+// ============================================================
+// TC-43 - SATELLITE SERVICE - LJ3II(0.5m)
+// ============================================================
 
-/*
+test(
+  '[P0] 43 - Satellite Service LJ3II(0.5m)',
+  async ({ page }, testInfo) => {
 
- // ============================================================
-    // STEP 11.19
-    // VERIFY OUTLINE ON MAP
-    // ============================================================
-
-    const mapAfterOutline = page
-      .locator("#map, .leaflet-container, .gm-style, .map-container")
-      .first();
-
-    await expect(
-      mapAfterOutline,
-      "Map should be visible after Outline",
-    ).toBeVisible({
-      timeout: 10000,
-    });
-
-    const outlineMapContent = page.locator(
-      [
-        ".leaflet-overlay-pane path",
-        ".leaflet-overlay-pane svg",
-        ".leaflet-interactive",
-        "svg path",
-        "canvas",
-      ].join(","),
+    await runSatelliteServiceTest(
+      page,
+      testInfo,
+      {
+        testNumber: 43,
+        satelliteName: 'LJ3II(0.5m)',
+        satelliteValue: 'TV:315',
+      }
     );
 
-    const outlineContentCount = await outlineMapContent.count();
+  }
+);
 
-    expect(
-      outlineContentCount,
-      "Outline should be displayed on map",
-    ).toBeGreaterThan(0);
 
-    const outlineOverlayButton = outlineCell.locator("input").first();
-    expect(
-      await mapPage.highlightSceneOutlineOnMap(outlineOverlayButton),
-      "Actual outline should receive a contrasting automation highlight",
-    ).toBe(true);
-
-    await mapPage.highlight(mapAfterOutline, {
-      label: "STEP 11.24: OUTLINE ON MAP",
-      pause: 1200,
-    });
-
-    logInfo(`Outline displayed on map: ${outlineContentCount} element(s)`);
-*/
+ //  npx playwright test specs/satellite.spec.js -g "\[P0\] 1" --headed --workers=1
+ //  npx playwright test specs/satellite.spec.js -g "\[P0\] (19|20|21|22)" --headed --workers=1
+ 

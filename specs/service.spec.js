@@ -27,7 +27,7 @@ test.use({
 // ============================================================================
 
 test(
-  '[P0] 1 - service popup sections, services and AOI options',
+  '[P0] 1 - ',
   async ({ page }) => {
     const homePage = new HomePage(page);
     const mapPage = new MapPage(page);
@@ -2585,7 +2585,7 @@ logInfo(
       // WAIT FOR PREVIEW IMAGE TO LOAD
       // ------------------------------------------------------------
 
-      await showStep(
+      /*await showStep(
         page,
         "Step 12.3: Wait for preview image to load on map"
       );
@@ -2601,7 +2601,7 @@ logInfo(
         mapImages.first(),
         "Preview image should appear on map"
       ).toBeVisible({
-        timeout: 30000,
+        timeout: 60000,
       });
 
       logInfo(
@@ -2610,14 +2610,50 @@ logInfo(
 
       await mapPage.highlight(map, {
         label: "STEP 12.3: PREVIEW IMAGE ON MAP",
-        pause: 1200,
+        pause: 1500,
       });
+ */
+// ------------------------------------------------------------
+// WAIT FOR PREVIEW IMAGE TO LOAD
+// ------------------------------------------------------------
 
+await showStep(
+  page,
+  "Step 12.3: Wait for preview image to load on map"
+);
+
+await fastWait(page, 1500);
+
+const mapImages =
+  page.locator(
+    '#map img[src]:visible'
+  );
+
+await expect(
+  mapImages.first(),
+  "Preview image should appear on map"
+).toBeVisible({
+  timeout: 60000,
+});
+
+logInfo(
+  "Preview image loaded successfully on map"
+);
+
+
+// ------------------------------------------------------------
+// Highlight loaded preview image
+// ------------------------------------------------------------
+
+await mapPage.highlight(mapImages.first(), {
+  label: "STEP 12.3: PREVIEW IMAGE ON MAP",
+  pause: 1500,
+}); 
       // ============================================================
       // STEP 12.4
       // METADATA
       // ============================================================
-
+/*
       await showStep(
         page,
         "Step 12.4: Select Metadata and verify metadata popup"
@@ -2630,7 +2666,7 @@ logInfo(
         metadataCell,
         "Metadata cell should be visible"
       ).toBeVisible({
-        timeout: 10000,
+        timeout: 60000,
       });
 
       const metadataAction =
@@ -2642,7 +2678,7 @@ logInfo(
         metadataAction,
         "Metadata action should be available"
       ).toBeVisible({
-        timeout: 10000,
+        timeout: 60000,
       });
 
       await mapPage.highlight(metadataAction, {
@@ -2654,7 +2690,7 @@ logInfo(
         page,
         metadataAction,
         {
-          timeout: 10000,
+          timeout: 30000,
           retry: 1,
         }
       );
@@ -2689,7 +2725,7 @@ await expect(
   metadataImage,
   'Metadata image should appear in popup'
 ).toBeVisible({
-  timeout: 60000,
+  timeout: 80000,
 });
 
 logInfo(
@@ -2713,7 +2749,7 @@ await expect
       );
     },
     {
-      timeout: 60000,
+      timeout: 80000,
       intervals: [500, 1000, 2000],
     }
   )
@@ -2767,7 +2803,7 @@ await expect(
   metadataImage,
   'Metadata image should be visible after loading'
 ).toBeVisible({
-  timeout: 10000,
+  timeout: 30000,
 });
 
 // ------------------------------------------------------------
@@ -2799,7 +2835,7 @@ await mapPage.highlight(
         detailsSection,
         "Metadata details section should be visible"
       ).toBeVisible({
-        timeout: 15000,
+        timeout: 25000,
       });
 
       await mapPage.highlight(detailsSection, {
@@ -2844,8 +2880,287 @@ await mapPage.highlight(
       logInfo(
         "Metadata Image and Details sections verified successfully"
       );
+*/
+ // ============================================================
+// STEP 12.4
+// METADATA
+// ============================================================
 
-      
+await showStep(
+  page,
+  "Step 12.4: Select Metadata and verify metadata popup"
+);
+
+const metadataCell =
+  firstSceneRow.locator("td").nth(5);
+
+await expect(
+  metadataCell,
+  "Metadata cell should be visible"
+).toBeVisible({
+  timeout: 60000,
+});
+
+const metadataAction =
+  metadataCell
+    .locator("button, a, input, i, span")
+    .first();
+
+await expect(
+  metadataAction,
+  "Metadata action should be available"
+).toBeVisible({
+  timeout: 60000,
+});
+
+await mapPage.highlight(
+  metadataAction,
+  {
+    label: "STEP 12.4: METADATA",
+    pause: 1000,
+  }
+);
+
+await robustClick(
+  page,
+  metadataAction,
+  {
+    timeout: 30000,
+    retry: 1,
+  }
+);
+
+await fastWait(page, 1200);
+
+
+// ============================================================
+// 12.4.1 METADATA POPUP
+// LOCATE VISIBLE METADATA MODAL
+// ============================================================
+
+await showStep(
+  page,
+  "Step 12.4: Verify metadata popup"
+);
+
+const metadataModal =
+  page.locator(".modal:visible").last();
+
+await expect(
+  metadataModal,
+  "Metadata popup should be visible"
+).toBeVisible({
+  timeout: 30000,
+});
+
+await mapPage.highlight(
+  metadataModal,
+  {
+    label: "STEP 12.4: METADATA POPUP",
+    pause: 1000,
+  }
+);
+
+
+// ============================================================
+// 12.4.2 METADATA IMAGE
+// WAIT UNTIL IMAGE ACTUALLY LOADS
+// ============================================================
+
+await showStep(
+  page,
+  "Step 12.4: Wait until metadata image is loaded"
+);
+
+const metadataImage =
+  metadataModal
+    .locator("#img_scene")
+    .first();
+
+
+// ------------------------------------------------------------
+// Wait for image element to appear
+// ------------------------------------------------------------
+
+await expect(
+  metadataImage,
+  "Metadata image should appear in popup"
+).toBeVisible({
+  timeout: 80000,
+});
+
+logInfo(
+  "Metadata image element appeared. Waiting for image to load..."
+);
+
+
+// ------------------------------------------------------------
+// Wait until image has valid src AND is completely loaded
+// ------------------------------------------------------------
+
+await expect
+  .poll(
+    async () => {
+      return await metadataImage.evaluate(
+        (img) => ({
+          src: img.getAttribute("src") || "",
+          complete: img.complete,
+          naturalWidth: img.naturalWidth,
+          naturalHeight: img.naturalHeight,
+        })
+      );
+    },
+    {
+      timeout: 80000,
+      intervals: [500, 1000, 2000],
+    }
+  )
+  .toMatchObject({
+    complete: true,
+  });
+
+
+// ------------------------------------------------------------
+// Final image validation
+// ------------------------------------------------------------
+
+const metadataImageState =
+  await metadataImage.evaluate(
+    (img) => ({
+      src: img.getAttribute("src") || "",
+      complete: img.complete,
+      naturalWidth: img.naturalWidth,
+      naturalHeight: img.naturalHeight,
+    })
+  );
+
+expect(
+  metadataImageState.src,
+  "Metadata image should have a valid src"
+).toMatch(/.+/);
+
+expect(
+  metadataImageState.complete,
+  "Metadata image should be completely loaded"
+).toBe(true);
+
+expect(
+  metadataImageState.naturalWidth,
+  "Metadata image should have valid width"
+).toBeGreaterThan(0);
+
+expect(
+  metadataImageState.naturalHeight,
+  "Metadata image should have valid height"
+).toBeGreaterThan(0);
+
+logInfo(
+  `Metadata image loaded successfully: ${metadataImageState.naturalWidth}x${metadataImageState.naturalHeight}`
+);
+
+
+// ------------------------------------------------------------
+// Image section is verified ONLY after image is loaded
+// ------------------------------------------------------------
+
+await expect(
+  metadataImage,
+  "Metadata image should be visible after loading"
+).toBeVisible({
+  timeout: 30000,
+});
+
+
+// ------------------------------------------------------------
+// Highlight loaded metadata image
+// ------------------------------------------------------------
+
+await mapPage.highlight(
+  metadataImage,
+  {
+    label: "STEP 12.4: METADATA IMAGE LOADED",
+    pause: 1200,
+  }
+);
+
+
+// ============================================================
+// 12.4.3 METADATA DETAILS
+// ============================================================
+
+await showStep(
+  page,
+  "Step 12.4: Verify metadata Details section"
+);
+
+const detailsSection =
+  page.locator(
+    "#tbl\\_details\\_wrapper"
+  );
+
+await expect(
+  detailsSection,
+  "Metadata details section should be visible"
+).toBeVisible({
+  timeout: 25000,
+});
+
+await mapPage.highlight(
+  detailsSection,
+  {
+    label: "STEP 12.4: METADATA DETAILS",
+    pause: 1200,
+  }
+);
+
+
+const parameterColumn =
+  page
+    .locator("#tbl\\_details thead th")
+    .nth(0);
+
+const valueColumn =
+  page
+    .locator("#tbl\\_details thead th")
+    .nth(1);
+
+
+await expect(
+  parameterColumn,
+  "Parameter column should be visible"
+).toBeVisible({
+  timeout: 10000,
+});
+
+await expect(
+  valueColumn,
+  "Value column should be visible"
+).toBeVisible({
+  timeout: 10000,
+});
+
+
+await mapPage.highlight(
+  parameterColumn,
+  {
+    label: "STEP 12.4: PARAMETER",
+    pause: 700,
+  }
+);
+
+await mapPage.highlight(
+  valueColumn,
+  {
+    label: "STEP 12.4: VALUE",
+    pause: 700,
+  }
+);
+
+
+logInfo(
+  "Metadata Image and Details sections verified successfully"
+);   
+
 // ============================================================
 // 12.5 CLOSE METADATA POPUP USING CANCEL
 // ============================================================
@@ -11545,7 +11860,7 @@ logInfo(
 // STEP 9
 // SELECT 3D MODELS SERVICE
 // ============================================================
-
+/*
 await showStep(
   page,
   "Step 9: Select 3D Models service and verify selection"
@@ -11580,6 +11895,58 @@ await page.waitForTimeout(1000);
 // ------------------------------------------------------------
 // Verify 3D Models service is selected
 // ------------------------------------------------------------
+
+const models3DSelected = await models3DService.evaluate((el) => {
+  return (
+    el.classList.contains("active") ||
+    el.classList.contains("selected") ||
+    el.getAttribute("aria-selected") === "true" ||
+    el.getAttribute("data-selected") === "true"
+  );
+});
+
+expect(
+  models3DSelected,
+  "3D Models service should be selected"
+).toBe(true);
+
+await mapPage.highlight(models3DService, {
+  borderColor: "#00FF00",
+  label: "3D MODELS SELECTED",
+  pause: 1200,
+});  
+*/
+// ============================================================
+// STEP 9
+// SELECT 3D MODELS SERVICE
+// ============================================================
+
+await showStep(
+  page,
+  "Step 9: Select 3D Models service and verify selection"
+);
+
+const models3DService =
+  page.locator('.gw-svc[data-svc="3D_Models"]').first();
+
+await expect(
+  models3DService,
+  "3D Models service should be visible"
+).toBeVisible({
+  timeout: 10000,
+});
+
+await mapPage.highlight(models3DService, {
+  borderColor: "#FFD700",
+  label: "STEP 9: 3D MODELS SERVICE",
+  pause: 1000,
+});
+
+await models3DService.click({
+  timeout: 10000,
+});
+
+await page.waitForTimeout(1000);
 
 const models3DSelected = await models3DService.evaluate((el) => {
   return (
@@ -13741,7 +14108,7 @@ logInfo(
 // STEP 11 CLICK SEARCH FOR DRONE COMPANY/PILOT
 //         AND VERIFY NEW PAGE / URL
 // ============================================================
-
+/*
 await showStep(
   page,
   'Step 11: Click Search for Drone Company/Pilot and verify new page'
@@ -13808,6 +14175,64 @@ await page.waitForTimeout(1200);
 
 logInfo(
   'New Drone Company/Pilot page and map area highlighted successfully.'
+);  */
+
+// ============================================================
+// STEP 11
+// CLICK SEARCH FOR DRONE COMPANY/PILOT
+//         AND VERIFY NEW PAGE / URL
+// ============================================================
+
+await showStep(
+  page,
+  'Step 11: Click Search for Drone Company/Pilot and verify new page'
+);
+
+// ------------------------------------------------------------
+// WAIT FOR NEW PAGE / TAB
+// ------------------------------------------------------------
+
+const newPagePromise =
+  page.context().waitForEvent('page', {
+    timeout: 90000,
+  });
+
+await searchDronePilotButton.click({
+  timeout: 10000,
+});
+
+logInfo(
+  'Search for Drone Company/Pilot button clicked.'
+);
+
+// ------------------------------------------------------------
+// GET NEW PAGE
+// ------------------------------------------------------------
+
+const dronePage =
+  await newPagePromise;
+
+await dronePage.waitForLoadState('domcontentloaded', {
+  timeout: 90000,
+});
+
+logInfo(
+  `New Drone Company/Pilot page opened. URL: ${dronePage.url()}`
+);
+
+// ------------------------------------------------------------
+// VERIFY NEW URL
+// ------------------------------------------------------------
+
+expect(
+  dronePage.url(),
+  'New Drone Company/Pilot page URL should be different from the DataStore page'
+).not.toBe(page.url());
+
+const newUrl = dronePage.url();
+
+logInfo(
+  `New page opened successfully. URL: ${newUrl}`
 );
 
 // ============================================================

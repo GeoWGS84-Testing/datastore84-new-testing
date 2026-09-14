@@ -1597,29 +1597,56 @@ test(
     clearDiagnostics();
 
     // ============================================================
-    // NETWORK REQUEST FAILURE HANDLING
-    // ============================================================
+// NETWORK REQUEST FAILURE HANDLING
+// ============================================================
 
-    page.on('requestfailed', (request) => {
+page.on('requestfailed', (request) => {
 
-      const url = request.url();
+  const url = request.url();
 
-      const ignoredAnalyticsRequest =
-        url.includes('google-analytics.com') ||
-        url.includes('googletagmanager.com') ||
-        url.includes('analytics.google.com');
+  const failure =
+    request.failure()?.errorText ||
+    'unknown';
 
-      if (ignoredAnalyticsRequest) {
-        return;
-      }
+  // ============================================================
+  // IGNORE ANALYTICS REQUESTS
+  // ============================================================
 
-      failedRequests.push({
-        url,
-        failure:
-          request.failure()?.errorText ||
-          'unknown',
-      });
-    });
+  const ignoredAnalyticsRequest =
+    url.includes('google-analytics.com') ||
+    url.includes('googletagmanager.com') ||
+    url.includes('analytics.google.com');
+
+  if (ignoredAnalyticsRequest) {
+    return;
+  }
+
+  // ============================================================
+  // IGNORE EXPECTED KML DOWNLOAD ABORT
+  // ============================================================
+
+  const expectedKmlDownloadAbort =
+    url.includes(
+      'kmlgenerationgeowgs84.blob.core.windows.net'
+    ) &&
+    failure === 'net::ERR_ABORTED';
+
+  if (expectedKmlDownloadAbort) {
+    logInfo(
+      `Ignoring expected KML download abort: ${url}`
+    );
+    return;
+  }
+
+  // ============================================================
+  // CAPTURE REAL FAILED REQUESTS
+  // ============================================================
+
+  failedRequests.push({
+    url,
+    failure,
+  });
+});
 
     // ============================================================
     // API / NETWORK RESPONSE LOGGING
@@ -3876,6 +3903,9 @@ logInfo(
 
   }
 );
+ 
+ 
+
 
 
 //    npx playwright test specs/cart.spec.js -g "\[P0\] 1" --headed --workers=1

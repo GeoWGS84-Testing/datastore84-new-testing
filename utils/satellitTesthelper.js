@@ -1133,7 +1133,7 @@ import {
      // ============================================================
      // 10.6 SELECT REQUIRED SATELLITE
      // ============================================================
- 
+ /*
      await showStep(
        page,
        `Step 10.6: Select satellite ${satelliteName}`
@@ -1187,7 +1187,65 @@ import {
      markStepPassed(
        'Step 10.6'
      );
+  */
+ // ============================================================
+// STEP 10.6: SELECT SATELLITE
+// ============================================================
+
+currentStep = 'Step 10.6';
+currentAction = `Select satellite ${satelliteName}`;
+
+await showStep(
+  page,
+  `Step 10.6: Select ${satelliteName}`
+);
+
+const satelliteOption = page.locator(
+  `label.gw-sat-check-item:has(input[value="${satelliteValue}"])`
+).first();
+
+await expect(
+  satelliteOption,
+  `${satelliteName} satellite option should be visible`
+).toBeVisible({ timeout: 15000 });
+
+logInfo(
+  `Satellite option located successfully: ${satelliteName}`
+);
+
+const satelliteInput = satelliteOption.locator(
+  `input[type="checkbox"][value="${satelliteValue}"]`
+);
+
+await expect(
+  satelliteInput,
+  `${satelliteName} satellite checkbox should be visible`
+).toBeVisible({ timeout: 15000 });
+
+await satelliteInput.check();
+
+await expect(
+  satelliteInput,
+  `${satelliteName} satellite checkbox should be selected`
+).toBeChecked({ timeout: 10000 });
+
+logInfo(
+  `${satelliteName} satellite selected successfully`
+);
+
+// Verify selected satellite appears in filter tags
  
+await expect(
+  page.locator('#gw-sat-tags'),
+  `${satelliteValue} should appear in selected satellite filters`
+).toContainText(
+  satelliteValue,
+  { timeout: 10000 }
+);
+
+logInfo(
+  `Verified selected satellite filter: ${satelliteValue} (${satelliteName})`
+);
      // ============================================================
      // 10.7 CLOSE ADD SATELLITE PANEL
      // ============================================================
