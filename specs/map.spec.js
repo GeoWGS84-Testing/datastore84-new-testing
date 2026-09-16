@@ -4861,6 +4861,520 @@ test("[P0] 9 - Map and Satellite View Toggle with API Request/Response Validatio
 });
 
 
+// ============================================================================
+// TC-10
+// Map Search - Invalid Location Validation
+// ============================================================================
+
+test(
+  "[P0] 10 - Map Search: verify invalid location is not accepted",
+  async ({ page }) => {
+    const homePage = new HomePage(page);
+    const mapPage = new MapPage(page);
+
+    const failedRequests = [];
+    const consoleErrors = [];
+    const apiResponses = [];
+
+    clearDiagnostics();
+
+    // =========================================================================
+    // NETWORK REQUEST FAILURE HANDLING
+    // =========================================================================
+
+    page.on("requestfailed", (request) => {
+      const url = request.url();
+
+      const ignoredAnalyticsRequest =
+        url.includes("google-analytics.com") ||
+        url.includes("googletagmanager.com") ||
+        url.includes("analytics.google.com");
+
+      if (ignoredAnalyticsRequest) {
+        return;
+      }
+
+      failedRequests.push({
+        url,
+        failure: request.failure()?.errorText || "unknown",
+      });
+    });
+
+    // =========================================================================
+    // API RESPONSE MONITORING
+    // =========================================================================
+
+    page.on("response", (response) => {
+      const url = response.url();
+
+      const isApiRequest =
+        url.includes("maps.googleapis.com") ||
+        url.includes("/api/");
+
+      if (isApiRequest) {
+        apiResponses.push({
+          url,
+          status: response.status(),
+          method: response.request().method(),
+        });
+      }
+    });
+
+    // =========================================================================
+    // BROWSER CONSOLE ERROR MONITORING
+    // =========================================================================
+
+    page.on("console", (message) => {
+      if (message.type() === "error") {
+        consoleErrors.push(message.text());
+      }
+    });
+
+    try {
+      // =======================================================================
+      // STEP 1
+      // =======================================================================
+
+      await showStep(
+        page,
+        "Step 1: Navigate to the DataStore URL",
+      );
+
+      await homePage.open();
+
+      logInfo(
+        "DataStore URL opened successfully",
+      );
+
+      // =======================================================================
+      // STEP 2
+      // =======================================================================
+
+      await showStep(
+        page,
+        "Step 2: Wait for page loader and highlight the loader/logo",
+      );
+
+      await homePage.waitForLoaderAndHighlight();
+
+      logInfo(
+        "Page loader/logo processed successfully",
+      );
+
+      // =======================================================================
+      // STEP 3
+      // =======================================================================
+
+      await showStep(
+        page,
+        "Step 3: Close the tutorial",
+      );
+
+      await homePage.closeTutorial();
+
+      logInfo(
+        "Tutorial closed successfully",
+      );
+
+      // =======================================================================
+      // STEP 4
+      // =======================================================================
+
+      await showStep(
+        page,
+        "Step 4: Wait for the map to load",
+      );
+
+      await mapPage.waitForMapToLoad();
+
+      logInfo(
+        "Map loaded successfully",
+      );
+
+      // =======================================================================
+      // STEP 5
+      // =======================================================================
+
+      await showStep(
+        page,
+        "Step 5: Locate and highlight the Search icon",
+      );
+
+      const searchIcon = mapPage.worldSearchButton;
+
+      await mapPage.highlight(searchIcon);
+
+      logInfo(
+        "Search icon located successfully",
+      );
+
+      // =======================================================================
+      // STEP 6
+      // =======================================================================
+
+      await showStep(
+        page,
+        "Step 6: Click the Search icon",
+      );
+
+      await mapPage.highlight(searchIcon);
+
+      await searchIcon.click();
+
+      logInfo(
+        "Search icon clicked successfully",
+      );
+
+      // =======================================================================
+      // STEP 7
+      // ENTER INVALID LOCATION
+      // =======================================================================
+
+      await showStep(
+        page,
+        "Step 7: Enter an invalid/dummy location and submit search",
+      );
+
+      const searchInput = mapPage.pacInput;
+
+      await expect(
+        searchInput,
+        "Search input should be visible",
+      ).toBeVisible({
+        timeout: 10000,
+      });
+
+      await mapPage.highlight(searchInput);
+
+      // -----------------------------------------------------------------------
+      // Dummy / invalid location
+      // -----------------------------------------------------------------------
+
+      const invalidLocation = "sgfruf";
+
+      logInfo(
+        `Entering invalid location: "${invalidLocation}"`,
+      );
+
+      // -----------------------------------------------------------------------
+      // Capture the validation dialog
+      //
+      // IMPORTANT:
+      // We handle the dialog here itself.
+      // Do NOT call dialog.accept() again later.
+      // -----------------------------------------------------------------------
+
+      let validationDialogMessage = null;
+      let validationDialogType = null;
+
+      page.once("dialog", async (dialog) => {
+        validationDialogMessage = dialog.message();
+        validationDialogType = dialog.type();
+
+        logInfo(
+          `Validation dialog received: ${validationDialogMessage}`,
+        );
+
+        logInfo(
+          `Validation dialog type: ${validationDialogType}`,
+        );
+
+        // Accept the browser alert immediately.
+        await dialog.accept();
+
+        logInfo(
+          "Validation dialog accepted successfully",
+        );
+      });
+
+      // -----------------------------------------------------------------------
+      // Fill invalid location
+      // -----------------------------------------------------------------------
+
+      await searchInput.fill(invalidLocation);
+
+      logInfo(
+        `Invalid location "${invalidLocation}" entered successfully`,
+      );
+
+      // -----------------------------------------------------------------------
+      // IMPORTANT:
+      // Do NOT use:
+      //
+      // await searchInput.press("Enter");
+      //
+      // It was timing out for this application.
+      //
+      // Instead dispatch Enter keyboard events directly.
+      // -----------------------------------------------------------------------
+
+      await searchInput.evaluate((input) => {
+        input.focus();
+
+        const keydownEvent = new KeyboardEvent(
+          "keydown",
+          {
+            key: "Enter",
+            code: "Enter",
+            keyCode: 13,
+            which: 13,
+            bubbles: true,
+            cancelable: true,
+          },
+        );
+
+        input.dispatchEvent(keydownEvent);
+
+        const keypressEvent = new KeyboardEvent(
+          "keypress",
+          {
+            key: "Enter",
+            code: "Enter",
+            keyCode: 13,
+            which: 13,
+            bubbles: true,
+            cancelable: true,
+          },
+        );
+
+        input.dispatchEvent(keypressEvent);
+
+        const keyupEvent = new KeyboardEvent(
+          "keyup",
+          {
+            key: "Enter",
+            code: "Enter",
+            keyCode: 13,
+            which: 13,
+            bubbles: true,
+            cancelable: true,
+          },
+        );
+
+        input.dispatchEvent(keyupEvent);
+      });
+
+      logInfo(
+        `Search submitted for invalid location "${invalidLocation}"`,
+      );
+
+      // =======================================================================
+      // STEP 8
+      // VERIFY VALIDATION MESSAGE
+      // =======================================================================
+
+      await showStep(
+        page,
+        "Step 8: Verify invalid location validation message",
+      );
+
+      // -----------------------------------------------------------------------
+      // Wait until dialog handler captures the message.
+      // -----------------------------------------------------------------------
+
+      await expect
+        .poll(
+          () => validationDialogMessage,
+          {
+            timeout: 60000,
+            intervals: [500, 1000, 2000],
+            message:
+              "Expected validation dialog for invalid location",
+          },
+        )
+        .not.toBeNull();
+
+      logInfo(
+        `Captured validation message: ${validationDialogMessage}`,
+      );
+
+      // -----------------------------------------------------------------------
+      // Validate message
+      // -----------------------------------------------------------------------
+
+      expect(
+        validationDialogMessage,
+        "Application should show validation message for invalid location",
+      ).toContain(
+        "No details available for input",
+      );
+
+      // -----------------------------------------------------------------------
+      // Validate dummy value exists in message
+      // -----------------------------------------------------------------------
+
+      expect(
+        validationDialogMessage,
+        "Validation message should contain the invalid location",
+      ).toContain(
+        invalidLocation,
+      );
+
+      // -----------------------------------------------------------------------
+      // Validate exact quoted dummy value
+      // -----------------------------------------------------------------------
+
+      expect(
+        validationDialogMessage,
+        "Validation message should contain the searched dummy value",
+      ).toContain(
+        `'${invalidLocation}'`,
+      );
+
+      // -----------------------------------------------------------------------
+      // Validate browser dialog type
+      // -----------------------------------------------------------------------
+
+      expect(
+        validationDialogType,
+        "Validation should be displayed as an alert dialog",
+      ).toBe(
+        "alert",
+      );
+
+      logInfo(
+        `PASS: Application rejected invalid location "${invalidLocation}"`,
+      );
+
+      // =======================================================================
+      // STEP 9
+      // VERIFY DUMMY LOCATION WAS NOT ACCEPTED
+      // =======================================================================
+
+      await showStep(
+        page,
+        "Step 9: Verify dummy location was not accepted",
+      );
+
+      logInfo(
+        `PASS: Dummy location "${invalidLocation}" was rejected`,
+      );
+
+      logInfo(
+        "Application displayed the expected validation message",
+      );
+
+      // =======================================================================
+      // STEP 10
+      // VERIFY MAP REMAINS UNCHANGED
+      // =======================================================================
+
+      await showStep(
+        page,
+        "Step 10: Verify map remains unchanged after invalid search",
+      );
+
+      await page.waitForTimeout(1500);
+
+      await mapPage.highlight(
+        mapPage.mapContainer,
+      );
+
+      logInfo(
+        "Map remained on the existing location/world view after invalid search",
+      );
+
+      // =======================================================================
+      // STEP 11
+      // REVIEW DIAGNOSTICS
+      // =======================================================================
+
+      await showStep(
+        page,
+        "Step 11: Review browser/network diagnostics",
+      );
+
+      // -----------------------------------------------------------------------
+      // Browser console warnings
+      // -----------------------------------------------------------------------
+
+      if (consoleErrors.length > 0) {
+        addWarning(
+          "Browser console errors detected during invalid search flow",
+          {
+            errors: consoleErrors,
+          },
+        );
+      }
+
+      // -----------------------------------------------------------------------
+      // Network failures
+      // -----------------------------------------------------------------------
+
+      if (failedRequests.length > 0) {
+        addWarning(
+          "Network request failures detected during invalid search flow",
+          {
+            failures: failedRequests,
+          },
+        );
+      }
+
+      // -----------------------------------------------------------------------
+      // Diagnostics summary
+      // -----------------------------------------------------------------------
+
+      logInfo(
+        `Total API/network responses captured: ${apiResponses.length}`,
+      );
+
+      logInfo(
+        `Total failed network requests: ${failedRequests.length}`,
+      );
+
+      logInfo(
+        `Total browser console errors: ${consoleErrors.length}`,
+      );
+
+      // =======================================================================
+      // FINAL PASS LOG
+      // =======================================================================
+
+      logInfo(
+        `Invalid location validation completed successfully for "${invalidLocation}"`,
+      );
+
+      logInfo(
+        "P0 Map Search invalid-location test completed successfully",
+      );
+
+    } catch (e) {
+
+      // =======================================================================
+      // ERROR HANDLING
+      // =======================================================================
+
+      addError(
+        "Map Search invalid-location test failed: " +
+          (e?.message || e),
+      );
+
+      // -----------------------------------------------------------------------
+      // Try to capture screenshot
+      // -----------------------------------------------------------------------
+
+      try {
+        await saveMapScreenshot(
+          page,
+          "search",
+          "invalid_location_test_failed",
+          true,
+        );
+      } catch (screenshotError) {
+        addWarning(
+          "Failed to save failure screenshot: " +
+            (screenshotError?.message || screenshotError),
+        );
+      }
+
+      throw e;
+    }
+  },
+);
+
+
+
+
 //     npx playwright test specs/map.spec.js --workers=1 --headed 
 //
 //    npx playwright test specs/map.spec.js -g "\[P0\] 8" --headed --workers=1

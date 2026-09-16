@@ -14290,6 +14290,1877 @@ logInfo(
   }
 );
 
+ 
+// ============================================================================
+// TC-10
+// SATELLITE SERVICE + RESOLUTION FILTER + SEARCH IMAGERY
+// + VERIFY RETURNED IMAGERY RESOLUTION
+// ============================================================================
+
+test(
+  "[P0] 10 - Satellite Service functionality and Resolution filter",
+  async ({ page }) => {
+    const homePage = new HomePage(page);
+    const mapPage = new MapPage(page);
+
+    const failedRequests = [];
+    const consoleErrors = [];
+    const apiResponses = [];
+
+    clearDiagnostics();
+
+    // ============================================================
+    // NETWORK
+    // ============================================================
+
+    page.on("requestfailed", (request) => {
+      const url = request.url();
+
+      const ignoredAnalyticsRequest =
+        url.includes("google-analytics.com") ||
+        url.includes("googletagmanager.com") ||
+        url.includes("analytics.google.com");
+
+      if (ignoredAnalyticsRequest) {
+        return;
+      }
+
+      failedRequests.push({
+        url,
+        failure:
+          request.failure()?.errorText || "unknown",
+      });
+    });
+
+    page.on("response", (response) => {
+      const url = response.url();
+
+      const isApiRequest =
+        url.includes("maps.googleapis.com") ||
+        url.includes("/api/");
+
+      if (isApiRequest) {
+        apiResponses.push({
+          url,
+          status: response.status(),
+          method: response.request().method(),
+        });
+      }
+    });
+
+    page.on("console", (message) => {
+      if (message.type() === "error") {
+        consoleErrors.push(message.text());
+      }
+    });
+
+    try {
+      // ============================================================
+      // STEP 1
+      // OPEN DATASTORE
+      // ============================================================
+
+      await showStep(
+        page,
+        "Step 1: Navigate to the DataStore URL"
+      );
+
+      await homePage.open();
+
+      // ============================================================
+      // STEP 2
+      // LOADER
+      // ============================================================
+
+      await showStep(
+        page,
+        "Step 2: Wait for page loader and highlight the loader/logo"
+      );
+
+      await homePage.waitForLoaderAndHighlight();
+
+      // ============================================================
+      // STEP 3
+      // TUTORIAL
+      // ============================================================
+
+      await showStep(
+        page,
+        "Step 3: Close the tutorial"
+      );
+
+      await homePage.closeTutorial();
+
+      // ============================================================
+      // STEP 4
+      // MAP
+      // ============================================================
+
+      await showStep(
+        page,
+        "Step 4: Wait for the map to load"
+      );
+
+      await mapPage.waitForMapToLoad();
+
+      // ============================================================
+      // STEP 5
+      // SEARCH ICON
+      // ============================================================
+
+      await showStep(
+        page,
+        "Step 5: Locate and highlight the Search icon"
+      );
+
+      const searchIcon =
+        mapPage.worldSearchButton;
+
+      await expect(
+        searchIcon,
+        "Search icon should be visible"
+      ).toBeVisible({
+        timeout: 10000,
+      });
+
+      await mapPage.highlight(searchIcon);
+
+      await searchIcon.click();
+
+      // ============================================================
+      // STEP 6
+      // SEARCH DENVER
+      // ============================================================
+
+      await showStep(
+        page,
+        "Step 6: Search Denver and verify selected marker"
+      );
+
+      const searchInput =
+        mapPage.pacInput;
+
+      await mapPage.highlight(
+        searchInput,
+        {
+          label: "STEP 6: SEARCH DENVER",
+          pause: 1000,
+        }
+      );
+
+      const searchApiPromise =
+        page.waitForResponse(
+          (response) => {
+            const url = response.url();
+
+            return (
+              url.includes(
+                "/maps/api/place/js/AutocompletionService.GetPredictions"
+              ) &&
+              url.includes("1sDenver") &&
+              response.request().method() === "GET"
+            );
+          },
+          {
+            timeout: 15000,
+          }
+        );
+
+      await searchInput.fill("Denver");
+
+      const searchApiResponse =
+        await searchApiPromise;
+
+      expect(
+        searchApiResponse.ok(),
+        "Denver search API response should be successful"
+      ).toBeTruthy();
+
+      const denverSuggestion =
+        page
+          .locator(".pac-container .pac-item")
+          .filter({
+            hasText: "Denver",
+          })
+          .first();
+
+      await expect(
+        denverSuggestion,
+        "Denver suggestion should be visible"
+      ).toBeVisible({
+        timeout: 12000,
+      });
+
+      await mapPage.highlight(
+        denverSuggestion,
+        {
+          label: "STEP 6: DENVER SUGGESTION",
+          pause: 1000,
+        }
+      );
+
+      await denverSuggestion.click();
+
+      await mapPage.waitForMapToLoad();
+
+      await page.waitForTimeout(1500);
+
+      await mapPage.verifyMapMarker();
+
+      // ============================================================
+      // STEP 7
+      // CAMERA + ZOOM + AOI DRAW TOOL
+      // ============================================================
+
+      await showStep(
+        page,
+        "Step 7: Open Map Camera Control, click Zoom + once and open AOI Draw Tool"
+      );
+
+      const cameraControl =
+        page
+          .locator(
+            'button[aria-label="Map camera controls"]'
+          )
+          .first();
+
+      await mapPage.highlight(
+        cameraControl,
+        {
+          label: "STEP 7: MAP CAMERA CONTROL",
+          pause: 1000,
+        }
+      );
+
+      await robustClick(
+        page,
+        cameraControl,
+        {
+          timeout: 10000,
+          retry: 1,
+        }
+      );
+
+      await fastWait(page, 700);
+
+      const zoomInButton =
+        page
+          .locator(
+            'button[aria-label="Zoom in"]'
+          )
+          .first();
+
+      await mapPage.highlight(
+        zoomInButton,
+        {
+          borderColor: "#22C55E",
+          label: "STEP 7: ZOOM +",
+          pause: 1000,
+        }
+      );
+
+      await robustClick(
+        page,
+        zoomInButton,
+        {
+          timeout: 10000,
+          retry: 1,
+        }
+      );
+
+      await fastWait(page, 1200);
+
+      const drawTool =
+        page
+          .getByRole(
+            "menuitemradio",
+            {
+              name: /Draw a shape/i,
+            }
+          )
+          .first();
+
+      await expect(
+        drawTool,
+        "AOI Draw Tool should be visible"
+      ).toBeVisible({
+        timeout: 10000,
+      });
+
+      await fastWait(page, 800);
+
+      // ============================================================
+      // STEP 8
+      // RECTANGLE AOI
+      // ============================================================
+
+      await showStep(
+        page,
+        "Step 8: Select Rectangle AOI, draw AOI and verify Service popup"
+      );
+
+      const rectangleTool =
+        page
+          .getByRole(
+            "menuitemradio",
+            {
+              name: "Draw a rectangle",
+            }
+          )
+          .first();
+
+      await expect(
+        rectangleTool,
+        "Rectangle AOI tool should be visible"
+      ).toBeVisible({
+        timeout: 10000,
+      });
+
+      await mapPage.highlight(
+        rectangleTool,
+        {
+          borderColor: "#FFD700",
+          label: "STEP 8: RECTANGLE AOI",
+          pause: 1000,
+        }
+      );
+
+      await rectangleTool.click({
+        timeout: 10000,
+      });
+
+      await page.waitForTimeout(500);
+
+      const rectangle =
+        await mapPage.drawRectangleAOIByRatio({
+          steps: 15,
+          waitMs: 1200,
+        });
+
+      await mapPage.validateDrawnAOI({
+        expectedWidth: rectangle.width,
+        expectedHeight: rectangle.height,
+      });
+
+      expect(
+        await mapPage.highlightDrawnAOIOnMap(),
+        "AOI should be highlighted on map"
+      ).toBe(true);
+
+      const servicePopup =
+        page.locator("#gw-panel").first();
+
+      await expect(
+        servicePopup,
+        "Service popup should be visible"
+      ).toBeVisible({
+        timeout: 15000,
+      });
+
+      await highlight(
+        page,
+        servicePopup,
+        {
+          label: "STEP 8: SERVICE POPUP",
+          pause: 1200,
+        }
+      );
+
+      const aoiActiveIndicator =
+        page.locator("#gw-aoi-label").first();
+
+      await expect(
+        aoiActiveIndicator,
+        "AOI Active status should be visible"
+      ).toBeVisible({
+        timeout: 15000,
+      });
+
+      await highlight(
+        page,
+        aoiActiveIndicator,
+        {
+          label: "STEP 8: AOI ACTIVE",
+          pause: 1200,
+        }
+      );
+
+      // ============================================================
+      // STEP 9
+      // SELECT SATELLITE
+      // ============================================================
+
+      await showStep(
+        page,
+        "Step 9: Select Satellite Service"
+      );
+
+      const satelliteService =
+        page
+          .locator(
+            'div.gw-svc[data-svc="satellite"]'
+          )
+          .first();
+
+      await expect(
+        satelliteService,
+        "Satellite service should be visible"
+      ).toBeVisible({
+        timeout: 10000,
+      });
+
+      await expect(
+        satelliteService,
+        "Satellite service should have satellite data-svc"
+      ).toHaveAttribute(
+        "data-svc",
+        "satellite"
+      );
+
+      const satelliteServiceText =
+        (
+          await satelliteService
+            .locator(".gw-svc-name")
+            .innerText()
+        ).trim();
+
+      expect(
+        satelliteServiceText,
+        "Service name should be Satellite"
+      ).toBe("Satellite");
+
+      await mapPage.highlight(
+        satelliteService,
+        {
+          label: "STEP 9: SATELLITE SERVICE",
+          pause: 1200,
+        }
+      );
+
+      await robustClick(
+        page,
+        satelliteService,
+        {
+          timeout: 10000,
+          retry: 1,
+        }
+      );
+
+      await fastWait(page, 1000);
+
+      await expect(
+        satelliteService,
+        "Satellite service should be selected"
+      ).toHaveClass(/selected/);
+
+      logInfo(
+        "Satellite service selected successfully"
+      );
+       // ============================================================
+      // STEP 10
+      // GO TO / VERIFY RESOLUTION FILTER PANEL
+      // ============================================================
+
+      await showStep(
+        page,
+        "Step 10: Open and verify Resolution filter panel"
+      );
+
+      // ------------------------------------------------------------
+      // LOCATE RESOLUTION FILTER PANEL
+      // ------------------------------------------------------------
+
+      const resolutionPanel =
+        page.locator(".gw-fb").filter({
+          has: page.locator(".gw-sec")
+        }).first();
+
+      await expect(
+        resolutionPanel,
+        "Resolution filter panel should be visible"
+      ).toBeVisible({
+        timeout: 15000,
+      });
+
+      // ------------------------------------------------------------
+      // HIGHLIGHT RESOLUTION PANEL
+      // ------------------------------------------------------------
+
+      await mapPage.highlight(
+        resolutionPanel,
+        {
+          label: "STEP 10: RESOLUTION FILTER PANEL",
+          pause: 1500,
+        }
+      );
+
+      logInfo(
+        "Resolution filter panel opened and verified successfully"
+      );
+
+      // ------------------------------------------------------------
+      // VERIFY RESOLUTION SECTION
+      // ------------------------------------------------------------
+
+      const resolutionSection =
+        resolutionPanel.locator(".gw-sec").first();
+
+      await expect(
+        resolutionSection,
+        "Resolution section should be visible"
+      ).toBeVisible({
+        timeout: 10000,
+      });
+
+      await mapPage.highlight(
+        resolutionSection,
+        {
+          label: "STEP 10: RESOLUTION SECTION",
+          pause: 1200,
+        }
+      );
+
+      // ------------------------------------------------------------
+      // LOCATE RESOLUTION INPUTS
+      // ------------------------------------------------------------
+
+      const resolutionInputs =
+        resolutionPanel.locator(
+          'input[type="number"], input[type="text"], input[type="range"]'
+        );
+
+      const resolutionInputCount =
+        await resolutionInputs.count();
+
+      logInfo(
+        `Resolution inputs detected: ${resolutionInputCount}`
+      );
+
+      expect(
+        resolutionInputCount,
+        "At least two Resolution inputs should be available"
+      ).toBeGreaterThanOrEqual(2);
+
+      const minResolutionInput =
+        resolutionInputs.nth(0);
+
+      const maxResolutionInput =
+        resolutionInputs.nth(1);
+
+      // ------------------------------------------------------------
+      // VERIFY MIN / MAX INPUTS
+      // ------------------------------------------------------------
+
+      await expect(
+        minResolutionInput,
+        "Minimum Resolution input should be visible"
+      ).toBeVisible({
+        timeout: 10000,
+      });
+
+      await expect(
+        maxResolutionInput,
+        "Maximum Resolution input should be visible"
+      ).toBeVisible({
+        timeout: 10000,
+      });
+
+      // ------------------------------------------------------------
+      // HIGHLIGHT MIN
+      // ------------------------------------------------------------
+
+      await mapPage.highlight(
+        minResolutionInput,
+        {
+          label: "STEP 10: MIN RESOLUTION = 0.2",
+          pause: 1000,
+        }
+      );
+
+      // ------------------------------------------------------------
+      // SET MINIMUM
+      // ------------------------------------------------------------
+
+      await minResolutionInput.fill("0.2");
+
+      await minResolutionInput.press("Tab");
+
+      await fastWait(page, 500);
+
+      // ------------------------------------------------------------
+      // HIGHLIGHT MAX
+      // ------------------------------------------------------------
+
+      await mapPage.highlight(
+        maxResolutionInput,
+        {
+          label: "STEP 10: MAX RESOLUTION = 4.1",
+          pause: 1000,
+        }
+      );
+
+      // ------------------------------------------------------------
+      // SET MAXIMUM
+      // ------------------------------------------------------------
+
+      await maxResolutionInput.fill("4.1");
+
+      await maxResolutionInput.press("Tab");
+
+      await fastWait(page, 1000);
+
+      // ------------------------------------------------------------
+      // VERIFY FILTER VALUES
+      // ------------------------------------------------------------
+
+      const minResolutionValue =
+        await minResolutionInput.inputValue();
+
+      const maxResolutionValue =
+        await maxResolutionInput.inputValue();
+
+      logInfo(
+        `Resolution filter set: Min=${minResolutionValue}, Max=${maxResolutionValue}`
+      );
+
+      expect(
+        Number(minResolutionValue),
+        "Minimum Resolution should be 0.2"
+      ).toBe(0.2);
+
+      expect(
+        Number(maxResolutionValue),
+        "Maximum Resolution should be 4.1"
+      ).toBe(4.1);
+
+      logInfo(
+        "Resolution filter configured successfully: 0.2m - 4.1m"
+      );
+
+      // ============================================================
+      // STEP 11
+      // SEARCH IMAGERY
+      // ============================================================
+
+      await showStep(
+        page,
+        "Step 11: Search imagery using Resolution 0.2m - 4.1m"
+      );
+
+      const searchImageryButton =
+        page
+          .locator("#gw-search-btn")
+          .first();
+
+      await expect(
+        searchImageryButton,
+        "Search Imagery button should be visible"
+      ).toBeVisible({
+        timeout: 10000,
+      });
+
+      await expect(
+        searchImageryButton,
+        "Search Imagery button should be enabled"
+      ).toBeEnabled({
+        timeout: 10000,
+      });
+
+      await mapPage.highlight(
+        searchImageryButton,
+        {
+          label: "STEP 11: SEARCH IMAGERY",
+          pause: 1200,
+        }
+      );
+
+      await robustClick(
+        page,
+        searchImageryButton,
+        {
+          timeout: 10000,
+          retry: 1,
+        }
+      );
+
+      logInfo(
+        "Search Imagery clicked successfully"
+      );
+
+      // ============================================================
+      // STEP 12
+      // WAIT FOR TABLE
+      // ============================================================
+
+      await showStep(
+        page,
+        "Step 12: Verify satellite imagery results table"
+      );
+
+      const satelliteScenesTable =
+        page.locator(
+          "#tbl\\_satellite\\_scenes"
+        );
+
+      await expect(
+        satelliteScenesTable,
+        "Satellite scenes table should become visible"
+      ).toBeVisible({
+        timeout: 60000,
+      });
+
+      await fastWait(page, 1500);
+
+      logInfo(
+        "Satellite imagery table loaded successfully"
+      );
+
+      // ============================================================
+      // STEP 13
+      // VERIFY AT LEAST ONE RESULT
+      // ============================================================
+
+      await showStep(
+        page,
+        "Step 13: Verify satellite scene data is available"
+      );
+
+      const satelliteRows =
+        satelliteScenesTable.locator(
+          "tbody tr"
+        );
+
+      const rowCount =
+        await satelliteRows.count();
+
+      expect(
+        rowCount,
+        "At least one satellite scene should be returned"
+      ).toBeGreaterThan(0);
+
+      logInfo(
+        `Satellite scene rows returned: ${rowCount}`
+      );
+ 
+ // ============================================================
+// STEP 14: VERIFY ALL RETURNED IMAGERY RESOLUTIONS
+// ============================================================
+
+await showStep(
+  page,
+  'Step 14: Verify imagery resolutions are between 0.2m and 4.1m'
+);
+
+const MIN_RESOLUTION = 0.2;
+const MAX_RESOLUTION = 4.1;
+
+const resolutionRows =
+  satelliteScenesTable.locator('tbody tr');
+
+const resolutionRowCount =
+  await resolutionRows.count();
+
+console.log(
+  `Validating resolution for ${resolutionRowCount} satellite rows`
+);
+
+let validatedResolutionCount = 0;
+
+for (let i = 0; i < resolutionRowCount; i++) {
+
+  const row = resolutionRows.nth(i);
+
+  // Get resolution directly from data-resolution attribute
+  const resolutionValue =
+    await row.getAttribute('data-resolution');
+
+  const actualResolution =
+    resolutionValue !== null
+      ? Number.parseFloat(resolutionValue)
+      : NaN;
+
+  const rowText =
+    (await row.innerText()).trim();
+
+  console.log(
+    `Row ${i + 1} resolution: ${resolutionValue}`
+  );
+
+  console.log(
+    `Row ${i + 1} data-resolution: ${resolutionValue}`
+  );
+
+  console.log(
+    `Row ${i + 1} text: ${rowText}`
+  );
+
+  // Resolution must exist
+  expect(
+    resolutionValue,
+    `Resolution should be available for satellite result row ${i + 1}`
+  ).not.toBeNull();
+
+  // Resolution must be numeric
+  expect(
+    Number.isFinite(actualResolution),
+    `Resolution should be numeric for satellite result row ${i + 1}`
+  ).toBeTruthy();
+
+  // Minimum resolution validation
+  expect(
+    actualResolution,
+    `Row ${i + 1} resolution should be >= ${MIN_RESOLUTION}m`
+  ).toBeGreaterThanOrEqual(MIN_RESOLUTION);
+
+  // Maximum resolution validation
+  expect(
+    actualResolution,
+    `Row ${i + 1} resolution should be <= ${MAX_RESOLUTION}m`
+  ).toBeLessThanOrEqual(MAX_RESOLUTION);
+
+  await highlight(
+    row,
+    page,
+    `Resolution ${actualResolution}m`
+  );
+
+  validatedResolutionCount++;
+}
+
+expect(
+  validatedResolutionCount,
+  'At least one satellite imagery resolution should be validated'
+).toBeGreaterThan(0);
+
+await showStep(
+  page,
+  `Step 14: All ${validatedResolutionCount} imagery resolutions are between ${MIN_RESOLUTION}m and ${MAX_RESOLUTION}m`
+);
+
+logInfo(
+  `Resolution validation passed: ${validatedResolutionCount} rows checked`
+);
+
+// ============================================================
+// FINAL SUCCESS
+// ============================================================
+
+logInfo(
+  `All ${validatedResolutionCount} returned satellite scenes passed Resolution validation: ${MIN_RESOLUTION}m - ${MAX_RESOLUTION}m`
+);
+
+logInfo(
+  "P0 Satellite Service + Resolution Filter + Search Imagery + Resolution Verification completed successfully"
+);
+
+// ============================================================
+// DIAGNOSTICS
+// ============================================================
+
+if (consoleErrors.length) {
+  addWarning(
+    "Browser console errors detected during Satellite Resolution flow",
+    {
+      errors: consoleErrors,
+    }
+  );
+}
+
+if (failedRequests.length) {
+  addWarning(
+    "Network request failures detected during Satellite Resolution flow",
+    {
+      failures: failedRequests,
+    }
+  );
+}
+
+logInfo(
+  `Total API/network responses captured: ${apiResponses.length}`
+);
+
+logInfo(
+  `Total failed network requests: ${failedRequests.length}`
+);
+
+logInfo(
+  `Total browser console errors: ${consoleErrors.length}`
+);
+
+// ============================================================
+// TEST COMPLETED
+// ============================================================
+
+logInfo(
+  "TC-10 completed successfully"
+);
+
+// ============================================================
+// ERROR HANDLING
+// ============================================================
+
+} catch (e) {
+
+  addError(
+    "Satellite Resolution flow failed: " +
+      (e?.message || e)
+  );
+
+  await saveMapScreenshot(
+    page,
+    "satellite",
+    "satellite_resolution_filter_failed",
+    true
+  ).catch(() => {});
+
+  throw e;
+}
+});
+
+
+
+// ============================================================================
+// TC-11
+// SATELLITE SERVICE + DATE RANGE FILTER + SEARCH IMAGERY + RESULT VERIFICATION
+// ============================================================================
+
+test(
+  "[P0] 11 - Satellite Service Date Range filter and imagery results verification",
+  async ({ page }, testInfo) => {
+
+    const homePage = new HomePage(page);
+    const mapPage = new MapPage(page);
+
+    const failedRequests = [];
+    const consoleErrors = [];
+    const apiResponses = [];
+
+    clearDiagnostics();
+
+    // ============================================================
+    // NETWORK
+    // ============================================================
+
+    page.on("requestfailed", (request) => {
+      const url = request.url();
+
+      const ignoredAnalyticsRequest =
+        url.includes("google-analytics.com") ||
+        url.includes("googletagmanager.com") ||
+        url.includes("analytics.google.com");
+
+      if (ignoredAnalyticsRequest) {
+        return;
+      }
+
+      failedRequests.push({
+        url,
+        failure: request.failure()?.errorText || "unknown",
+      });
+    });
+
+    page.on("response", (response) => {
+      const url = response.url();
+
+      const isApiRequest =
+        url.includes("maps.googleapis.com") ||
+        url.includes("/api/");
+
+      if (isApiRequest) {
+        apiResponses.push({
+          url,
+          status: response.status(),
+          method: response.request().method(),
+        });
+      }
+    });
+
+    page.on("console", (message) => {
+      if (message.type() === "error") {
+        consoleErrors.push(message.text());
+      }
+    });
+
+    try {
+
+      // ============================================================
+      // STEP 1
+      // OPEN DATASTORE
+      // ============================================================
+
+      await showStep(
+        page,
+        "Step 1: Navigate to the DataStore URL"
+      );
+
+      await homePage.open();
+
+      // ============================================================
+      // STEP 2
+      // LOADER
+      // ============================================================
+
+      await showStep(
+        page,
+        "Step 2: Wait for page loader and highlight the loader/logo"
+      );
+
+      await homePage.waitForLoaderAndHighlight();
+
+      // ============================================================
+      // STEP 3
+      // CLOSE TUTORIAL
+      // ============================================================
+
+      await showStep(
+        page,
+        "Step 3: Close the tutorial"
+      );
+
+      await homePage.closeTutorial();
+
+      // ============================================================
+      // STEP 4
+      // MAP
+      // ============================================================
+
+      await showStep(
+        page,
+        "Step 4: Wait for the map to load"
+      );
+
+      await mapPage.waitForMapToLoad();
+
+      // ============================================================
+      // STEP 5
+      // SEARCH ICON
+      // ============================================================
+
+      await showStep(
+        page,
+        "Step 5: Locate and highlight the Search icon"
+      );
+
+      const searchIcon = mapPage.worldSearchButton;
+
+      await expect(
+        searchIcon,
+        "Search icon should be visible"
+      ).toBeVisible({
+        timeout: 10000,
+      });
+
+      await mapPage.highlight(searchIcon);
+
+      await searchIcon.click();
+
+      // ============================================================
+      // STEP 6
+      // SEARCH DENVER
+      // ============================================================
+
+      await showStep(
+        page,
+        "Step 6: Search Denver and verify selected marker"
+      );
+
+      const searchInput = mapPage.pacInput;
+
+      await mapPage.highlight(searchInput, {
+        label: "STEP 6: SEARCH DENVER",
+        pause: 1000,
+      });
+
+      const searchApiPromise =
+        page.waitForResponse(
+          (response) => {
+            const url = response.url();
+
+            return (
+              url.includes(
+                "/maps/api/place/js/AutocompletionService.GetPredictions"
+              ) &&
+              url.includes("1sDenver") &&
+              response.request().method() === "GET"
+            );
+          },
+          {
+            timeout: 15000,
+          }
+        );
+
+      await searchInput.fill("Denver");
+
+      const searchApiResponse =
+        await searchApiPromise;
+
+      expect(
+        searchApiResponse.ok(),
+        "Denver search API response should be successful"
+      ).toBeTruthy();
+
+      const denverSuggestion =
+        page
+          .locator(".pac-container .pac-item")
+          .filter({
+            hasText: "Denver",
+          })
+          .first();
+
+      await expect(
+        denverSuggestion,
+        "Denver suggestion should be visible"
+      ).toBeVisible({
+        timeout: 12000,
+      });
+
+      await mapPage.highlight(denverSuggestion, {
+        label: "STEP 6: DENVER SUGGESTION",
+        pause: 1000,
+      });
+
+      await denverSuggestion.click();
+
+      await mapPage.waitForMapToLoad();
+
+      await page.waitForTimeout(1500);
+
+      await mapPage.verifyMapMarker();
+
+      // ============================================================
+      // STEP 7
+      // CAMERA + ZOOM + DRAW TOOL
+      // ============================================================
+
+      await showStep(
+        page,
+        "Step 7: Open Map Camera Control, click Zoom + once and open AOI Draw Tool"
+      );
+
+      const cameraControl =
+        page
+          .locator(
+            'button[aria-label="Map camera controls"]'
+          )
+          .first();
+
+      await mapPage.highlight(cameraControl, {
+        label: "STEP 7: MAP CAMERA CONTROL",
+        pause: 1000,
+      });
+
+      await robustClick(page, cameraControl, {
+        timeout: 10000,
+        retry: 1,
+      });
+
+      await fastWait(page, 700);
+
+      const zoomInButton =
+        page
+          .locator(
+            'button[aria-label="Zoom in"]'
+          )
+          .first();
+
+      await mapPage.highlight(zoomInButton, {
+        borderColor: "#22C55E",
+        label: "STEP 7: ZOOM +",
+        pause: 1000,
+      });
+
+      await robustClick(page, zoomInButton, {
+        timeout: 10000,
+        retry: 1,
+      });
+
+      await fastWait(page, 1200);
+
+      const drawTool =
+        page
+          .getByRole("menuitemradio", {
+            name: /Draw a shape/i,
+          })
+          .first();
+
+      await expect(
+        drawTool,
+        "AOI Draw Tool should be visible"
+      ).toBeVisible({
+        timeout: 10000,
+      });
+
+      // ============================================================
+      // STEP 8
+      // RECTANGLE AOI
+      // ============================================================
+
+      await showStep(
+        page,
+        "Step 8: Select Rectangle AOI, draw AOI and verify Service popup"
+      );
+
+      const rectangleTool =
+        page
+          .getByRole("menuitemradio", {
+            name: "Draw a rectangle",
+          })
+          .first();
+
+      await expect(
+        rectangleTool,
+        "Rectangle AOI tool should be visible"
+      ).toBeVisible({
+        timeout: 10000,
+      });
+
+      await mapPage.highlight(rectangleTool, {
+        borderColor: "#FFD700",
+        label: "STEP 8: RECTANGLE AOI",
+        pause: 1000,
+      });
+
+      await rectangleTool.click({
+        timeout: 10000,
+      });
+
+      await page.waitForTimeout(500);
+
+      const rectangle =
+        await mapPage.drawRectangleAOIByRatio({
+          steps: 15,
+          waitMs: 1200,
+        });
+
+      await mapPage.validateDrawnAOI({
+        expectedWidth: rectangle.width,
+        expectedHeight: rectangle.height,
+      });
+
+      expect(
+        await mapPage.highlightDrawnAOIOnMap(),
+        "AOI should be highlighted on map"
+      ).toBe(true);
+
+      const servicePopup =
+        page.locator("#gw-panel").first();
+
+      await expect(
+        servicePopup,
+        "Service popup should be visible"
+      ).toBeVisible({
+        timeout: 15000,
+      });
+
+      await highlight(page, servicePopup, {
+        label: "STEP 8: SERVICE POPUP",
+        pause: 1200,
+      });
+
+      const aoiActiveIndicator =
+        page.locator("#gw-aoi-label").first();
+
+      await expect(
+        aoiActiveIndicator,
+        "AOI Active status should be visible"
+      ).toBeVisible({
+        timeout: 15000,
+      });
+
+      // ============================================================
+      // STEP 9
+      // SELECT SATELLITE
+      // ============================================================
+
+      await showStep(
+        page,
+        "Step 9: Select Satellite Service"
+      );
+
+      const satelliteService =
+        page
+          .locator(
+            'div.gw-svc[data-svc="satellite"]'
+          )
+          .first();
+
+      await expect(
+        satelliteService,
+        "Satellite service should be visible"
+      ).toBeVisible({
+        timeout: 10000,
+      });
+
+      await expect(
+        satelliteService,
+        "Satellite service should have satellite data-svc"
+      ).toHaveAttribute(
+        "data-svc",
+        "satellite"
+      );
+
+      const satelliteServiceText =
+        (
+          await satelliteService
+            .locator(".gw-svc-name")
+            .innerText()
+        ).trim();
+
+      expect(
+        satelliteServiceText,
+        "Service name should be Satellite"
+      ).toBe("Satellite");
+
+      await mapPage.highlight(satelliteService, {
+        label: "STEP 9: SATELLITE SERVICE",
+        pause: 1200,
+      });
+
+      await robustClick(page, satelliteService, {
+        timeout: 10000,
+        retry: 1,
+      });
+
+      await fastWait(page, 1000);
+
+      await expect(
+        satelliteService,
+        "Satellite service should be selected"
+      ).toHaveClass(/selected/);
+
+      logInfo(
+        testInfo,
+        "Satellite service selected successfully"
+      );
+
+      // ============================================================
+      // STEP 10
+      // DATE RANGE
+      // ============================================================
+
+      await showStep(
+        page,
+        "Step 10: Scroll to Date Range and set From and To dates"
+      );
+
+      try {
+
+        const dateRangeSection =
+          page
+            .locator(
+              '.gw-fb:has(.gw-sec:has-text("Date Range"))'
+            )
+            .first();
+
+        await expect(
+          dateRangeSection,
+          "Date Range section should be visible"
+        ).toBeVisible({
+          timeout: 15000,
+        });
+
+        await dateRangeSection.scrollIntoViewIfNeeded();
+
+        // ----------------------------------------------------------
+        // FROM DATE
+        // ----------------------------------------------------------
+
+        const fromDateInput =
+          page.locator("#gw-date-from");
+
+        await expect(
+          fromDateInput,
+          "From date input should be visible"
+        ).toBeVisible({
+          timeout: 10000,
+        });
+
+        await fromDateInput.click();
+
+        const fromCalendar =
+          page.locator(".flatpickr-calendar.open");
+
+        await expect(
+          fromCalendar,
+          "From date Flatpickr calendar should open"
+        ).toBeVisible({
+          timeout: 10000,
+        });
+
+        await fromDateInput.evaluate(
+          (input) => {
+
+            const fp = input._flatpickr;
+
+            if (!fp) {
+              throw new Error(
+                "Flatpickr instance not found on #gw-date-from"
+              );
+            }
+
+            fp.setDate(
+              "2026-08-12",
+              true
+            );
+          }
+        );
+
+        const fromDateValue =
+          await fromDateInput.inputValue();
+
+        expect(
+          fromDateValue,
+          "From date should be set to 2026-08-12"
+        ).not.toBe("");
+
+        logInfo(
+          testInfo,
+          `From date set successfully: ${fromDateValue}`
+        );
+
+        // ----------------------------------------------------------
+        // TO DATE
+        // ----------------------------------------------------------
+
+        const toDateInput =
+          page.locator("#gw-date-to");
+
+        await expect(
+          toDateInput,
+          "To date input should be visible"
+        ).toBeVisible({
+          timeout: 10000,
+        });
+
+        await toDateInput.click();
+
+        const toCalendar =
+          page.locator(".flatpickr-calendar.open");
+
+        await expect(
+          toCalendar,
+          "To date Flatpickr calendar should open"
+        ).toBeVisible({
+          timeout: 10000,
+        });
+
+        await toDateInput.evaluate(
+          (input) => {
+
+            const fp = input._flatpickr;
+
+            if (!fp) {
+              throw new Error(
+                "Flatpickr instance not found on #gw-date-to"
+              );
+            }
+
+            fp.setDate(
+              "2026-09-15",
+              true
+            );
+          }
+        );
+
+        const toDateValue =
+          await toDateInput.inputValue();
+
+        expect(
+          toDateValue,
+          "To date should be set to 2026-09-15"
+        ).not.toBe("");
+
+        logInfo(
+          testInfo,
+          `To date set successfully: ${toDateValue}`
+        );
+
+        await page.keyboard
+          .press("Escape")
+          .catch(() => {});
+
+        logInfo(
+          testInfo,
+          "Date Range successfully set: From 2026-08-12 To 2026-09-15"
+        );
+
+      } catch (error) {
+
+        addError(
+          testInfo,
+          `Satellite Date Range flow failed: ${error.message}`
+        );
+
+        await page.screenshot({
+          path:
+            `test-results/date-range-flow-failed-${Date.now()}.png`,
+          fullPage: true,
+        });
+
+        throw error;
+      }
+
+      
+      // ============================================================
+      // STEP 11
+      // SEARCH IMAGERY
+      // ============================================================
+
+      await showStep(
+        page,
+        "Step 11: Click Search Imagery and verify results match selected date range"
+      );
+
+      try {
+
+        const searchImageryButton =
+          page
+            .locator("#gw-search-btn")
+            .first();
+
+        await expect(
+          searchImageryButton,
+          "Search Imagery button should be visible"
+        ).toBeVisible({
+          timeout: 10000,
+        });
+
+        await expect(
+          searchImageryButton,
+          "Search Imagery button should be enabled"
+        ).toBeEnabled({
+          timeout: 10000,
+        });
+
+        await mapPage.highlight(
+          searchImageryButton,
+          {
+            label: "STEP 11: SEARCH IMAGERY",
+            pause: 1200,
+          }
+        );
+
+        await robustClick(
+          page,
+          searchImageryButton,
+          {
+            timeout: 10000,
+            retry: 1,
+          }
+        );
+
+        logInfo(
+          testInfo,
+          "Search Imagery clicked successfully"
+        );
+
+        // ============================================================
+        // STEP 12
+        // VERIFY SATELLITE TABLE
+        // ============================================================
+
+        await showStep(
+          page,
+          "Step 12: Verify satellite imagery table and returned scene dates"
+        );
+
+        const satelliteScenesTable =
+          page.locator(
+            "#tbl\\_satellite\\_scenes"
+          );
+
+        await expect(
+          satelliteScenesTable,
+          "Satellite scenes table should become visible"
+        ).toBeVisible({
+          timeout: 60000,
+        });
+
+        await fastWait(
+          page,
+          1500
+        );
+
+        logInfo(
+          testInfo,
+          "Satellite imagery table loaded successfully"
+        );
+
+        // ============================================================
+        // STEP 12.1
+        // VERIFY DATA ROWS
+        // ============================================================
+
+        const satelliteRows =
+          satelliteScenesTable.locator(
+            "tbody tr"
+          );
+
+        const rowCount =
+          await satelliteRows.count();
+
+        expect(
+          rowCount,
+          "At least one satellite scene row should be available"
+        ).toBeGreaterThan(0);
+
+        logInfo(
+          testInfo,
+          `Satellite scene rows available: ${rowCount}`
+        );
+
+        // ============================================================
+        // STEP 12.2
+        // VERIFY DATE COLUMN
+        // ============================================================
+
+        await showStep(
+          page,
+          "Step 12.2: Verify all returned scene dates are within From-To range"
+        );
+
+        const dateColumnIndex = 2;
+
+        const fromDate =
+          new Date(
+            "2026-08-12T00:00:00"
+          );
+
+        const toDate =
+          new Date(
+            "2026-09-15T23:59:59"
+          );
+
+        let validDateRows = 0;
+
+        for (
+          let i = 0;
+          i < rowCount;
+          i++
+        ) {
+
+          const row =
+            satelliteRows.nth(i);
+
+          const dateCell =
+            row
+              .locator("td")
+              .nth(dateColumnIndex);
+
+          const dateText =
+            (
+              await dateCell.innerText()
+            ).trim();
+
+          logInfo(
+            testInfo,
+            `Scene row ${i + 1} date value: ${dateText}`
+          );
+
+          expect(
+            dateText,
+            `Row ${i + 1} should contain a scene date`
+          ).not.toBe("");
+
+          // ----------------------------------------------------------
+          // DATE PARSING
+          // ----------------------------------------------------------
+
+          let parsedDate = null;
+
+          // Supports:
+          // YYYY-MM-DD
+          // YYYY/MM/DD
+          // YYYY-MM-DD HH:mm:ss
+          // YYYY/MM/DD HH:mm:ss
+
+          let match =
+            dateText.match(
+              /\b(20\d{2})[-/](\d{1,2})[-/](\d{1,2})\b/
+            );
+
+          if (match) {
+
+            parsedDate =
+              new Date(
+                `${match[1]}-${String(match[2]).padStart(2, "0")}-${String(match[3]).padStart(2, "0")}T00:00:00`
+              );
+          }
+
+          // ----------------------------------------------------------
+          // MM/DD/YYYY
+          // ----------------------------------------------------------
+
+          if (!parsedDate) {
+
+            match =
+              dateText.match(
+                /\b(\d{1,2})\/(\d{1,2})\/(20\d{2})\b/
+              );
+
+            if (match) {
+
+              parsedDate =
+                new Date(
+                  `${match[3]}-${String(match[1]).padStart(2, "0")}-${String(match[2]).padStart(2, "0")}T00:00:00`
+                );
+            }
+          }
+
+          expect(
+            parsedDate,
+            `Unable to parse scene date from row ${i + 1}: "${dateText}"`
+          ).not.toBeNull();
+
+          // ----------------------------------------------------------
+          // LOWER BOUND
+          // ----------------------------------------------------------
+
+          expect(
+            parsedDate.getTime(),
+            `Scene date in row ${i + 1} should be on/after 2026-08-12`
+          ).toBeGreaterThanOrEqual(
+            fromDate.getTime()
+          );
+
+          // ----------------------------------------------------------
+          // UPPER BOUND
+          // ----------------------------------------------------------
+
+          expect(
+            parsedDate.getTime(),
+            `Scene date in row ${i + 1} should be on/before 2026-09-15`
+          ).toBeLessThanOrEqual(
+            toDate.getTime()
+          );
+
+          validDateRows++;
+
+          logInfo(
+            testInfo,
+            `Row ${i + 1} date verified successfully: ${dateText}`
+          );
+        }
+
+        // ============================================================
+        // FINAL DATE VALIDATION
+        // ============================================================
+
+        expect(
+          validDateRows,
+          "Every returned satellite scene row should match the selected date range"
+        ).toBe(rowCount);
+
+        logInfo(
+          testInfo,
+          `All ${rowCount} satellite scene rows matched date range 2026-08-12 to 2026-09-15`
+        );
+
+        // ============================================================
+        // STEP 12.3
+        // HIGHLIGHT FIRST DATE CELL
+        // ============================================================
+
+        const firstSceneRow =
+          satelliteRows.first();
+
+        const firstDateCell =
+          firstSceneRow
+            .locator("td")
+            .nth(dateColumnIndex);
+
+        await mapPage.highlight(
+          firstDateCell,
+          {
+            label: "STEP 12.3: FILTERED SCENE DATE",
+            pause: 1200,
+          }
+        );
+
+        logInfo(
+          testInfo,
+          "Date Range filter result verification completed successfully"
+        );
+
+      } catch (error) {
+
+        addError(
+          testInfo,
+          `Satellite Date Range flow failed: ${error.message}`
+        );
+
+        await page.screenshot({
+          path:
+            `test-results/date-range-flow-failed-${Date.now()}.png`,
+          fullPage: true,
+        });
+
+        throw error;
+      }
+
+
+
+      // ============================================================
+      // TC COMPLETE
+      // ============================================================
+
+      logInfo(
+        "P0 TC-11 Satellite Date Range Filter + Search Imagery + Result Verification completed successfully"
+      );
+
+      // ============================================================
+      // DIAGNOSTICS
+      // ============================================================
+
+      if (consoleErrors.length) {
+        addWarning(
+          "Browser console errors detected during Satellite Date Range flow",
+          {
+            errors: consoleErrors,
+          }
+        );
+      }
+
+      if (failedRequests.length) {
+        addWarning(
+          "Network request failures detected during Satellite Date Range flow",
+          {
+            failures: failedRequests,
+          }
+        );
+      }
+
+      logInfo(
+        `Total API/network responses captured: ${apiResponses.length}`
+      );
+
+      logInfo(
+        `Total failed network requests: ${failedRequests.length}`
+      );
+
+      logInfo(
+        `Total browser console errors: ${consoleErrors.length}`
+      );
+
+    } catch (e) {
+
+      addError(
+        "Satellite Date Range flow failed: " +
+        (e?.message || e)
+      );
+
+      await saveMapScreenshot(
+        page,
+        "satellite",
+        "satellite_date_range_flow_failed",
+        true
+      ).catch(() => {});
+
+      throw e;
+    }
+  }
+);
+
 
 
 

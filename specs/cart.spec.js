@@ -3905,6 +3905,2633 @@ logInfo(
 );
  
  
+// ============================================================
+// TC-3
+// VERIFY EXPORT OPTIONS: Projection → UTM , Datum → WGS84, Format → GeoTIFF
+// ============================================================
+
+test(
+  '[P0] 3 - Verify Export Options UTM, WGS84 and GeoTIFF',
+  async ({ page }) => {
+
+    const homePage = new HomePage(page);
+    const mapPage = new MapPage(page);
+
+    const failedRequests = [];
+    const consoleErrors = [];
+    const apiResponses = [];
+
+    clearDiagnostics();
+
+
+    // ============================================================
+    // NETWORK REQUEST FAILURE HANDLING
+    // ============================================================
+
+    page.on('requestfailed', (request) => {
+
+      const url = request.url();
+
+      const ignoredAnalyticsRequest =
+        url.includes('google-analytics.com') ||
+        url.includes('googletagmanager.com') ||
+        url.includes('analytics.google.com');
+
+      if (ignoredAnalyticsRequest) {
+        return;
+      }
+
+      failedRequests.push({
+        url,
+        failure:
+          request.failure()?.errorText ||
+          'unknown',
+      });
+    });
+
+
+    // ============================================================
+    // API / NETWORK RESPONSE LOGGING
+    // ============================================================
+
+    page.on('response', (response) => {
+
+      const url = response.url();
+
+      const isApiRequest =
+        url.includes('maps.googleapis.com') ||
+        url.includes('/api/');
+
+      if (isApiRequest) {
+
+        apiResponses.push({
+          url,
+          status: response.status(),
+          method: response.request().method(),
+        });
+      }
+    });
+
+
+    // ============================================================
+    // BROWSER CONSOLE ERROR HANDLING
+    // ============================================================
+
+    page.on('console', (message) => {
+
+      if (message.type() === 'error') {
+        consoleErrors.push(message.text());
+      }
+    });
+
+
+    try {
+
+      // ============================================================
+      // STEP 1
+      // NAVIGATE TO DATASTORE
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 1: Navigate to the DataStore URL'
+      );
+
+      await homePage.open();
+
+      logInfo(
+        'DataStore URL opened successfully'
+      );
+
+
+      // ============================================================
+      // STEP 2
+      // WAIT FOR LOADER
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 2: Wait for page loader and highlight loader/logo'
+      );
+
+      await homePage.waitForLoaderAndHighlight();
+
+      logInfo(
+        'Page loader/logo processed successfully'
+      );
+
+
+      // ============================================================
+      // STEP 3
+      // CLOSE TUTORIAL
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 3: Close the tutorial'
+      );
+
+      await homePage.closeTutorial();
+
+      logInfo(
+        'Tutorial closed successfully'
+      );
+
+
+      // ============================================================
+      // STEP 4
+      // WAIT FOR MAP
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 4: Wait for the map to load'
+      );
+
+      await mapPage.waitForMapToLoad();
+
+      logInfo(
+        'Map loaded successfully'
+      );
+
+
+      // ============================================================
+      // STEP 5
+      // LOCATE + HIGHLIGHT SEARCH ICON
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 5: Locate and highlight the Search icon'
+      );
+
+      const searchIcon =
+        mapPage.worldSearchButton;
+
+      await expect(
+        searchIcon,
+        'Search icon should be visible'
+      ).toBeVisible({
+        timeout: 10000,
+      });
+
+      await mapPage.highlight(
+        searchIcon,
+        {
+          label: 'STEP 5: SEARCH ICON',
+          pause: 1000,
+        }
+      );
+
+      logInfo(
+        'Search icon located successfully'
+      );
+
+
+      // ============================================================
+      // STEP 6
+      // CLICK SEARCH ICON
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 6: Click the Search icon'
+      );
+
+      await mapPage.highlight(
+        searchIcon,
+        {
+          label: 'STEP 6: SEARCH ICON',
+          pause: 800,
+        }
+      );
+
+      await searchIcon.click();
+
+      logInfo(
+        'Search icon clicked successfully'
+      );
+
+
+      // ============================================================
+      // STEP 7
+      // SEARCH DENVER
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 7: Search Denver and verify selected marker'
+      );
+
+
+      // ------------------------------------------------------------
+      // 7.1 SEARCH INPUT
+      // ------------------------------------------------------------
+
+      const searchInput =
+        mapPage.pacInput;
+
+      await expect(
+        searchInput,
+        'Search input should be visible'
+      ).toBeVisible({
+        timeout: 10000,
+      });
+
+      await mapPage.highlight(
+        searchInput,
+        {
+          label: 'STEP 7: SEARCH DENVER',
+          pause: 1000,
+        }
+      );
+
+
+      // ------------------------------------------------------------
+      // 7.2 SEARCH API
+      // ------------------------------------------------------------
+
+      const searchApiPromise =
+        page.waitForResponse(
+          (response) => {
+
+            const url =
+              response.url();
+
+            return (
+              url.includes(
+                '/maps/api/place/js/AutocompletionService.GetPredictions'
+              ) &&
+              url.includes('1sDenver') &&
+              response.request().method() === 'GET'
+            );
+          },
+          {
+            timeout: 15000,
+          }
+        );
+
+
+      await searchInput.fill(
+        'Denver'
+      );
+
+
+      const searchApiResponse =
+        await searchApiPromise;
+
+      expect(
+        searchApiResponse.ok(),
+        'Denver search API response should be successful'
+      ).toBeTruthy();
+
+      logInfo(
+        `Denver Search API response status: ${searchApiResponse.status()}`
+      );
+
+
+      // ------------------------------------------------------------
+      // 7.3 DENVER SUGGESTION
+      // ------------------------------------------------------------
+
+      const denverSuggestion =
+        page
+          .locator(
+            '.pac-container .pac-item'
+          )
+          .filter({
+            hasText: 'Denver',
+          })
+          .first();
+
+      await expect(
+        denverSuggestion,
+        'Denver location suggestion should be available'
+      ).toBeVisible({
+        timeout: 12000,
+      });
+
+      await mapPage.highlight(
+        denverSuggestion,
+        {
+          label: 'STEP 7: DENVER SUGGESTION',
+          pause: 1000,
+        }
+      );
+
+      await denverSuggestion.click();
+
+      logInfo(
+        'Denver, CO, USA location suggestion selected successfully'
+      );
+
+
+      // ------------------------------------------------------------
+      // 7.4 WAIT FOR MAP
+      // ------------------------------------------------------------
+
+      await mapPage.waitForMapToLoad();
+
+      await page.waitForTimeout(1500);
+
+      logInfo(
+        'Map moved to selected Denver location'
+      );
+
+
+      // ------------------------------------------------------------
+      // 7.5 VERIFY MARKER
+      // ------------------------------------------------------------
+
+      await mapPage.verifyMapMarker();
+
+      await mapPage.highlight(
+        mapPage.mapContainer,
+        {
+          label: 'STEP 7: DENVER MAP / MARKER',
+          pause: 1200,
+        }
+      );
+
+      logInfo(
+        'Selected Denver location marker verified successfully'
+      );
+
+
+      // ============================================================
+      // STEP 8
+      // CAMERA CONTROL + ZOOM + DRAW TOOL
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 8: Open Map Camera Control, Zoom once and open AOI Draw Tool'
+      );
+
+
+      // ------------------------------------------------------------
+      // 8.1 CAMERA CONTROL
+      // ------------------------------------------------------------
+
+      const cameraControl =
+        page
+          .locator(
+            'button[aria-label="Map camera controls"]'
+          )
+          .first();
+
+      await expect(
+        cameraControl,
+        'Map Camera Control should be visible'
+      ).toBeVisible({
+        timeout: 10000,
+      });
+
+      await mapPage.highlight(
+        cameraControl,
+        {
+          borderColor: '#6C63FF',
+          label: 'STEP 8: MAP CAMERA CONTROL',
+          pause: 1000,
+        }
+      );
+
+      await robustClick(
+        page,
+        cameraControl,
+        {
+          timeout: 10000,
+          retry: 1,
+        }
+      );
+
+      await fastWait(
+        page,
+        700
+      );
+
+      logInfo(
+        'Map Camera Control opened successfully'
+      );
+
+
+      // ------------------------------------------------------------
+      // 8.2 ZOOM IN
+      // ------------------------------------------------------------
+
+      const zoomInButton =
+        page
+          .locator(
+            'button[aria-label="Zoom in"]'
+          )
+          .first();
+
+      await expect(
+        zoomInButton,
+        'Zoom in button should be visible'
+      ).toBeVisible({
+        timeout: 10000,
+      });
+
+      await mapPage.highlight(
+        zoomInButton,
+        {
+          borderColor: '#22C55E',
+          label: 'STEP 8: ZOOM +',
+          pause: 1000,
+        }
+      );
+
+      // EXACTLY ONE CLICK
+      await robustClick(
+        page,
+        zoomInButton,
+        {
+          timeout: 10000,
+          retry: 1,
+        }
+      );
+
+      await fastWait(
+        page,
+        1500
+      );
+
+      logInfo(
+        'Zoom (+) clicked exactly once'
+      );
+
+
+      // ------------------------------------------------------------
+      // 8.3 AOI DRAW TOOL
+      // ------------------------------------------------------------
+
+      const drawTool =
+        page
+          .getByRole(
+            'menuitemradio',
+            {
+              name: /Draw a shape/i,
+            }
+          )
+          .first();
+
+      await expect(
+        drawTool,
+        'AOI Draw Tool should be visible'
+      ).toBeVisible({
+        timeout: 10000,
+      });
+
+      await fastWait(
+        page,
+        1000
+      );
+
+      logInfo(
+        'AOI Draw Tool opened successfully'
+      );
+
+
+      // ============================================================
+      // STEP 9
+      // DRAW RECTANGLE AOI
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 9: Select Rectangle AOI, draw AOI and verify Service popup'
+      );
+
+      const rectangleTool =
+        page
+          .getByRole(
+            'menuitemradio',
+            {
+              name: 'Draw a rectangle',
+            }
+          )
+          .first();
+
+      await expect(
+        rectangleTool,
+        'Rectangle AOI tool should be visible'
+      ).toBeVisible({
+        timeout: 10000,
+      });
+
+      await mapPage.highlight(
+        rectangleTool,
+        {
+          borderColor: '#FFD700',
+          label: 'STEP 9: RECTANGLE AOI',
+          pause: 1000,
+        }
+      );
+
+      await rectangleTool.click({
+        timeout: 10000,
+      });
+
+      await page.waitForTimeout(500);
+
+
+      // ------------------------------------------------------------
+      // DRAW AOI
+      // ------------------------------------------------------------
+
+      const rectangle =
+        await mapPage.drawRectangleAOIByRatio({
+          steps: 15,
+          waitMs: 1200,
+        });
+
+
+      // ------------------------------------------------------------
+      // VALIDATE AOI
+      // ------------------------------------------------------------
+
+      await mapPage.validateDrawnAOI({
+        expectedWidth: rectangle.width,
+        expectedHeight: rectangle.height,
+      });
+
+
+      // ------------------------------------------------------------
+      // HIGHLIGHT AOI
+      // ------------------------------------------------------------
+
+      expect(
+        await mapPage.highlightDrawnAOIOnMap(),
+        'AOI should be highlighted on map'
+      ).toBe(true);
+
+
+      // ------------------------------------------------------------
+      // VERIFY SERVICE POPUP
+      // ------------------------------------------------------------
+
+      const servicePopup =
+        page.locator(
+          '#gw-panel'
+        ).first();
+
+      await expect(
+        servicePopup,
+        'Service popup should be visible'
+      ).toBeVisible({
+        timeout: 15000,
+      });
+
+      await highlight(
+        page,
+        servicePopup,
+        {
+          label: 'STEP 9: SERVICE POPUP',
+          pause: 1200,
+        }
+      );
+
+
+      // ------------------------------------------------------------
+      // VERIFY AOI ACTIVE
+      // ------------------------------------------------------------
+
+      const aoiActiveIndicator =
+        page
+          .locator(
+            '#gw-aoi-label'
+          )
+          .first();
+
+      await expect(
+        aoiActiveIndicator,
+        'AOI Active status should be visible'
+      ).toBeVisible({
+        timeout: 15000,
+      });
+
+      await highlight(
+        page,
+        aoiActiveIndicator,
+        {
+          label: 'STEP 9: AOI ACTIVE',
+          pause: 1200,
+        }
+      );
+
+      logInfo(
+        'Rectangle AOI and Service popup verified successfully'
+      );
+
+
+      // ============================================================
+      // STEP 10
+      // SELECT SATELLITE SERVICE
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 10: Select Satellite Service'
+      );
+
+      const serviceGrid =
+        page
+          .locator(
+            '#gw-service-grid'
+          )
+          .first();
+
+      await expect(
+        serviceGrid,
+        'Service grid should be visible'
+      ).toBeVisible({
+        timeout: 10000,
+      });
+
+      const serviceOptions =
+        serviceGrid.locator(
+          'div.gw-svc'
+        );
+
+      await expect(
+        serviceOptions.first(),
+        'At least one service should be available'
+      ).toBeVisible({
+        timeout: 10000,
+      });
+
+
+      // ------------------------------------------------------------
+      // SATELLITE SERVICE
+      // ------------------------------------------------------------
+
+      const satelliteService =
+        serviceGrid.locator(
+          'div.gw-svc[data-svc="satellite"]'
+        ).first();
+
+      await expect(
+        satelliteService,
+        'Satellite service should be available'
+      ).toBeVisible({
+        timeout: 15000,
+      });
+
+      await mapPage.highlight(
+        satelliteService,
+        {
+          label: 'STEP 10: SATELLITE SERVICE',
+          pause: 1200,
+        }
+      );
+
+      await satelliteService.click();
+
+      await fastWait(
+        page,
+        1000
+      );
+
+      logInfo(
+        'Satellite service selected successfully'
+      );
+
+
+      // ============================================================
+      // STEP 11
+      // SEARCH IMAGERY
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 11: Search Imagery'
+      );
+
+      const searchImageryButton =
+        page
+          .locator(
+            '#gw-search-btn'
+          )
+          .first();
+
+      await expect(
+        searchImageryButton,
+        'Search Imagery button should be visible'
+      ).toBeVisible({
+        timeout: 15000,
+      });
+
+      await searchImageryButton.scrollIntoViewIfNeeded();
+
+      await mapPage.highlight(
+        searchImageryButton,
+        {
+          label: 'STEP 11: SEARCH IMAGERY',
+          pause: 1200,
+        }
+      );
+
+      await robustClick(
+        page,
+        searchImageryButton,
+        {
+          timeout: 15000,
+          retry: 1,
+        }
+      );
+
+      logInfo(
+        'Search Imagery button clicked successfully'
+      );
+
+
+      // ============================================================
+      // STEP 12
+      // WAIT FOR IMAGERY RESULTS
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 12: Wait for imagery scenes to load'
+      );
+
+      await page.waitForTimeout(
+        1500
+      );
+
+
+      // ------------------------------------------------------------
+      // ADD TO CART ICON
+      // ------------------------------------------------------------
+
+      const addToCart =
+        page.locator(
+          'input[type="image"][src*="add-to-cart.png"]'
+        );
+
+      await expect(
+        addToCart.first(),
+        'At least one Add to Cart icon should be available'
+      ).toBeVisible({
+        timeout: 90000,
+      });
+
+      logInfo(
+        `Imagery scenes loaded successfully. Add to Cart icons found: ${await addToCart.count()}`
+      );
+
+
+      // ============================================================
+      // STEP 13
+      // ADD FIRST SCENE TO CART
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 13: Add first available imagery scene to cart'
+      );
+
+      const firstAddToCart =
+        addToCart.first();
+
+      await firstAddToCart.scrollIntoViewIfNeeded();
+
+      await mapPage.highlight(
+        firstAddToCart,
+        {
+          label: 'STEP 13: ADD TO CART',
+          pause: 1200,
+        }
+      );
+
+      await robustClick(
+        page,
+        firstAddToCart,
+        {
+          timeout: 15000,
+          retry: 1,
+        }
+      );
+
+      logInfo(
+        'First available scene Add to Cart icon clicked successfully'
+      );
+
+
+      // ============================================================
+      // STEP 14
+      // VERIFY ITEM ADDED POPUP
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 14: Verify Item Added to Cart confirmation'
+      );
+
+      const itemAddedPopup =
+        page
+          .locator(
+            '#popup'
+          )
+          .first();
+
+      const popupTimeout =
+        80000;
+
+      const popupStartTime =
+        Date.now();
+
+      let itemAddedConfirmed =
+        false;
+
+
+      while (
+        Date.now() - popupStartTime <
+        popupTimeout
+      ) {
+
+        try {
+
+          if (
+            await itemAddedPopup.isVisible()
+          ) {
+
+            const popupText =
+              (
+                await itemAddedPopup.innerText()
+              ).trim();
+
+            if (
+              popupText.includes(
+                'Item added to cart'
+              )
+            ) {
+
+              itemAddedConfirmed =
+                true;
+
+              logInfo(
+                'Item added to cart confirmation detected successfully'
+              );
+
+              break;
+            }
+          }
+
+        } catch (error) {
+
+          // Popup may change visibility.
+          // Continue polling.
+
+        }
+
+        await page.waitForTimeout(
+          100
+        );
+      }
+
+
+      // ------------------------------------------------------------
+      // FAIL IF POPUP NOT FOUND
+      // ------------------------------------------------------------
+
+      expect(
+        itemAddedConfirmed,
+        'Item added to cart confirmation should appear'
+      ).toBeTruthy();
+
+      logInfo(
+        'Item added to cart confirmation validated successfully'
+      );
+
+
+      // ============================================================
+      // STEP 15
+      // VIEW CART AND PROCEED
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 15: Verify and click View Cart and Proceed'
+      );
+
+      await fastWait(
+        page,
+        1000
+      );
+
+      const viewCartButton =
+        page
+          .locator(
+            '#gw-proceed-step3-btn'
+          )
+          .first();
+
+      await expect(
+        viewCartButton,
+        'View Cart and Proceed button should appear'
+      ).toBeVisible({
+        timeout: 30000,
+      });
+
+      await viewCartButton.scrollIntoViewIfNeeded();
+
+      await mapPage.highlight(
+        viewCartButton,
+        {
+          label: 'STEP 15: VIEW CART AND PROCEED',
+          pause: 1500,
+        }
+      );
+
+      logInfo(
+        'View Cart and Proceed option verified successfully'
+      );
+
+
+      // ------------------------------------------------------------
+      // CLICK VIEW CART AND PROCEED
+      // ------------------------------------------------------------
+
+      await robustClick(
+        page,
+        viewCartButton,
+        {
+          timeout: 15000,
+          retry: 1,
+        }
+      );
+
+      await fastWait(
+        page,
+        2500
+      );
+
+      logInfo(
+        'View Cart and Proceed clicked successfully'
+      );
+
+
+      // ============================================================
+      // STEP 16
+      // VERIFY EXPORT OPTIONS PANEL
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 16: Verify Export Options panel'
+      );
+
+      const exportOptions =
+        page
+          .locator(
+            '#gw-cart-common-options'
+          )
+          .first();
+
+      await expect(
+        exportOptions,
+        'Export Options panel should be visible'
+      ).toBeVisible({
+        timeout: 15000,
+      });
+
+      await mapPage.highlight(
+        exportOptions,
+        {
+          label: 'STEP 16: EXPORT OPTIONS',
+          pause: 1200,
+        }
+      );
+
+      logInfo(
+        'Export Options panel is visible successfully'
+      );
+
+
+      // ============================================================
+      // STEP 17
+      // PROJECTION → UTM
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 17: Select Projection UTM'
+      );
+
+
+      // IMPORTANT:
+      // This assumes the first select inside Export Options
+      // is Projection.
+
+      const exportSelects =
+        exportOptions.locator(
+          'select'
+        );
+
+      await expect(
+        exportSelects.first(),
+        'Export option dropdowns should be available'
+      ).toBeVisible({
+        timeout: 15000,
+      });
+
+
+      const projectionSelect =
+        exportSelects.nth(0);
+
+      await mapPage.highlight(
+        projectionSelect,
+        {
+          label: 'STEP 17: PROJECTION → UTM',
+          pause: 1200,
+        }
+      );
+
+
+      // Verify UTM option exists
+      await expect(
+        projectionSelect.locator(
+          'option',
+          {
+            hasText: 'UTM',
+          }
+        ).first(),
+        'UTM option should be available in Projection'
+      ).toHaveCount(
+        1
+      );
+
+
+      await projectionSelect.selectOption({
+        label: 'UTM',
+      });
+
+      await expect(
+        projectionSelect.locator(
+          'option:checked'
+        ),
+        'Projection should be selected as UTM'
+      ).toHaveText(
+        /UTM/i
+      );
+
+      logInfo(
+        'Projection selected successfully: UTM'
+      );
+
+
+      // ============================================================
+      // STEP 18
+      // DATUM → WGS84
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 18: Select Datum WGS84'
+      );
+
+
+      const datumSelect =
+        exportSelects.nth(1);
+
+      await expect(
+        datumSelect,
+        'Datum dropdown should be visible'
+      ).toBeVisible({
+        timeout: 15000,
+      });
+
+      await mapPage.highlight(
+        datumSelect,
+        {
+          label: 'STEP 18: DATUM → WGS84',
+          pause: 1200,
+        }
+      );
+
+
+      // Verify WGS84 option exists
+      await expect(
+        datumSelect.locator(
+          'option',
+          {
+            hasText: 'WGS84',
+          }
+        ).first(),
+        'WGS84 option should be available in Datum'
+      ).toHaveCount(
+        1
+      );
+
+
+      await datumSelect.selectOption({
+        label: 'WGS84',
+      });
+
+      await expect(
+        datumSelect.locator(
+          'option:checked'
+        ),
+        'Datum should be selected as WGS84'
+      ).toHaveText(
+        /WGS84/i
+      );
+
+      logInfo(
+        'Datum selected successfully: WGS84'
+      );
+
+
+      // ============================================================
+      // STEP 19
+      // FORMAT → GeoTIFF
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 19: Select Format GeoTIFF'
+      );
+
+
+      const formatSelect =
+        exportSelects.nth(2);
+
+      await expect(
+        formatSelect,
+        'Format dropdown should be visible'
+      ).toBeVisible({
+        timeout: 15000,
+      });
+
+      await mapPage.highlight(
+        formatSelect,
+        {
+          label: 'STEP 19: FORMAT → GeoTIFF',
+          pause: 1200,
+        }
+      );
+
+
+      // Verify GeoTIFF option exists
+      await expect(
+        formatSelect.locator(
+          'option',
+          {
+            hasText: 'GeoTIFF',
+          }
+        ).first(),
+        'GeoTIFF option should be available in Format'
+      ).toHaveCount(
+        1
+      );
+
+
+      await formatSelect.selectOption({
+        label: 'GeoTIFF',
+      });
+
+      await expect(
+        formatSelect.locator(
+          'option:checked'
+        ),
+        'Format should be selected as GeoTIFF'
+      ).toHaveText(
+        /GeoTIFF/i
+      );
+
+      logInfo(
+        'Format selected successfully: GeoTIFF'
+      );
+
+
+      // ============================================================
+      // STEP 20
+      // FINAL EXPORT OPTIONS VERIFICATION
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 20: Verify Projection UTM, Datum WGS84 and Format GeoTIFF'
+      );
+
+      
+      // ------------------------------------------------------------
+      // FINAL FORMAT CHECK
+      // ------------------------------------------------------------
+
+      await expect(
+        formatSelect.locator(
+          'option:checked'
+        ),
+        'Final Format should be GeoTIFF'
+      ).toHaveText(
+        /GeoTIFF/i
+      );
+
+
+      // ------------------------------------------------------------
+      // HIGHLIGHT FINAL EXPORT OPTIONS
+      // ------------------------------------------------------------
+
+      await mapPage.highlight(
+        exportOptions,
+        {
+          label: 'FINAL: UTM | WGS84 | GeoTIFF',
+          pause: 1500,
+        }
+      );
+
+
+      logInfo(
+        'Final Export Options verified successfully: Projection = UTM, Datum = WGS84, Format = GeoTIFF'
+      );
+
+
+
+
+        // ============================================================
+      // STEP 21
+      // VERIFY CHECKOUT BUTTON
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 21: Verify Checkout button'
+      );
+
+
+      // ------------------------------------------------------------
+      // 21.1 VERIFY CHECKOUT BUTTON
+      // ------------------------------------------------------------
+
+      const checkoutButton =
+        page
+          .locator(
+            'button.gw-submit-btn'
+          )
+          .first();
+
+      await expect(
+        checkoutButton,
+        'Checkout button should be visible'
+      ).toBeVisible({
+        timeout: 15000,
+      });
+
+      await expect(
+        checkoutButton,
+        'Checkout button should have correct text'
+      ).toHaveText(
+        'Checkout →'
+      );
+
+      await expect(
+        checkoutButton,
+        'Checkout button should have correct onclick'
+      ).toHaveAttribute(
+        'onclick',
+        'gwSubmitOrder()'
+      );
+
+      await mapPage.highlight(
+        checkoutButton,
+        {
+          label: 'STEP 21.1: CHECKOUT',
+          pause: 1200,
+        }
+      );
+
+      logInfo(
+        'Checkout button verified successfully'
+      );
+
+
+      // ============================================================
+      // STEP 21.2
+      // CLICK CHECKOUT AND VERIFY SUBMIT REQUEST PAGE
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 21.2: Click Checkout and verify Submit Request page'
+      );
+
+
+      // ------------------------------------------------------------
+      // 21.2.1 CLICK CHECKOUT
+      // ------------------------------------------------------------
+
+      await checkoutButton.scrollIntoViewIfNeeded();
+
+      await mapPage.highlight(
+        checkoutButton,
+        {
+          label: 'STEP 21.2: CLICK CHECKOUT',
+          pause: 1200,
+        }
+      );
+
+      await robustClick(
+        page,
+        checkoutButton,
+        {
+          timeout: 15000,
+          retry: 1,
+        }
+      );
+
+      logInfo(
+        'Checkout button clicked successfully'
+      );
+
+
+      // ------------------------------------------------------------
+      // 21.2.2 VERIFY SUBMIT REQUEST PAGE
+      // ------------------------------------------------------------
+
+      const submitRequestWrapper =
+        page
+          .locator(
+            'div.wrapper:has(#contact_lead_form)'
+          )
+          .first();
+
+      await expect(
+        submitRequestWrapper,
+        'Submit Request page should be visible after Checkout'
+      ).toBeVisible({
+        timeout: 15000,
+      });
+
+      const submitRequestTitle =
+        submitRequestWrapper
+          .locator(
+            '.title'
+          )
+          .first();
+
+      await expect(
+        submitRequestTitle,
+        'Submit Request title should be visible'
+      ).toBeVisible({
+        timeout: 15000,
+      });
+
+      await expect(
+        submitRequestTitle,
+        'Submit Request title should have correct text'
+      ).toHaveText(
+        'Submit Request'
+      );
+
+      await expect(
+        submitRequestWrapper.locator(
+          '.gw-form-instruction'
+        ),
+        'Submit Request instruction should be visible'
+      ).toBeVisible({
+        timeout: 10000,
+      });
+
+      await mapPage.highlight(
+        submitRequestWrapper,
+        {
+          label: 'STEP 21.2: SUBMIT REQUEST',
+          pause: 1500,
+        }
+      );
+
+      logInfo(
+        'Submit Request page verified successfully'
+      );
+
+
+      // ============================================================
+      // STEP 21.3
+      // VERIFY DOWNLOAD AOI (KML) BUTTON
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 21.3: Verify Download AOI (KML) button'
+      );
+
+
+      // ------------------------------------------------------------
+      // 21.3.1 LOCATE DOWNLOAD AOI BUTTON
+      // ------------------------------------------------------------
+
+      const downloadAoiButton =
+        page
+          .locator(
+            '#a_kml_download'
+          )
+          .first();
+
+      await expect(
+        downloadAoiButton,
+        'Download AOI (KML) button should be visible'
+      ).toBeVisible({
+        timeout: 15000,
+      });
+
+
+      // ------------------------------------------------------------
+      // 21.3.2 VERIFY BUTTON TEXT
+      // ------------------------------------------------------------
+
+      await expect(
+        downloadAoiButton,
+        'Download AOI button should have correct text'
+      ).toHaveText(
+        '⬇ Download AOI (KML)'
+      );
+
+
+      // ------------------------------------------------------------
+      // 21.3.3 VERIFY DOWNLOAD ATTRIBUTE
+      // ------------------------------------------------------------
+
+      await expect(
+        downloadAoiButton,
+        'Download AOI button should have download attribute'
+      ).toHaveAttribute(
+        'download',
+        ''
+      );
+
+
+      // ------------------------------------------------------------
+      // 21.3.4 VERIFY ONCLICK
+      // ------------------------------------------------------------
+
+      await expect(
+        downloadAoiButton,
+        'Download AOI button should have correct onclick'
+      ).toHaveAttribute(
+        'onclick',
+        'return gwDownloadKml()'
+      );
+
+
+      // ------------------------------------------------------------
+      // 21.3.5 VERIFY HREF
+      // ------------------------------------------------------------
+
+      await expect(
+        downloadAoiButton,
+        'Download AOI button should have KML href'
+      ).toHaveAttribute(
+        'href',
+        /kml-storage\/.*\.kml/i
+      );
+
+      await mapPage.highlight(
+        downloadAoiButton,
+        {
+          label: 'STEP 21.3: DOWNLOAD AOI (KML)',
+          pause: 1500,
+        }
+      );
+
+      logInfo(
+        'Download AOI (KML) button verified successfully'
+      );
+
+
+      // ============================================================
+      // STEP 21.4
+      // CLICK DOWNLOAD AOI AND VERIFY DOWNLOAD
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 21.4: Click Download AOI (KML) and verify download process'
+      );
+
+
+      // ------------------------------------------------------------
+      // 21.4.1 WAIT FOR DOWNLOAD EVENT
+      // ------------------------------------------------------------
+
+      const downloadPromise =
+        page.waitForEvent(
+          'download',
+          {
+            timeout: 30000,
+          }
+        );
+
+
+      // ------------------------------------------------------------
+      // 21.4.2 CLICK DOWNLOAD BUTTON
+      // ------------------------------------------------------------
+
+      await mapPage.highlight(
+        downloadAoiButton,
+        {
+          label: 'STEP 21.4: CLICK DOWNLOAD AOI',
+          pause: 1200,
+        }
+      );
+
+      await downloadAoiButton.click({
+        timeout: 15000,
+      });
+
+      logInfo(
+        'Download AOI (KML) button clicked successfully'
+      );
+
+
+      // ------------------------------------------------------------
+      // 21.4.3 GET DOWNLOAD OBJECT
+      // ------------------------------------------------------------
+
+      const aoiDownload =
+        await downloadPromise;
+
+
+      // ------------------------------------------------------------
+      // 21.4.4 VERIFY DOWNLOAD DID NOT FAIL
+      // ------------------------------------------------------------
+
+      const downloadFailure =
+        await aoiDownload.failure();
+
+      expect(
+        downloadFailure,
+        'AOI KML download should complete without failure'
+      ).toBeNull();
+
+
+      // ------------------------------------------------------------
+      // 21.4.5 VERIFY DOWNLOADED FILE NAME
+      // ------------------------------------------------------------
+
+      const downloadedFileName =
+        aoiDownload.suggestedFilename();
+
+      expect(
+        downloadedFileName,
+        'Downloaded AOI file should have KML extension'
+      ).toMatch(
+        /\.kml$/i
+      );
+
+      const downloadedFilePath =
+        await aoiDownload.path();
+
+      expect(
+        downloadedFilePath,
+        'Downloaded AOI KML file path should be available'
+      ).not.toBeNull();
+
+      logInfo(
+        `AOI KML download completed successfully: ${downloadedFileName}`
+      );
+
+
+      // ============================================================
+// STEP 21.5
+// VERIFY AND FILL FIRST NAME FIELD
+// ============================================================
+
+await showStep(
+  page,
+  'Step 21.5: Verify and fill First Name field'
+);
+
+const firstNameInput =
+  page
+    .locator('#first_name')
+    .first();
+
+await expect(
+  firstNameInput,
+  'First Name field should be visible'
+).toBeVisible({
+  timeout: 15000,
+});
+
+await expect(
+  firstNameInput,
+  'First Name field should have correct placeholder'
+).toHaveAttribute(
+  'placeholder',
+  'First Name'
+);
+
+await expect(
+  firstNameInput,
+  'First Name field should be required'
+).toHaveAttribute(
+  'required',
+  ''
+);
+
+await mapPage.highlight(
+  firstNameInput,
+  {
+    label: 'STEP 21.5: FIRST NAME',
+    pause: 1000,
+  }
+);
+
+// Fill First Name
+await firstNameInput.fill('john');
+
+await expect(
+  firstNameInput,
+  'First Name should contain john'
+).toHaveValue('john');
+
+logInfo(
+  'First Name field verified and filled successfully: john'
+);
+
+
+// ============================================================
+// STEP 21.6
+// VERIFY AND FILL LAST NAME FIELD
+// ============================================================
+
+await showStep(
+  page,
+  'Step 21.6: Verify and fill Last Name field'
+);
+
+const lastNameInput =
+  page
+    .locator('#last_name')
+    .first();
+
+await expect(
+  lastNameInput,
+  'Last Name field should be visible'
+).toBeVisible({
+  timeout: 15000,
+});
+
+await expect(
+  lastNameInput,
+  'Last Name field should have correct placeholder'
+).toHaveAttribute(
+  'placeholder',
+  'Last Name'
+);
+
+await expect(
+  lastNameInput,
+  'Last Name field should be required'
+).toHaveAttribute(
+  'required',
+  ''
+);
+
+await mapPage.highlight(
+  lastNameInput,
+  {
+    label: 'STEP 21.6: LAST NAME',
+    pause: 1000,
+  }
+);
+
+// Fill Last Name
+await lastNameInput.fill('dalton');
+
+await expect(
+  lastNameInput,
+  'Last Name should contain dalton'
+).toHaveValue('dalton');
+
+logInfo(
+  'Last Name field verified and filled successfully: dalton'
+);
+
+
+// ============================================================
+// STEP 21.7
+// VERIFY AND FILL EMAIL FIELD
+// ============================================================
+
+await showStep(
+  page,
+  'Step 21.7: Verify and fill Email field'
+);
+
+const emailInput =
+  page
+    .locator('#email')
+    .first();
+
+await expect(
+  emailInput,
+  'Email field should be visible'
+).toBeVisible({
+  timeout: 15000,
+});
+
+await expect(
+  emailInput,
+  'Email field should have correct placeholder'
+).toHaveAttribute(
+  'placeholder',
+  'Email'
+);
+
+await expect(
+  emailInput,
+  'Email field should be required'
+).toHaveAttribute(
+  'required',
+  ''
+);
+
+await mapPage.highlight(
+  emailInput,
+  {
+    label: 'STEP 21.7: EMAIL',
+    pause: 1000,
+  }
+);
+
+// Fill Email
+await emailInput.fill('test@gmail.com');
+
+await expect(
+  emailInput,
+  'Email should contain test@gmail.com'
+).toHaveValue('test@gmail.com');
+
+logInfo(
+  'Email field verified and filled successfully: test@gmail.com'
+);
+
+
+// ============================================================
+// STEP 21.8
+// VERIFY AND FILL COMPANY FIELD
+// ============================================================
+
+await showStep(
+  page,
+  'Step 21.8: Verify and fill Company field'
+);
+
+const companyInput =
+  page
+    .locator('#company')
+    .first();
+
+await expect(
+  companyInput,
+  'Company field should be visible'
+).toBeVisible({
+  timeout: 15000,
+});
+
+await expect(
+  companyInput,
+  'Company field should have correct placeholder'
+).toHaveAttribute(
+  'placeholder',
+  'Company'
+);
+
+await mapPage.highlight(
+  companyInput,
+  {
+    label: 'STEP 21.8: COMPANY',
+    pause: 1000,
+  }
+);
+
+// Fill Company
+await companyInput.fill('test');
+
+await expect(
+  companyInput,
+  'Company should contain test'
+).toHaveValue('test');
+
+logInfo(
+  'Company field verified and filled successfully: test'
+);
+
+
+// ============================================================
+// STEP 21.9
+// VERIFY AND FILL PHONE FIELD
+// ============================================================
+
+await showStep(
+  page,
+  'Step 21.9: Verify and fill Phone field'
+);
+
+const phoneInput =
+  page
+    .locator('#phone')
+    .first();
+
+await expect(
+  phoneInput,
+  'Phone field should be visible'
+).toBeVisible({
+  timeout: 15000,
+});
+
+await expect(
+  phoneInput,
+  'Phone field should have correct placeholder'
+).toHaveAttribute(
+  'placeholder',
+  'Phone'
+);
+
+await mapPage.highlight(
+  phoneInput,
+  {
+    label: 'STEP 21.9: PHONE',
+    pause: 1000,
+  }
+);
+
+// Fill Phone
+await phoneInput.fill('test');
+
+await expect(
+  phoneInput,
+  'Phone should contain test'
+).toHaveValue('test');
+
+logInfo(
+  'Phone field verified and filled successfully: test'
+);
+
+
+// ============================================================
+// STEP 21.10
+// VERIFY AND FILL STREET FIELD
+// ============================================================
+
+await showStep(
+  page,
+  'Step 21.10: Verify and fill Street field'
+);
+
+const streetInput =
+  page
+    .locator('#street')
+    .first();
+
+await expect(
+  streetInput,
+  'Street field should be visible'
+).toBeVisible({
+  timeout: 15000,
+});
+
+await expect(
+  streetInput,
+  'Street field should have correct placeholder'
+).toHaveAttribute(
+  'placeholder',
+  'Street'
+);
+
+await mapPage.highlight(
+  streetInput,
+  {
+    label: 'STEP 21.10: STREET',
+    pause: 1000,
+  }
+);
+
+// Fill Street
+await streetInput.fill('test');
+
+await expect(
+  streetInput,
+  'Street should contain test'
+).toHaveValue('test');
+
+logInfo(
+  'Street field verified and filled successfully: test'
+);
+
+
+// ============================================================
+// STEP 21.11
+// VERIFY AND FILL CITY FIELD
+// ============================================================
+
+await showStep(
+  page,
+  'Step 21.11: Verify and fill City field'
+);
+
+const cityInput =
+  page
+    .locator('#city')
+    .first();
+
+await expect(
+  cityInput,
+  'City field should be visible'
+).toBeVisible({
+  timeout: 15000,
+});
+
+await expect(
+  cityInput,
+  'City field should have correct placeholder'
+).toHaveAttribute(
+  'placeholder',
+  'City'
+);
+
+await mapPage.highlight(
+  cityInput,
+  {
+    label: 'STEP 21.11: CITY',
+    pause: 1000,
+  }
+);
+
+// Fill City
+await cityInput.fill('test');
+
+await expect(
+  cityInput,
+  'City should contain test'
+).toHaveValue('test');
+
+logInfo(
+  'City field verified and filled successfully: test'
+);
+
+
+// ============================================================
+// STEP 21.12
+// VERIFY AND FILL STATE FIELD
+// ============================================================
+
+await showStep(
+  page,
+  'Step 21.12: Verify and fill State/Province field'
+);
+
+const stateInput =
+  page
+    .locator('#state')
+    .first();
+
+await expect(
+  stateInput,
+  'State/Province field should be visible'
+).toBeVisible({
+  timeout: 15000,
+});
+
+await expect(
+  stateInput,
+  'State/Province field should have correct placeholder'
+).toHaveAttribute(
+  'placeholder',
+  'State/Province'
+);
+
+await mapPage.highlight(
+  stateInput,
+  {
+    label: 'STEP 21.12: STATE / PROVINCE',
+    pause: 1000,
+  }
+);
+
+// Fill State
+await stateInput.fill('test');
+
+await expect(
+  stateInput,
+  'State/Province should contain test'
+).toHaveValue('test');
+
+logInfo(
+  'State/Province field verified and filled successfully: test'
+);
+
+
+// ============================================================
+// STEP 21.13
+// VERIFY AND FILL ZIP FIELD
+// ============================================================
+
+await showStep(
+  page,
+  'Step 21.13: Verify and fill Zip field'
+);
+
+const zipInput =
+  page
+    .locator('#zip')
+    .first();
+
+await expect(
+  zipInput,
+  'Zip field should be visible'
+).toBeVisible({
+  timeout: 15000,
+});
+
+await expect(
+  zipInput,
+  'Zip field should have correct placeholder'
+).toHaveAttribute(
+  'placeholder',
+  'Zip'
+);
+
+await mapPage.highlight(
+  zipInput,
+  {
+    label: 'STEP 21.13: ZIP',
+    pause: 1000,
+  }
+);
+
+// Fill Zip
+await zipInput.fill('test');
+
+await expect(
+  zipInput,
+  'Zip should contain test'
+).toHaveValue('test');
+
+logInfo(
+  'Zip field verified and filled successfully: test'
+);
+
+
+// ============================================================
+// STEP 21.14
+// VERIFY AND FILL COUNTRY FIELD
+// ============================================================
+
+await showStep(
+  page,
+  'Step 21.14: Verify and fill Country field'
+);
+
+const countryInput =
+  page
+    .locator('#country')
+    .first();
+
+await expect(
+  countryInput,
+  'Country field should be visible'
+).toBeVisible({
+  timeout: 15000,
+});
+
+await expect(
+  countryInput,
+  'Country field should have correct placeholder'
+).toHaveAttribute(
+  'placeholder',
+  'Country'
+);
+
+await mapPage.highlight(
+  countryInput,
+  {
+    label: 'STEP 21.14: COUNTRY',
+    pause: 1000,
+  }
+);
+
+// Fill Country
+await countryInput.fill('test');
+
+await expect(
+  countryInput,
+  'Country should contain test'
+).toHaveValue('test');
+
+logInfo(
+  'Country field verified and filled successfully: test'
+);
+
+
+// ============================================================
+// STEP 21.15
+// VERIFY AND FILL ADDITIONAL NOTES FIELD
+// ============================================================
+
+await showStep(
+  page,
+  'Step 21.15: Verify and fill Additional Notes field'
+);
+
+const additionalNotesInput =
+  page
+    .locator('#description')
+    .first();
+
+await expect(
+  additionalNotesInput,
+  'Additional Notes field should be visible'
+).toBeVisible({
+  timeout: 15000,
+});
+
+await expect(
+  additionalNotesInput,
+  'Additional Notes field should have correct placeholder'
+).toHaveAttribute(
+  'placeholder',
+  'Additional Notes'
+);
+
+await mapPage.highlight(
+  additionalNotesInput,
+  {
+    label: 'STEP 21.15: ADDITIONAL NOTES',
+    pause: 1000,
+  }
+);
+
+// Fill Additional Notes
+await additionalNotesInput.fill('test');
+
+await expect(
+  additionalNotesInput,
+  'Additional Notes should contain test'
+).toHaveValue('test');
+
+logInfo(
+  'Additional Notes field verified and filled successfully: test'
+);
+
+
+// ============================================================
+// STEP 21.16
+// VERIFY INDUSTRY SELECT + ALL OPTIONS + SELECT AGRICULTURE
+// ============================================================
+
+await showStep(
+  page,
+  'Step 21.16: Verify Industry field and select Agriculture'
+);
+
+const industrySelect =
+  page
+    .locator('#industry')
+    .first();
+
+await expect(
+  industrySelect,
+  'Industry field should be visible'
+).toBeVisible({
+  timeout: 15000,
+});
+
+await expect(
+  industrySelect,
+  'Industry field should have correct class'
+).toHaveClass(
+  /gw-industry-select/
+);
+
+
+// ------------------------------------------------------------
+// VERIFY TOTAL INDUSTRY OPTIONS
+// ------------------------------------------------------------
+
+const industryOptions =
+  industrySelect.locator('option');
+
+await expect(
+  industryOptions,
+  'Industry dropdown should contain 11 options'
+).toHaveCount(
+  11
+);
+
+
+// ------------------------------------------------------------
+// VERIFY REQUIRED INDUSTRY OPTIONS
+// ------------------------------------------------------------
+
+await expect(
+  industryOptions.filter({
+    hasText: 'Agriculture',
+  }),
+  'Industry should contain Agriculture option'
+).toHaveCount(
+  1
+);
+
+await expect(
+  industryOptions.filter({
+    hasText: 'Construction',
+  }),
+  'Industry should contain Construction option'
+).toHaveCount(
+  1
+);
+
+await expect(
+  industryOptions.filter({
+    hasText: 'Technology',
+  }),
+  'Industry should contain Technology option'
+).toHaveCount(
+  1
+);
+
+
+// ------------------------------------------------------------
+// VERIFY ALL INDUSTRY OPTIONS ARE PRESENT
+// ------------------------------------------------------------
+
+const expectedIndustryOptions = [
+  'Agriculture',
+  'Construction',
+  'Technology',
+  // Add remaining expected options here if needed
+];
+
+for (
+  const expectedOption of expectedIndustryOptions
+) {
+
+  await expect(
+    industryOptions.filter({
+      hasText: expectedOption,
+    }),
+    `Industry should contain ${expectedOption} option`
+  ).toHaveCount(1);
+}
+
+
+// ------------------------------------------------------------
+// HIGHLIGHT INDUSTRY DROPDOWN
+// ------------------------------------------------------------
+
+await mapPage.highlight(
+  industrySelect,
+  {
+    label: 'STEP 21.16: INDUSTRY',
+    pause: 1200,
+  }
+);
+
+
+// ------------------------------------------------------------
+// SELECT AGRICULTURE
+// ------------------------------------------------------------
+
+await industrySelect.selectOption({
+  label: 'Agriculture',
+});
+
+
+// ------------------------------------------------------------
+// VERIFY AGRICULTURE IS SELECTED
+// ------------------------------------------------------------
+
+await expect(
+  industrySelect,
+  'Industry should have Agriculture selected'
+).toHaveValue(
+  await industrySelect
+    .locator('option')
+    .filter({
+      hasText: 'Agriculture',
+    })
+    .getAttribute('value')
+);
+
+logInfo(
+  'Industry field verified successfully and Agriculture selected'
+);
+
+
+      // ============================================================
+      // STEP 21.17
+      // VERIFY SUBMIT REQUEST BUTTON
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 21.17: Verify Submit Request button'
+      );
+
+
+      // ------------------------------------------------------------
+      // 21.17.1 LOCATE SUBMIT BUTTON
+      // ------------------------------------------------------------
+
+      const submitRequestButton =
+        page
+          .locator(
+            '#contact_lead_form input[type="submit"][value="Submit Request"]'
+          )
+          .first();
+
+      await expect(
+        submitRequestButton,
+        'Submit Request button should be visible'
+      ).toBeVisible({
+        timeout: 15000,
+      });
+
+
+      // ------------------------------------------------------------
+      // 21.17.2 VERIFY BUTTON TYPE
+      // ------------------------------------------------------------
+
+      await expect(
+        submitRequestButton,
+        'Submit Request should be a submit input'
+      ).toHaveAttribute(
+        'type',
+        'submit'
+      );
+
+
+      // ------------------------------------------------------------
+      // 21.17.3 VERIFY BUTTON VALUE
+      // ------------------------------------------------------------
+
+      await expect(
+        submitRequestButton,
+        'Submit Request button should have correct text'
+      ).toHaveValue(
+        'Submit Request'
+      );
+
+      await mapPage.highlight(
+        submitRequestButton,
+        {
+          label: 'STEP 21.17: SUBMIT REQUEST',
+          pause: 1500,
+        }
+      );
+
+      logInfo(
+        'Submit Request button verified successfully'
+      );
+
+
+      // ============================================================
+      // STEP 21.18
+      // CLICK SUBMIT REQUEST AND VERIFY THANK YOU PAGE
+      // ============================================================
+
+      await showStep(
+        page,
+        'Step 21.18: Submit request and verify Thank You page'
+      );
+
+
+      // ------------------------------------------------------------
+      // 21.19.1 VERIFY FORM ACTION
+      // ------------------------------------------------------------
+
+      const contactLeadForm =
+        page
+          .locator(
+            '#contact_lead_form'
+          )
+          .first();
+
+      await expect(
+        contactLeadForm,
+        'Contact lead form should be visible'
+      ).toBeVisible({
+        timeout: 15000,
+      });
+
+      await expect(
+        contactLeadForm,
+        'Contact lead form should have Salesforce action'
+      ).toHaveAttribute(
+        'action',
+        /webto\.salesforce\.com\/servlet\/servlet\.WebToLead/
+      );
+
+
+      // ------------------------------------------------------------
+      // 21.19.2 VERIFY THANK YOU RETURN URL
+      // ------------------------------------------------------------
+
+      await expect(
+        contactLeadForm.locator(
+          'input[name="retURL"]'
+        ),
+        'Return URL should point to Thank You page'
+      ).toHaveValue(
+        'https://datastore.geowgs84.com/thank_you/'
+      );
+
+
+      // ------------------------------------------------------------
+      // 21.19.3 HIGHLIGHT SUBMIT BUTTON
+      // ------------------------------------------------------------
+
+      await mapPage.highlight(
+        submitRequestButton,
+        {
+          label: 'STEP 21.19: CLICK SUBMIT REQUEST',
+          pause: 1500,
+        }
+      );
+
+
+      // ------------------------------------------------------------
+      // 21.19.4 CLICK SUBMIT REQUEST
+      // ------------------------------------------------------------
+
+      await submitRequestButton.click({
+        timeout: 15000,
+      });
+
+      logInfo(
+        'Submit Request button clicked successfully'
+      );
+
+
+      // ------------------------------------------------------------
+      // 21.19.5 WAIT FOR THANK YOU PAGE
+      // ------------------------------------------------------------
+
+      await page.waitForURL(
+        /\/thank_you\/?$/,
+        {
+          timeout: 90000,
+          waitUntil: 'domcontentloaded',
+        }
+      );
+
+      logInfo(
+        `Thank You page loaded successfully: ${page.url()}`
+      );
+
+
+      // ------------------------------------------------------------
+      // 21.19.6 VERIFY THANK YOU HEADING
+      // ------------------------------------------------------------
+
+      const thankYouHeading =
+        page
+          .locator(
+            'h1'
+          )
+          .filter({
+            hasText:
+              'Thank you for submitting your project request.',
+          })
+          .first();
+
+      await expect(
+        thankYouHeading,
+        'Thank You heading should be visible'
+      ).toBeVisible({
+        timeout: 15000,
+      });
+
+      await expect(
+        thankYouHeading,
+        'Thank You heading should have correct text'
+      ).toHaveText(
+        'Thank you for submitting your project request.'
+      );
+
+
+      // ------------------------------------------------------------
+      // 21.19.7 VERIFY THANK YOU MESSAGE
+      // ------------------------------------------------------------
+
+      const thankYouMessage =
+        page
+          .locator(
+            'p'
+          )
+          .filter({
+            hasText:
+              'We are processing your request',
+          })
+          .first();
+
+      await expect(
+        thankYouMessage,
+        'Thank You processing message should be visible'
+      ).toBeVisible({
+        timeout: 15000,
+      });
+
+      await expect(
+        thankYouMessage,
+        'Thank You processing message should have correct text'
+      ).toHaveText(
+        'We are processing your request and will get back to you within 24-48 hrs!'
+      );
+
+
+      // ------------------------------------------------------------
+      // 21.19.8 HIGHLIGHT THANK YOU PAGE
+      // ------------------------------------------------------------
+
+      await mapPage.highlight(
+        thankYouHeading,
+        {
+          label: 'STEP 21.19: THANK YOU PAGE',
+          pause: 1500,
+        }
+      );
+
+      logInfo(
+        'Thank You page verified successfully'
+      );
+
+
+      // ------------------------------------------------------------
+      // FINAL PROJECTION CHECK
+      // ------------------------------------------------------------
+
+      await expect(
+        projectionSelect.locator(
+          'option:checked'
+        ),
+        'Final Projection should be UTM'
+      ).toHaveText(
+        /UTM/i
+      );
+
+
+      // ------------------------------------------------------------
+      // FINAL DATUM CHECK
+      // ------------------------------------------------------------
+
+      await expect(
+        datumSelect.locator(
+          'option:checked'
+        ),
+        'Final Datum should be WGS84'
+      ).toHaveText(
+        /WGS84/i
+      );
+
+ 
+
+      // ============================================================
+      // TC-3 COMPLETE
+      // ============================================================
+
+      logInfo(
+        'TC-3 completed successfully'
+      );
+
+
+    } catch (error) {
+
+      addError(
+        `TC-3 failed: ${error.message}`
+      );
+
+      logInfo(
+        `Failed Requests: ${JSON.stringify(failedRequests)}`
+      );
+
+      logInfo(
+        `Console Errors: ${JSON.stringify(consoleErrors)}`
+      );
+
+      logInfo(
+        `API Responses: ${JSON.stringify(apiResponses)}`
+      );
+
+      throw error;
+
+
+    } finally {
+
+      logInfo(
+        'TC-3 execution finished'
+      );
+
+    }
+
+  }
+);
+
 
 
 
