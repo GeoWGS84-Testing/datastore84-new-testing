@@ -1,165 +1,314 @@
- PS C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright>  npx playwright test specs/cart.spec.js -g "\[P0\] 2" --headed --workers=1
+ // tests/datastore.spec.js
 
-Running 1 test using 1 worker
+//import { test, expect } from './common.';
+import { test, expect } from './common.js';
 
-🧹 Diagnostics cleared: 2 stale files from previous run
-     1 [chromium] › specs\cart.spec.js:1131:5 › [P0] 2 - verify the checkout popup sections 
-[INFO] 2026-09-09T22:09:29.980Z ([P0] 2 - verify the checkout popup sections )  - Context set
-[INFO] 2026-09-09T22:09:29.991Z ([P0] 2 - verify the checkout popup sections )  - Step 1: Navigate to the DataStore URL
-[INFO] 2026-09-09T22:09:38.423Z ([P0] 2 - verify the checkout popup sections )  - DataStore root returned HTTP 200
-[INFO] 2026-09-09T22:09:38.423Z ([P0] 2 - verify the checkout popup sections )  - DataStore URL opened successfully
-[INFO] 2026-09-09T22:09:38.423Z ([P0] 2 - verify the checkout popup sections )  - Step 2: Wait for page loader and highlight the loader/logo
-[INFO] 2026-09-09T22:09:43.170Z ([P0] 2 - verify the checkout popup sections )  - Page loader became hidden
-[INFO] 2026-09-09T22:09:43.170Z ([P0] 2 - verify the checkout popup sections )  - Page loader/logo processed successfully
-[INFO] 2026-09-09T22:09:43.171Z ([P0] 2 - verify the checkout popup sections )  - Step 3: Close the tutorial
-[INFO] 2026-09-09T22:09:45.846Z ([P0] 2 - verify the checkout popup sections )  - robustClick succeeded
-[INFO] 2026-09-09T22:09:47.272Z ([P0] 2 - verify the checkout popup sections )  - Tutorial modal closed
-[INFO] 2026-09-09T22:09:47.273Z ([P0] 2 - verify the checkout popup sections )  - Tutorial closed successfully
-[INFO] 2026-09-09T22:09:47.273Z ([P0] 2 - verify the checkout popup sections )  - Step 4: Wait for the map to load
-[INFO] 2026-09-09T22:09:50.229Z ([P0] 2 - verify the checkout popup sections )  - World map is visible and loaded
-[INFO] 2026-09-09T22:09:50.229Z ([P0] 2 - verify the checkout popup sections )  - Map loaded successfully
-[INFO] 2026-09-09T22:09:50.230Z ([P0] 2 - verify the checkout popup sections )  - Step 5: Locate and highlight the Search icon
-[INFO] 2026-09-09T22:09:52.860Z ([P0] 2 - verify the checkout popup sections )  - Search icon located successfully
-[INFO] 2026-09-09T22:09:52.860Z ([P0] 2 - verify the checkout popup sections )  - Step 6: Click the Search icon
-[INFO] 2026-09-09T22:09:56.089Z ([P0] 2 - verify the checkout popup sections )  - Search icon clicked successfully
-[INFO] 2026-09-09T22:09:56.090Z ([P0] 2 - verify the checkout popup sections )  - Step 7: Search Denver, select the location, wait for map movement and verify the selected marker
-[INFO] 2026-09-09T22:10:00.538Z ([P0] 2 - verify the checkout popup sections )  - Denver Search API response status: 200
-[INFO] 2026-09-09T22:10:02.818Z ([P0] 2 - verify the checkout popup sections )  - Denver, CO, USA location suggestion selected successfully
-[INFO] 2026-09-09T22:10:04.551Z ([P0] 2 - verify the checkout popup sections )  - World map is visible and loaded
-[INFO] 2026-09-09T22:10:06.147Z ([P0] 2 - verify the checkout popup sections )  - Map moved to selected Denver location
-[INFO] 2026-09-09T22:10:07.996Z ([P0] 2 - verify the checkout popup sections )  - Map marker is visible
-[INFO] 2026-09-09T22:10:10.074Z ([P0] 2 - verify the checkout popup sections )  - Selected Denver location marker verified successfully
-[INFO] 2026-09-09T22:10:10.075Z ([P0] 2 - verify the checkout popup sections )  - Step 8: Open Map Camera Control, click Zoom + once and open AOI Draw Tool
-[INFO] 2026-09-09T22:10:14.476Z ([P0] 2 - verify the checkout popup sections )  - robustClick succeeded
-[INFO] 2026-09-09T22:10:15.587Z ([P0] 2 - verify the checkout popup sections )  - Map Camera Control opened successfully
-[INFO] 2026-09-09T22:10:18.774Z ([P0] 2 - verify the checkout popup sections )  - robustClick succeeded
-[INFO] 2026-09-09T22:10:21.089Z ([P0] 2 - verify the checkout popup sections )  - Zoom (+) clicked exactly once
-[INFO] 2026-09-09T22:10:24.866Z ([P0] 2 - verify the checkout popup sections )  - AOI Draw Tool opened successfully
-[INFO] 2026-09-09T22:10:24.866Z ([P0] 2 - verify the checkout popup sections )  - Step 9: Select Rectangle AOI, draw the AOI and verify Service popup with AOI Active status
-[INFO] 2026-09-09T22:10:28.782Z ([P0] 2 - verify the checkout popup sections )  - Rectangle AOI draw tool selected successfully
-[INFO] 2026-09-09T22:10:31.931Z ([P0] 2 - verify the checkout popup sections )  - Rectangle AOI drawn successfully
-[INFO] 2026-09-09T22:10:34.022Z ([P0] 2 - verify the checkout popup sections )  - Service popup is visible
-[INFO] 2026-09-09T22:10:36.145Z ([P0] 2 - verify the checkout popup sections )  - AOI Active status verified successfully
-[INFO] 2026-09-09T22:10:36.145Z ([P0] 2 - verify the checkout popup sections )  - Step 10: Verify Satellite Service, Resolution, Satellite Filter, Date Range, Cloud Coverage and Search Imagery
-[INFO] 2026-09-09T22:10:41.621Z ([P0] 2 - verify the checkout popup sections )  - Satellite service selected successfully
-[INFO] 2026-09-09T22:10:45.632Z ([P0] 2 - verify the checkout popup sections )  - robustClick succeeded
-[INFO] 2026-09-09T22:10:45.633Z ([P0] 2 - verify the checkout popup sections )  - Search Imagery button clicked successfully
-[INFO] 2026-09-09T22:10:45.633Z ([P0] 2 - verify the checkout popup sections )  - Step 10.3: Wait for imagery scenes to load
-[INFO] 2026-09-09T22:10:55.724Z ([P0] 2 - verify the checkout popup sections )  - Imagery scenes loaded successfully. Add to Cart icons found: 10
-[INFO] 2026-09-09T22:10:55.725Z ([P0] 2 - verify the checkout popup sections )  - Step 10.4: Add scene to cart and proceed to cart
-[INFO] 2026-09-09T22:11:00.916Z ([P0] 2 - verify the checkout popup sections )  - robustClick succeeded
-[INFO] 2026-09-09T22:11:00.916Z ([P0] 2 - verify the checkout popup sections )  - First available scene Add to Cart icon clicked successfully
-[INFO] 2026-09-09T22:11:25.020Z ([P0] 2 - verify the checkout popup sections )  - Item added to cart !! confirmation detected successfully
-[INFO] 2026-09-09T22:11:25.023Z ([P0] 2 - verify the checkout popup sections )  - Item added to cart confirmation validated successfully
-[INFO] 2026-09-09T22:11:29.362Z ([P0] 2 - verify the checkout popup sections )  - View Cart and Proceed option verified successfully
-[INFO] 2026-09-09T22:11:30.702Z ([P0] 2 - verify the checkout popup sections )  - robustClick succeeded
-[INFO] 2026-09-09T22:11:34.504Z ([P0] 2 - verify the checkout popup sections )  - View Cart and Proceed clicked successfully
-[INFO] 2026-09-09T22:11:34.504Z ([P0] 2 - verify the checkout popup sections )  - Step 10.4 completed successfully: scene added to cart, confirmation validated, and cart page opened
-[INFO] 2026-09-09T22:11:34.504Z ([P0] 2 - verify the checkout popup sections )  - Step 11.1: Verify Data Query, Imagery and Order steps
-[INFO] 2026-09-09T22:11:35.799Z ([P0] 2 - verify the checkout popup sections )  - Data Query step verified successfully
-[INFO] 2026-09-09T22:11:35.893Z ([P0] 2 - verify the checkout popup sections )  - Imagery step verified successfully
-[INFO] 2026-09-09T22:11:35.977Z ([P0] 2 - verify the checkout popup sections )  - Order step verified successfully
-[INFO] 2026-09-09T22:11:35.977Z ([P0] 2 - verify the checkout popup sections )  - Step 11.2: Verify Export Options section
-[INFO] 2026-09-09T22:11:37.196Z ([P0] 2 - verify the checkout popup sections )  - Export Options section exists in DOM
-[INFO] 2026-09-09T22:11:37.281Z ([P0] 2 - verify the checkout popup sections )  - Projection export option verified successfully
-[INFO] 2026-09-09T22:11:37.383Z ([P0] 2 - verify the checkout popup sections )  - Datum export option verified successfully
-[INFO] 2026-09-09T22:11:37.425Z ([P0] 2 - verify the checkout popup sections )  - Format export option verified successfully
-[INFO] 2026-09-09T22:11:37.426Z ([P0] 2 - verify the checkout popup sections )  - Export Options verified successfully: Projection, Datum and Format
-[INFO] 2026-09-09T22:11:37.426Z ([P0] 2 - verify the checkout popup sections )  - Step 11.3: Verify cart table Product, Price, Resolution and Date
-[INFO] 2026-09-09T22:11:38.623Z ([P0] 2 - verify the checkout popup sections )  - Satellite cart table found successfully
-[ERROR] 2026-09-09T22:11:53.712Z ([P0] 2 - verify the checkout popup sections )  - TC-2 failed: Product column should be visible
+import { SatellitePage } from '../pages/SatellitePage';
+import { CartPage } from '../pages/CartPage';
+import { 
+  setContext, getWarnings, logInfo, addWarning, saveMapScreenshot, highlight, waitForAOIOnMap, getElementMetrics 
+} from '../utils/helpers';
 
-expect(locator).toBeVisible() failed
+test.describe('GeoWGS84 Full Suite', () => {
+  let mapPage, satellitePage, cartPage;
 
-Locator:  locator('#tbl_satellite_scenes').locator('thead th').filter({ hasText: 'Product' }).first()
-Expected: visible
-Received: hidden
-Timeout:  15000ms
+  test.beforeEach(async ({ page }) => {
+    mapPage = new MapPage(page);
+    satellitePage = new SatellitePage(page);
+    cartPage = new CartPage(page);
+  });
 
-Call log:
-  - Product column should be visible with timeout 15000ms
-  - waiting for locator('#tbl_satellite_scenes').locator('thead th').filter({ hasText: 'Product' }).first()
-    18 × locator resolved to <th rowspan="1" colspan="1" tabindex="0" class="sorting" aria-controls="tbl_satellite_scenes" aria-label="Product: activate to sort column ascending">Product</th>
-       - unexpected value "hidden"
+  // 1. Shopping Cart
+  test('[P0] 1: Shopping Cart and checkout page', async ({ page }) => {
+    await mapPage.showStep('Step 1: Opening datastore landing page');
+    await mapPage.openLanding(); 
 
-[INFO] 2026-09-09T22:11:53.719Z ([P0] 2 - verify the checkout popup sections )  - Failed Requests: []
-[INFO] 2026-09-09T22:11:53.719Z ([P0] 2 - verify the checkout popup sections )  - Console Errors: []
-[INFO] 2026-09-09T22:11:53.720Z ([P0] 2 - verify the checkout popup sections )  - API Responses: [{"url":"https://maps.googleapis.com/maps/api/js?key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&callback=initMap&libraries=drawing,places&v=3.64","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/common.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/util.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/map.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/onion.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/kml.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/geocoder.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/maxzoom.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/drawing_impl.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/controls.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/places_impl.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/log.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/marker.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/infowindow.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/api/mapsjs/gen_204?csp_test=true","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/$rpc/google.internal.maps.mapsjs.v1.MapsJsInternalService/GetViewportInfo","status":200,"method":"POST"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i2!2i3!3i0!4i256!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=130983","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i2!2i2!3i0!4i256!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=34512","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i2!2i1!3i1!4i256!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=1802","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i2!2i1!3i0!4i256!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=69112","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i2!2i2!3i1!4i256!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=98273","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i2!2i3!3i2!4i256!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=127434","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i2!2i0!3i0!4i256!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=103712","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i2!2i2!3i2!4i256!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=30963","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i2!2i3!3i1!4i256!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=63673","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i2!2i1!3i2!4i256!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=65563","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i2!2i0!3i2!4i256!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=100163","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i2!2i0!3i1!4i256!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=36402","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m4!1m3!1i2!2i0!3i0!1m4!1m3!1i2!2i0!3i1!1m4!1m3!1i2!2i1!3i0!1m4!1m3!1i2!2i1!3i1!1m4!1m3!1i2!2i0!3i2!1m4!1m3!1i2!2i1!3i2!1m4!1m3!1i2!2i2!3i0!1m4!1m3!1i2!2i2!3i1!1m4!1m3!1i2!2i3!3i0!1m4!1m3!1i2!2i3!3i1!1m4!1m3!1i2!2i2!3i2!1m4!1m3!1i2!2i3!3i2!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e3!12m2!5b1!6b1!23i46991212!23i47054750&callback=_xdc_._m42msi&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=59290","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/api/js/AuthenticationService.Authenticate?1shttps%3A%2F%2Fdatastore.geowgs84.com%2F&4sAIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&8b0&callback=_xdc_._vplqnn&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=94838","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/api/place/js/AutocompletionService.GetPredictions?1sDenver&4sen-US&6m6&1m2&1d-63.29994323148397&2d-180&2m2&1d76.72673601323714&2d180&15e3&20s16512D60A35143A593C99C6DACE3EC4926o7&21m1&2e1&r_url=https%3A%2F%2Fdatastore.geowgs84.com%2F&callback=_xdc_._dpqo1u&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=47496","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/api/place/js/PlaceService.GetPlaceDetails?2sen-US&10e3&14m1&1sChIJzxcfI6qAa4cR1jaKJ_j0jhE&15s16512D60A35143A593C99C6DACE3EC4926o7&16m1&1saddress_components%2Cgeometry%2Cicon%2Cname&17m1&2e1&r_url=https%3A%2F%2Fdatastore.geowgs84.com%2F&callback=_xdc_._o0xojw&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=126047","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/$rpc/google.internal.maps.mapsjs.v1.MapsJsInternalService/GetViewportInfo","status":200,"method":"POST"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m4!1m3!1i10!2i211!3i387!1m4!1m3!1i10!2i211!3i388!1m4!1m3!1i10!2i211!3i389!1m4!1m3!1i10!2i212!3i387!1m4!1m3!1i10!2i213!3i387!1m4!1m3!1i10!2i214!3i387!1m4!1m3!1i10!2i215!3i387!1m4!1m3!1i10!2i212!3i388!1m4!1m3!1i10!2i212!3i389!1m4!1m3!1i10!2i213!3i388!1m4!1m3!1i10!2i213!3i389!1m4!1m3!1i10!2i214!3i388!1m4!1m3!1i10!2i214!3i389!1m4!1m3!1i10!2i215!3i388!1m4!1m3!1i10!2i215!3i389!1m4!1m3!1i10!2i216!3i387!1m4!1m3!1i10!2i216!3i388!1m4!1m3!1i10!2i216!3i389!2m3!1e0!2sm!3i794559262!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e3!12m2!5b1!6b1!23i46991212!23i47054750&callback=_xdc_._6kgmnq&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=97554","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i214!3i388!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=100122","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i213!3i387!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=88984","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i213!3i388!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=79072","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i215!3i389!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=53862","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i214!3i387!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=110034","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i215!3i387!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=13","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i215!3i388!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=121172","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i214!3i389!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=32812","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i213!3i389!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=11762","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i216!3i387!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=78461","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i212!3i387!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=67934","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i212!3i388!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=58022","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i212!3i389!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=121783","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i216!3i389!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=74912","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i211!3i389!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=100733","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i216!3i388!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=11151","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i211!3i388!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=36972","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i10!2i211!3i387!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=46884","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m4!1m3!1i10!2i211!3i387!1m4!1m3!1i10!2i211!3i388!1m4!1m3!1i10!2i211!3i389!1m4!1m3!1i10!2i212!3i387!1m4!1m3!1i10!2i213!3i387!1m4!1m3!1i10!2i214!3i387!1m4!1m3!1i10!2i215!3i387!1m4!1m3!1i10!2i212!3i388!1m4!1m3!1i10!2i212!3i389!1m4!1m3!1i10!2i213!3i388!1m4!1m3!1i10!2i213!3i389!1m4!1m3!1i10!2i214!3i388!1m4!1m3!1i10!2i214!3i389!1m4!1m3!1i10!2i215!3i388!1m4!1m3!1i10!2i215!3i389!1m4!1m3!1i10!2i216!3i387!1m4!1m3!1i10!2i216!3i388!1m4!1m3!1i10!2i216!3i389!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e3!12m2!5b1!6b1!23i46991212!23i47054750&callback=_xdc_._gvj0bs&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=75895","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i427!3i777!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=101735","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i427!3i776!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=37974","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i426!3i777!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=80685","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i426!3i776!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=16924","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/$rpc/google.internal.maps.mapsjs.v1.MapsJsInternalService/GetViewportInfo","status":200,"method":"POST"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i428!3i776!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=59024","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i428!3i777!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=122785","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i428!3i778!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=55475","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i426!3i778!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=13375","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i427!3i778!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=34425","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i425!3i778!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=123396","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i426!3i775!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=84234","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i425!3i776!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=126945","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i425!3i777!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=59635","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i428!3i775!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=126334","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i427!3i775!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=105284","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i429!3i775!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=16313","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i425!3i775!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=63184","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i429!3i776!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=80074","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i429!3i778!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=76525","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i11!2i429!3i777!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=12764","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m4!1m3!1i11!2i425!3i775!1m4!1m3!1i11!2i426!3i775!1m4!1m3!1i11!2i427!3i775!1m4!1m3!1i11!2i428!3i775!1m4!1m3!1i11!2i429!3i775!1m4!1m3!1i11!2i425!3i776!1m4!1m3!1i11!2i425!3i777!1m4!1m3!1i11!2i425!3i778!1m4!1m3!1i11!2i426!3i776!1m4!1m3!1i11!2i426!3i777!1m4!1m3!1i11!2i427!3i776!1m4!1m3!1i11!2i427!3i777!1m4!1m3!1i11!2i426!3i778!1m4!1m3!1i11!2i427!3i778!1m4!1m3!1i11!2i428!3i776!1m4!1m3!1i11!2i428!3i777!1m4!1m3!1i11!2i429!3i776!1m4!1m3!1i11!2i429!3i777!1m4!1m3!1i11!2i428!3i778!1m4!1m3!1i11!2i429!3i778!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e3!12m2!5b1!6b1!23i46991212!23i47054750&callback=_xdc_._fb1t98&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=64911","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/geometry.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps-api-v3/api/js/64/14a/poly.js","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i854!3i1553!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=92972","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i853!3i1552!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=71499","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i856!3i1552!4i256!2m3!1e0!2sm!3i794559964!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=16274","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i853!3i1553!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=4189","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i854!3i1552!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=29211","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i856!3i1553!4i256!2m3!1e0!2sm!3i794559964!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=80035","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i854!3i1554!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=25662","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i855!3i1554!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=114445","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i853!3i1554!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=67950","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/$rpc/google.internal.maps.mapsjs.v1.MapsJsInternalService/GetViewportInfo","status":200,"method":"POST"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i852!3i1554!4i256!2m3!1e0!2sm!3i794560234!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=7866","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i852!3i1553!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=46477","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i852!3i1552!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=113787","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i851!3i1554!4i256!2m3!1e0!2sm!3i794560234!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=50154","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i851!3i1552!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=25004","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i851!3i1553!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=88765","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i856!3i1554!4i256!2m3!1e0!2sm!3i794560216!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=129555","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i855!3i1553!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=50684","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i12!2i855!3i1552!4i256!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e0!5m2!1e3!5f2!23i46991212!23i47054750!23i47083502&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=117994","status":200,"method":"GET"},{"url":"https://maps.googleapis.com/maps/vt?pb=!1m4!1m3!1i12!2i852!3i1552!1m4!1m3!1i12!2i852!3i1553!1m4!1m3!1i12!2i853!3i1552!1m4!1m3!1i12!2i853!3i1553!1m4!1m3!1i12!2i852!3i1554!1m4!1m3!1i12!2i853!3i1554!1m4!1m3!1i12!2i854!3i1552!1m4!1m3!1i12!2i854!3i1553!1m4!1m3!1i12!2i855!3i1552!1m4!1m3!1i12!2i855!3i1553!1m4!1m3!1i12!2i854!3i1554!1m4!1m3!1i12!2i855!3i1554!2m3!1e0!2sm!3i794560252!3m13!2sen-US!3sUS!5e18!12m5!1e68!2m2!1sset!2sRoadmap!4e2!12m3!1e37!2m1!1ssmartmaps!4e3!12m2!5b1!6b1!23i46991212!23i47054750&callback=_xdc_._gyg072&key=AIzaSyAEdczK0_O9YjPpOxnju-DAdUK70Tr48nc&token=112553","status":200,"method":"GET"}]
-[INFO] 2026-09-09T22:11:53.720Z ([P0] 2 - verify the checkout popup sections )  - TC-2 execution finished
-[DIAG-DEBUG] testId="b254acef562a5fc632e0-dbf7c94f40b38b5d267f" title="[P0] 2 - verify the checkout popup sections " warnings=0 errors=1 skipped=0 status=failed
-[INFO] 2026-09-09T22:11:54.646Z ([P0] 2 - verify the checkout popup sections )  - Screenshot captured
-[INFO] 2026-09-09T22:11:55.125Z ([P0] 2 - verify the checkout popup sections )  - Screenshot captured
-[WARNING] 2026-09-09T22:11:55.517Z ([P0] 2 - verify the checkout popup sections )  - screenshot saved: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\test-results\scene__P0__2_-_verify_the_checkout_popup_sections__final_state_2026-09-09T22-11-55.126Z.png
-[DIAG-DEBUG] File EXISTS: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\diagnostics\b254acef562a5fc632e0-dbf7c94f40b38b5d267f.json
-[DIAG-DEBUG] File contains: warnings=1 errors=1 skippedSteps=0
-[INFO] 2026-09-09T22:11:56.056Z   - Screenshot captured
-  ✘  1 [chromium] › specs\cart.spec.js:1131:5 › [P0] 2 - verify the checkout popup sections  (2.5m)
+    await mapPage.showStep('Step 2: Closing wizard modal');
+    await mapPage.closeWizardModal();
 
+    await mapPage.showStep('Step 3: Search for a place and Drawing AOI');
+    await mapPage.searchPlace('Indore');
 
-  1) [chromium] › specs\cart.spec.js:1131:5 › [P0] 2 - verify the checkout popup sections  ─────────
+    await mapPage.showStep('Step 4: Open Satellite Imagery section');
+    await satellitePage.openSatelliteSection();
 
-    Error: Product column should be visible
+    await mapPage.showStep('Step 5: Waiting for table to load');
+    await satellitePage.waitForSatelliteTable();
 
-    expect(locator).toBeVisible() failed
+    await mapPage.showStep('Step 6: Click Add to cart for FIRST row in satellite table');
+    await cartPage.addItemToCartAndVerifyPopup();
 
-    Locator:  locator('#tbl_satellite_scenes').locator('thead th').filter({ hasText: 'Product' }).first()
-    Expected: visible
-    Received: hidden
-    Timeout:  15000ms
+    await mapPage.showStep('Step 7: Waiting for "Item added to cart" popup / Verify cart (first-row match)');
+    await cartPage.openCartAndVerifyItem();
 
-    Call log:
-      - Product column should be visible with timeout 15000ms
-      - waiting for locator('#tbl_satellite_scenes').locator('thead th').filter({ hasText: 'Product' }).first()
-        18 × locator resolved to <th rowspan="1" colspan="1" tabindex="0" class="sorting" aria-controls="tbl_satellite_scenes" aria-label="Product: activate to sort column ascending">Product</th>
-           - unexpected value "hidden"
+    await mapPage.showStep('Step 8: Click Checkout / Fill form / Submit order');
+    await cartPage.checkoutAndFillForm();
 
+    await mapPage.showStep('Step 9: ✅ Redirected to thank_you page — TEST PASSED');
+  });
 
-      2424 |   productColumn,
-      2425 |   'Product column should be visible'
-    > 2426 | ).toBeVisible({
-           |   ^
-      2427 |   timeout: 15000,
-      2428 | });
-      2429 |
-        at C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\specs\cart.spec.js:2426:3
+  // Dynamic Product Tests
+  const PRODUCT_TESTS = [
+    { id: '2', titleSuffix: 'WorldView01', productName: 'WorldView01' },
+    { id: '2.1', titleSuffix: 'WorldView02', productName: 'WorldView02' },
+    { id: '2.2', titleSuffix: 'WorldView03', productName: 'WorldView03' },
+    { id: '2.3', titleSuffix: 'WorldView04', productName: 'WorldView04' },
+    { id: '2.4', titleSuffix: 'GeoEye1', productName: 'GeoEye1' },
+    { id: '2.5', titleSuffix: 'QuickBird', productName: 'QuickBird' },
+    { id: '2.6', titleSuffix: 'IKONOS', productName: 'IKONOS' },
+    { id: '2.7', titleSuffix: '21AT 30cm Archive', productName: '21AT 30cm Archive' },
+    { id: '2.8', titleSuffix: '21AT 50cm Archive', productName: '21AT 50cm Archive' },
+    { id: '2.9', titleSuffix: '21AT 80cm Archive', productName: '21AT 80cm Archive' },
+    { id: '2.10', titleSuffix: 'WV-Legion01', productName: 'WV-Legion01' },
+    { id: '2.11', titleSuffix: 'WV-Legion02', productName: 'WV-Legion02' }
+  ];
 
-    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results\specs-cart--P0-2---verify-the-checkout-popup-sections--chromium\test-failed-1.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
+  for (const t of PRODUCT_TESTS) {
+    test(`[P0] ${t.id}: Satellite scenes — ${t.titleSuffix}`, async ({ page }) => {
+      await mapPage.showStep('Step 1: Open Landing and Close Modal');
+      await mapPage.openLanding();
+      await mapPage.closeWizardModal();
+      
+      await mapPage.showStep('Step 2: Search Location and Draw AOI');
+      await mapPage.searchPlace('Indore');
+      
+      await mapPage.showStep('Step 3: Open Satellite Section');
+      await satellitePage.openSatelliteSection();
+      
+      await mapPage.showStep('Step 4: Wait for Product Table');
+      await satellitePage.waitForSatelliteTable();
+      
+      await mapPage.showStep(`Step 5: Locate and Select Product "${t.productName}"`);
+      const found = await satellitePage.selectProduct(t.productName);
+      if (!found) return; 
 
-    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results\specs-cart--P0-2---verify-the-checkout-popup-sections--chromium\attachments\screenshot-f0c3171ce7def357c04e1c2cb36e2bba40a8986a.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
+      await mapPage.showStep('Step 6: Wait for Scenes Table (up to 3 minutes)');
+      const scenesStatus = await satellitePage.waitForScenesTable();
 
-    attachment #3: screenshot (image/png) ──────────────────────────────────────────────────────────
-    test-results\specs-cart--P0-2---verify-the-checkout-popup-sections--chromium\attachments\screenshot-4d2f4794f8aca51fa1e65611e4a84908da7933e8.png
-    ────────────────────────────────────────────────────────────────────────────────────────────────
+      if (scenesStatus === 'empty') {
+        await mapPage.showStep(`No scenes available for "${t.productName}" at this AOI after 3 min — skipping scene processing`);
+        // Test PASSES but is marked with WARNING/SKIPPED in email
+        return;
+      }
+      if (scenesStatus === 'error') {
+        await mapPage.showStep(`Error loading scenes table for "${t.productName}" — skipping`);
+        return;
+      }
 
-    attachment #4: video (video/webm) ──────────────────────────────────────────────────────────────
-    test-results\specs-cart--P0-2---verify-the-checkout-popup-sections--chromium\attachments\video-16d4cc76d3cf26df4b345fe9108514d8b21de244.webm
-    ────────────────────────────────────────────────────────────────────────────────────────────────
+      // Data loaded — process the first scene
+      await mapPage.showStep('Step 7: Process First Scene (Outline, Preview, Details)');
+      const firstRow = satellitePage.scenesRows.first();
+      await satellitePage.processScene(firstRow);
+    });
+  }
 
-    attachment #5: video (video/webm) ──────────────────────────────────────────────────────────────
-    test-results\specs-cart--P0-2---verify-the-checkout-popup-sections--chromium\video.webm
-    ────────────────────────────────────────────────────────────────────────────────────────────────
+  // 3. Search UI — FIXED: wait for pac-item visibility before clicking
+  test('[P1] 3: Search UI — search location (draw AOI)', async ({ page }) => {
+    await mapPage.showStep('Step 1: Open Landing and Close Modal');
+    await mapPage.openLanding();
+    await mapPage.closeWizardModal();
+    
+    await mapPage.showStep('Step 2: Click Search Icon');
+    try {
+        await mapPage.robustClick(mapPage.worldSearchButton);
+    } catch {
+        await mapPage.worldSearchButton.click();
+    }
+    
+    await mapPage.showStep('Step 3: Verify Search Input Appears');
+    await expect(mapPage.pacInput).toBeVisible({ timeout: 10000 });
+    
+    await mapPage.showStep('Step 4: Type "Indore" and Select Suggestion');
+    // Click input first to ensure it's focused
+    await mapPage.pacInput.click();
+    await page.waitForTimeout(300);
+    
+    // Type the search query
+    await mapPage.pacInput.fill('Indore');
+    
+    // Wait for the autocomplete dropdown suggestions to become VISIBLE
+    // The .pac-item may exist in DOM but be hidden until the API responds
+    const firstSuggestion = page.locator('.pac-item').first();
+    await firstSuggestion.waitFor({ state: 'visible', timeout: 15000 });
+    
+    // Small pause to let the dropdown fully render its position
+    await page.waitForTimeout(300);
+    await firstSuggestion.click();
+    
+    await mapPage.showStep('Step 5: Wait for Map to Load');
+    await mapPage.waitForMapToLoad();
 
-    Error Context: test-results\specs-cart--P0-2---verify-the-checkout-popup-sections--chromium\error-context.md
+    await mapPage.showStep('Step 6: Wait for Marker to Render (5s)');
+    await page.waitForTimeout(5000);
 
-    attachment #7: trace (application/zip) ─────────────────────────────────────────────────────────
-    test-results\specs-cart--P0-2---verify-the-checkout-popup-sections--chromium\trace.zip
-    Usage:
+    await mapPage.showStep('Step 7: Verify Search Result Marker is Present');
+    await mapPage.verifyMapMarker(); 
+  });
 
-        npx playwright show-trace test-results\specs-cart--P0-2---verify-the-checkout-popup-sections--chromium\trace.zip
+  // 4. Coordinates
+  test('[P1] 4: Coordinates — enter lat/lon and zoom to place', async ({ page }) => {
+    await mapPage.showStep('Step 1: Open Landing and Close Modal');
+    await mapPage.openLanding();
+    await mapPage.closeWizardModal();
+    
+    await mapPage.showStep('Step 2: Open Coordinates Modal and Enter Data');
+    await mapPage.enterCoordinates('18.5246', '73.8786');
 
-    ────────────────────────────────────────────────────────────────────────────────────────────────
+    await mapPage.showStep('Step 3: Wait for Map to Render Marker (5s)');
+    await page.waitForTimeout(5000);
 
-  1 failed
-    [chromium] › specs\cart.spec.js:1131:5 › [P0] 2 - verify the checkout popup sections  ──────────
-[REPORTER] Diagnostics found by title: [P0]_2_-_verify_the_checkout_popup_sections_ (warnings=1, skipped=0)
-[REPORTER] [P0] 2 - verify the checkout popup sections : failure=true hasWarning=true(1) hasSkippedLogic=false(0) diag=found
+    await mapPage.showStep('Step 4: Verify Map Marker is Visible');
+    await mapPage.verifyMapMarker(); 
+  });
 
-To open last HTML report run:
+  // 5. Upload KMZ
+  test('[P1] 5: Upload KMZ and verify map info window', async ({ page }) => {
+    await mapPage.showStep('Step 1: Open Landing and Close Modal');
+    await mapPage.openLanding();
+    await mapPage.closeWizardModal();
+    
+    await mapPage.showStep('Step 2: Upload KMZ File');
+    await mapPage.uploadKMZ('utils/test-data/MadhyaPradesh.kmz');
+    
+    await mapPage.showStep('Step 3: Click Map Until Info Window Appears');
+    const found = await mapPage.clickMapUntilInfoWindow();
+    
+    await mapPage.showStep('Step 4: Validate Info Window Found');
+    expect(found).toBeTruthy();
+  });
 
-  npx playwright show-report
+  // 6. Locate
+  test('[P1] 6: Locate (go to current location)', async ({ page }) => {
+    await mapPage.showStep('Step 1: Open Landing and Close Modal');
+    await mapPage.openLanding();
+    await mapPage.closeWizardModal();
+    
+    await mapPage.showStep('Step 2: Grant Permission and Set Location');
+    setContext({ flow: 'locate' });
+    await mapPage.locateCurrentLocation(22.7196, 75.8577);
+    
+    await mapPage.showStep('Step 3: Verify Location Marker');
+    await mapPage.verifyMapMarker(); 
+  });
 
-PS C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright> 
+  // 7. Hover
+  test('[P1] 7: Hover locationer — show coordinates on mouse hover', async ({ page }) => {
+    await mapPage.showStep('Step 1: Open Landing and Close Modal');
+    await mapPage.openLanding();
+    await mapPage.closeWizardModal();
+    
+    await mapPage.showStep('Step 2: Enable Hover Location Toggle');
+    setContext({ flow: 'hover' });
+    try {
+      await mapPage.enableHoverLocation();
+    } catch (e) {
+      addWarning('Unable to enable hover location toggle: ' + (e?.message || e));
+      return;
+    }
+    
+    await mapPage.showStep('Step 3: Hover on Map to Get Coordinates');
+    const hasCoords = await mapPage.verifyHoverCoordinates();
+    
+    await mapPage.showStep('Step 4: Validate Coordinates Displayed');
+    expect(hasCoords).toBeTruthy();
+  });
+
+  // 8. AOI View
+  test('[P1] 8: AOI_view (zoom back to AOI) and World View', async ({ page }) => {
+    await mapPage.showStep('Step 1: Open Landing and Close Modal');
+    await mapPage.openLanding();
+    await mapPage.closeWizardModal();
+    
+    await mapPage.showStep('Step 2: Draw AOI');
+    await mapPage.zoomUntilAOI();
+    await mapPage.openAndDrawRectangleAOI();
+    
+    const initialAoi = await waitForAOIOnMap(page, 10000);
+    if (!initialAoi) throw new Error('Initial AOI not found');
+    
+    const initialMetrics = await getElementMetrics(initialAoi.locator);
+    logInfo(`Initial AOI Metrics: ${JSON.stringify(initialMetrics)}`);
+
+    await mapPage.showStep('Step 3: Click World View');
+    await mapPage.switchToWorldView();
+    await mapPage.waitForMapToLoad(); 
+
+    await saveMapScreenshot(page, 'view', 'world_view_state', false);
+
+    let worldViewValid = false;
+    const worldMetrics = await getElementMetrics(initialAoi.locator);
+
+    if (!worldMetrics) {
+        logInfo('VALIDATED: AOI disappeared or moved off-screen in World View.');
+        worldViewValid = true;
+    } else {
+        logInfo(`World View Metrics: ${JSON.stringify(worldMetrics)}`);
+        const areaShrunk = worldMetrics.area < (initialMetrics.area * 0.9);
+        const centerShiftX = Math.abs((worldMetrics.x + worldMetrics.width/2) - (initialMetrics.x + initialMetrics.width/2));
+        const centerShiftY = Math.abs((worldMetrics.y + worldMetrics.height/2) - (initialMetrics.y + initialMetrics.height/2));
+        const movedSignificantly = (centerShiftX > 50 || centerShiftY > 50);
+
+        if (areaShrunk) {
+            logInfo(`VALIDATED: AOI area shrunk from ${initialMetrics.area} to ${worldMetrics.area}.`);
+            worldViewValid = true;
+        } else if (movedSignificantly) {
+            logInfo(`VALIDATED: AOI moved significantly (Shift X:${centerShiftX}, Y:${centerShiftY}).`);
+            worldViewValid = true;
+        } else {
+            addWarning(`World View clicked, but AOI size/position did not change significantly.`);
+        }
+    }
+
+    if (!worldViewValid) {
+        await saveMapScreenshot(page, 'view', 'world_view_validation_failed', true);
+    }
+
+    await mapPage.showStep('Step 4: Click AOI View');
+    await mapPage.switchToAoiView();
+    await mapPage.waitForMapToLoad();
+
+    const restoredAoi = await waitForAOIOnMap(page, 15000);
+    if (!restoredAoi) throw new Error('FAILURE: AOI did not reappear after clicking AOI View.');
+
+    const restoredMetrics = await getElementMetrics(restoredAoi.locator);
+    logInfo(`Restored AOI Metrics: ${JSON.stringify(restoredMetrics)}`);
+    
+    const areaSimilar = Math.abs(restoredMetrics.area - initialMetrics.area) < (initialMetrics.area * 0.2);
+    
+    if (areaSimilar) {
+        logInfo('VALIDATED: AOI returned to original size.');
+        await highlight(page, restoredAoi.locator, { borderColor: 'lime', pause: 1000 });
+    } else {
+        addWarning(`AOI size mismatch. Initial: ${initialMetrics.area}, Restored: ${restoredMetrics.area}`);
+        await highlight(page, restoredAoi.locator, { borderColor: 'orange', pause: 1000 });
+    }
+
+    await saveMapScreenshot(page, 'view', 'aoi_view_restored', false);
+    
+    await mapPage.showStep('Step 5: Final Validation');
+    expect(worldViewValid).toBe(true);
+  });
+
+  // 9. AOI Info Window
+  test('[P1] 9: AOI info window validation with close + reset behavior', async ({ page }) => {
+    await mapPage.showStep('Step 1: Open Landing and Close Modal');
+    await mapPage.openLanding();
+    await mapPage.closeWizardModal();
+    
+    await mapPage.showStep('Step 2: Search Place and Draw AOI');
+    await mapPage.searchPlace('Vijay Nagar'); 
+    
+    await mapPage.showStep('Step 3: Validate Info Window Presence');
+    await mapPage.infoWindow.waitFor({ state: 'visible' });
+    
+    await mapPage.showStep('Step 4: Close Info Window');
+    await mapPage.closeInfoWindow();
+    
+    await mapPage.showStep('Step 5: Reset AOI');
+    await mapPage.resetAOI();
+    
+    await mapPage.showStep('Step 6: Validate Info Window is Gone');
+    await expect(mapPage.infoWindow).not.toBeVisible();
+  });
+
+});

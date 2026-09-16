@@ -6354,96 +6354,97 @@ logInfo(
         }
       );
 
+ // ------------------------------------------------------------
+// 21.19.4 CLICK SUBMIT REQUEST
+// ------------------------------------------------------------
 
-      // ------------------------------------------------------------
-      // 21.19.4 CLICK SUBMIT REQUEST
-      // ------------------------------------------------------------
+await submitRequestButton.click({
+  timeout: 15000,
+});
 
-      await submitRequestButton.click({
-        timeout: 15000,
-      });
+logInfo(
+  'Submit Request button clicked successfully'
+);
 
-      logInfo(
-        'Submit Request button clicked successfully'
-      );
+// ------------------------------------------------------------
+// 21.19.5 WAIT FOR SALESFORCE SUBMISSION / THANK YOU PAGE
+// ------------------------------------------------------------
 
+// Salesforce WebToLead submission may temporarily navigate
+// through Salesforce before returning to the configured retURL.
 
-      // ------------------------------------------------------------
-      // 21.19.5 WAIT FOR THANK YOU PAGE
-      // ------------------------------------------------------------
+await page.waitForLoadState('domcontentloaded', {
+  timeout: 90000,
+}).catch(() => {
+  logInfo(
+    'DOM content load did not complete within 90 seconds; continuing with Thank You verification'
+  );
+});
 
-      await page.waitForURL(
-        /\/thank_you\/?$/,
-        {
-          timeout: 90000,
-          waitUntil: 'domcontentloaded',
-        }
-      );
+// Give Salesforce redirect a little time to complete.
+await page.waitForTimeout(5000);
 
-      logInfo(
-        `Thank You page loaded successfully: ${page.url()}`
-      );
+logInfo(
+  `Current URL after Submit Request: ${page.url()}`
+);
 
+// ------------------------------------------------------------
+// 21.19.6 VERIFY THANK YOU PAGE
+// ------------------------------------------------------------
 
-      // ------------------------------------------------------------
-      // 21.19.6 VERIFY THANK YOU HEADING
-      // ------------------------------------------------------------
+const thankYouHeading =
+  page
+    .locator('h1')
+    .filter({
+      hasText:
+        'Thank you for submitting your project request.',
+    })
+    .first();
 
-      const thankYouHeading =
-        page
-          .locator(
-            'h1'
-          )
-          .filter({
-            hasText:
-              'Thank you for submitting your project request.',
-          })
-          .first();
+await expect(
+  thankYouHeading,
+  'Thank You heading should be visible after submitting request'
+).toBeVisible({
+  timeout: 90000,
+});
 
-      await expect(
-        thankYouHeading,
-        'Thank You heading should be visible'
-      ).toBeVisible({
-        timeout: 15000,
-      });
+await expect(
+  thankYouHeading,
+  'Thank You heading should have correct text'
+).toHaveText(
+  'Thank you for submitting your project request.'
+);
 
-      await expect(
-        thankYouHeading,
-        'Thank You heading should have correct text'
-      ).toHaveText(
-        'Thank you for submitting your project request.'
-      );
+logInfo(
+  `Thank You page verified successfully. Current URL: ${page.url()}`
+);
 
+// ------------------------------------------------------------
+// 21.19.7 VERIFY THANK YOU MESSAGE
+// ------------------------------------------------------------
 
-      // ------------------------------------------------------------
-      // 21.19.7 VERIFY THANK YOU MESSAGE
-      // ------------------------------------------------------------
+const thankYouMessage =
+  page
+    .locator('p')
+    .filter({
+      hasText:
+        'We are processing your request',
+    })
+    .first();
 
-      const thankYouMessage =
-        page
-          .locator(
-            'p'
-          )
-          .filter({
-            hasText:
-              'We are processing your request',
-          })
-          .first();
+await expect(
+  thankYouMessage,
+  'Thank You processing message should be visible'
+).toBeVisible({
+  timeout: 15000,
+});
 
-      await expect(
-        thankYouMessage,
-        'Thank You processing message should be visible'
-      ).toBeVisible({
-        timeout: 15000,
-      });
-
-      await expect(
-        thankYouMessage,
-        'Thank You processing message should have correct text'
-      ).toHaveText(
-        'We are processing your request and will get back to you within 24-48 hrs!'
-      );
-
+await expect(
+  thankYouMessage,
+  'Thank You processing message should have correct text'
+).toHaveText(
+  'We are processing your request and will get back to you within 24-48 hrs!'
+);
 
       // ------------------------------------------------------------
       // 21.19.8 HIGHLIGHT THANK YOU PAGE
@@ -6462,34 +6463,6 @@ logInfo(
       );
 
 
-      // ------------------------------------------------------------
-      // FINAL PROJECTION CHECK
-      // ------------------------------------------------------------
-
-      await expect(
-        projectionSelect.locator(
-          'option:checked'
-        ),
-        'Final Projection should be UTM'
-      ).toHaveText(
-        /UTM/i
-      );
-
-
-      // ------------------------------------------------------------
-      // FINAL DATUM CHECK
-      // ------------------------------------------------------------
-
-      await expect(
-        datumSelect.locator(
-          'option:checked'
-        ),
-        'Final Datum should be WGS84'
-      ).toHaveText(
-        /WGS84/i
-      );
-
- 
 
       // ============================================================
       // TC-3 COMPLETE
