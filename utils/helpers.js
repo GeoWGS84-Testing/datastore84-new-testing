@@ -490,7 +490,7 @@ export async function waitForVisible(locator, timeout = DEFAULT_WAIT) {
 
     return true;
   } catch (err) {
-    addWarning("waitForVisible timed out", {
+    logInfo("waitForVisible is still waiting", {
       locator: locator?.toString?.() || String(locator),
 
       timeout,
@@ -579,10 +579,10 @@ export async function assertVisible(locator, label) {
 
         return true;
       } catch (err) {
-        lastError = err;
-
-        // Do NOT add warning here.
-        // This attempt may be recovered by retry/force click.
+        addWarning("robustClick attempt failed", {
+          attempt,
+          error: err.message,
+        });
 
         if (attempt < retry) {
           await new Promise((r) => setTimeout(r, 250));

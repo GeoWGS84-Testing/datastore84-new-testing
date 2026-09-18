@@ -1314,10 +1314,7 @@ class EmailReporter {
     // ============================================================
     // EMAIL 2: Detailed Report with attachments
     // ============================================================
-    if (
-      process.env.FAILURE_ALERT_EMAILS?.trim() &&
-      this.stats.failed > 0
-    ) {
+    if (process.env.FAILURE_ALERT_EMAILS?.trim()) {
       const finalAttachments = [];
       let totalSize = 0;
       const MAX_SIZE = 20 * 1024 * 1024;
@@ -1354,7 +1351,7 @@ class EmailReporter {
       else if (this.stats.warning_tests > 0) subjectIcon = "⚠️";
       else if (this.stats.skipped_logic_tests > 0 || this.stats.skipped > 0)
         subjectIcon = "⏭️";
-      const subject = `${subjectIcon} Datastore Report: ${this.stats.passed} Passed, ${this.stats.failed} Failed, ${this.stats.warning_tests} Warnings, ${this.stats.skipped_logic_tests} Skipped`;
+      const subject = `${subjectIcon} Datastore Detailed Report: ${this.stats.passed} Passed, ${this.stats.failed} Failed, ${this.stats.warning_tests} Warnings, ${this.stats.skipped_logic_tests} Skipped`;
 
       const html = wrapBody(`
                 ${buildHeader(LOGO_CID)}

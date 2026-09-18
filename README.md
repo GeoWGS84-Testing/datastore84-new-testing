@@ -185,7 +185,7 @@ Diagnostics are worker-local during execution. The CI email job downloads diagno
 Shard jobs do not send mail. After all eight shards complete, the single `email-report` job downloads the artifacts and runs `npm run report:email`.
 
 - **Daily email:** one summary for all 68 tests with pass, fail, warning, logic-skip and skipped totals.
-- **Failure email:** one detailed email only when failures remain after CI retries. It includes the consolidated test table, logs and available evidence from all shards.
+- **Detailed email:** one detailed email on every run when `FAILURE_ALERT_EMAILS` is configured. It includes the consolidated test table, warnings, failures, logs and available evidence from all shards, even when all tests pass.
 - There is never one email per shard.
 
 Configure these GitHub Actions secrets:
