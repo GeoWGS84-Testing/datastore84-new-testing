@@ -8,7 +8,8 @@
     "test:p0": "playwright test -g \"\\[P0\\]\" --project=chromium --workers=1",
     "test:p1": "playwright test -g \"\\[P1\\]\" --project=chromium --workers=1",
     "test:p2": "playwright test -g \"\\[P2\\]\" --project=chromium --workers=1",
-    "test:p3": "playwright test -g \"\\[P3\\]\" --project=chromium --workers=1"
+    "test:p3": "playwright test -g \"\\[P3\\]\" --project=chromium --workers=1",
+    "report:email": "playwright merge-reports --reporter=./reporters/email-reporter.cjs blob-reports"
   },
   "keywords": [],
   "author": "",
@@ -21,7 +22,6 @@
   },
   "dependencies": {
     "dotenv": "^17.3.1",
-    "nodemailer": "^8.0.11",
-    "playwright-nodemailer-reporter": "^0.2.0"
+    "nodemailer": "^10.0.10"
   }
 }

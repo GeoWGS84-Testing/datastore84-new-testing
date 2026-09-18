@@ -2,13 +2,18 @@
 import { defineConfig } from "@playwright/test";
 import "dotenv/config";
 
+/** @type {import('@playwright/test').ReporterDescription[]} */
 const reporters = [
   ["html", { open: "never" }],
   ["list"],
 ];
 
-if (!process.env.CI && process.env.ENABLE_EMAIL_REPORTER !== "false") {
+if (process.env.ENABLE_EMAIL_REPORTER === "true") {
   reporters.push(["./reporters/email-reporter.cjs"]);
+}
+
+if (process.env.CI) {
+  reporters.push(["blob", { outputDir: "blob-report" }]);
 }
 
 export default defineConfig({

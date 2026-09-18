@@ -1788,45 +1788,48 @@ logInfo(
      .locator('#img_scene')
      .first();
  
- // ------------------------------------------------------------
- // Wait for image element to appear
- // ------------------------------------------------------------
- 
- await expect(
-   metadataImage,
-   'Metadata image should appear in popup'
- ).toBeVisible({
-   timeout: 60000,
- });
- 
- logInfo(
-   'Metadata image element appeared. Waiting for image to load...'
- );
- 
- // ------------------------------------------------------------
- // Wait until image has valid src AND is completely loaded
- // ------------------------------------------------------------
- 
- await expect
-   .poll(
-     async () => {
-       return await metadataImage.evaluate(
-         (img) => ({
-           src: img.getAttribute('src') || '',
-           complete: img.complete,
-           naturalWidth: img.naturalWidth,
-           naturalHeight: img.naturalHeight,
-         })
-       );
-     },
-     {
-       timeout: 60000,
-       intervals: [500, 1000, 2000],
+ // The metadata endpoint can transiently return HTTP 500. Reopen the
+ // metadata modal a bounded number of times so a transient response does
+ // not fail the whole satellite flow.
+ let metadataImageLoaded = false;
+ for (let attempt = 1; attempt <= 3; attempt++) {
+   try {
+     await expect
+       .poll(
+         async () => {
+           return await metadataImage.evaluate((img) =>
+             !!(
+               (img.offsetWidth || img.offsetHeight || img.getClientRects().length) &&
+               img.getAttribute('src') &&
+               img.complete &&
+               img.naturalWidth > 0 &&
+               img.naturalHeight > 0
+             )
+           );
+         },
+         { timeout: 20000, intervals: [500, 1000, 2000] }
+       )
+       .toBe(true);
+     metadataImageLoaded = true;
+     break;
+   } catch (error) {
+     if (attempt === 3) throw error;
+     logInfo(`Metadata image was not ready; reopening popup (attempt ${attempt + 1}/3)`);
+      const closeButton = metadataModal.locator('span').filter({ hasText: '×' }).first();
+     if (await closeButton.isVisible().catch(() => false)) {
+       await robustClick(page, closeButton, { timeout: 10000, retry: 1 });
+       await expect(metadataModal).toBeHidden({ timeout: 10000 });
+     } else {
+       await page.keyboard.press('Escape');
+       await expect(metadataModal).toBeHidden({ timeout: 10000 });
      }
-   )
-   .toMatchObject({
-     complete: true,
-   });
+     await robustClick(page, metadataAction, { timeout: 10000, retry: 1 });
+     await expect(metadataModal).toBeVisible({ timeout: 15000 });
+   }
+ }
+
+ expect(metadataImageLoaded, 'Metadata image should load after bounded retries').toBe(true);
+ logInfo('Metadata image element appeared and loaded successfully.');
  
  // ------------------------------------------------------------
  // Final image validation
