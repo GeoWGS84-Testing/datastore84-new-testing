@@ -100,28 +100,28 @@ jobs:
         run: npm ci
 
       - name: Download diagnostics
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           pattern: diagnostics-*
           merge-multiple: true
           path: diagnostics
 
       - name: Download test results
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           pattern: test-results-*
           merge-multiple: true
           path: test-results
 
       - name: Download Playwright reports
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           pattern: playwright-report-*
           merge-multiple: true
           path: playwright-report
 
       - name: Download blob reports
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           pattern: blob-report-*
           merge-multiple: true

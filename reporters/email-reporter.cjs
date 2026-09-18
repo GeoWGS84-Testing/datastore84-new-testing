@@ -658,7 +658,7 @@ function buildTimeBar(time, wallClock, totalDuration, totalTests, workers) {
                                 <tr><td style="font-family:'Segoe UI',Arial,sans-serif; font-size:16px; color:#0f172a; font-weight:700;" class="r-time-val">${wallClock}</td></tr>
                                 <tr><td style="font-family:'Segoe UI',Arial,sans-serif; font-size:10px; color:#a1a1aa; padding-top:3px;" class="r-meta">
                                     🧩 ${totalTests} test${totalTests !== 1 ? "s" : ""} · ⚡ ${workers}w
-                                    ${savings ? ` · <span style="color:#16a34a; font-weight:600;">🚀 -${savings}</span>` : ""}
+                                    ${savings ? ` · <span style="color:#16a34a; font-weight:600;">🚀 Saved ${savings}</span>` : ""}
                                 </td></tr>
                             </table>
                         </td>
