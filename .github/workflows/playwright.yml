@@ -21,9 +21,9 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 8
       matrix:
-        shard: [1, 2]
+        shard: [1, 2, 3, 4, 5, 6, 7, 8]
 
     steps:
       - name: Checkout repository
@@ -45,11 +45,11 @@ jobs:
         env:
           HEADLESS: "true"
           PW_WORKERS: "4"
-        run: npx playwright test --project=chromium --shard=${{ matrix.shard }}/2
+        run: npx playwright test --project=chromium --shard=${{ matrix.shard }}/8
 
       - name: Upload blob report
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: blob-report-${{ matrix.shard }}
           path: blob-report/
@@ -57,7 +57,7 @@ jobs:
 
       - name: Upload Playwright report
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: playwright-report-${{ matrix.shard }}
           path: playwright-report/
@@ -66,7 +66,7 @@ jobs:
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: test-results-${{ matrix.shard }}
           path: test-results/
@@ -75,7 +75,7 @@ jobs:
 
       - name: Upload diagnostics
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: diagnostics-${{ matrix.shard }}
           path: diagnostics/
@@ -100,28 +100,28 @@ jobs:
         run: npm ci
 
       - name: Download diagnostics
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           pattern: diagnostics-*
           merge-multiple: true
           path: diagnostics
 
       - name: Download test results
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           pattern: test-results-*
           merge-multiple: true
           path: test-results
 
       - name: Download Playwright reports
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           pattern: playwright-report-*
           merge-multiple: true
           path: playwright-report
 
       - name: Download blob reports
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           pattern: blob-report-*
           merge-multiple: true

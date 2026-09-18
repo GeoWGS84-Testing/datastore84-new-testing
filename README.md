@@ -3,8 +3,8 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Playwright-1.50+-blue?logo=playwright&logoColor=white" alt="Playwright" />
   <img src="https://img.shields.io/badge/Node.js-22-green?logo=node.js&logoColor=white" alt="Node.js" />
-  <img src="https://img.shields.io/badge/Tests-20-8B5CF6?logo=test&logoColor=white" alt="20 Tests" />
-  <img src="https://img.shields.io/badge/Workers-6-FF6B35?logo=parallel&logoColor=white" alt="6 Workers" />
+    <img src="https://img.shields.io/badge/Tests-68-8B5CF6?logo=test&logoColor=white" alt="68 Tests" />
+    <img src="https://img.shields.io/badge/Workers-4_per_shard-FF6B35?logo=parallel&logoColor=white" alt="4 Workers per shard" />
   <img src="https://img.shields.io/badge/CI-GitHub_Actions-2088FF?logo=githubactions&logoColor=white" alt="CI" />
   <img src="https://img.shields.io/badge/Email_Reporter-Nodemailer-EA4335?logo=gmail&logoColor=white" alt="Email" />
   <img src="https://img.shields.io/badge/Schedule-12%3A00_IST-gold?logo=clock&logoColor=black" alt="Daily" />
@@ -18,7 +18,7 @@
 
 ```mermaid
 graph LR
-    A[🧪 20 Tests] --> B[⚡ 6 Workers]
+    A[🧪 68 Tests] --> B[⚡ 8 Shards × 4 Workers]
     B --> C{🔄 Each Test}
     C --> D[📋 beforeEach<br/>Clear State]
     C --> E[🎯 Execute Steps]
@@ -30,7 +30,7 @@ graph LR
     G -->|No| I[✅ Clean]
     H --> J[💾 Diagnostics JSON]
     I --> J
-    J --> K[📧 Email Reporter<br/>2 Emails]
+    J --> K[📧 One aggregation job<br/>Daily summary + failure detail]
 ```
 
 ---
@@ -40,16 +40,8 @@ graph LR
 - [Architecture Overview](#-architecture-overview)
 - [Project Structure](#-project-structure)
 - [Page Object Model](#-page-object-model)
-- [Test Cases — Full Flow Diagrams](#-test-cases--full-flow-diagrams)
-  - [Test 1: Shopping Cart & Checkout](#test-1-shopping-cart--checkout)
-  - [Tests 2–13: Satellite Scene Processing](#tests-213-satellite-scene-processing)
-  - [Test 14: Search UI](#test-14-search-ui)
-  - [Test 15: Coordinates](#test-15-coordinates)
-  - [Test 16: Upload KMZ](#test-16-upload-kmz)
-  - [Test 17: Locate Geolocation](#test-17-locate-geolocation)
-  - [Test 18: Hover Locationer](#test-18-hover-locationer)
-  - [Test 19: AOI View & World View](#test-19-aoi-view--world-view)
-  - [Test 20: AOI Info Window](#test-20-aoi-info-window)
+- [Current Test Inventory](#-current-test-inventory)
+- [Representative Flow Diagrams](#-representative-flow-diagrams)
 - [Diagnostics System](#-diagnostics-system)
 - [Email Reporting](#-email-reporting)
 - [CI/CD Pipeline](#-cicd-pipeline)
@@ -62,13 +54,13 @@ graph LR
 
 ```mermaid
 graph TB
-    subgraph PLAYWRIGHT["🎭 PLAYWRIGHT RUNNER (6 Workers)"]
+    subgraph PLAYWRIGHT["🎭 PLAYWRIGHT RUNNER (8 Shards × 4 Workers)"]
         T1["🧪 Test 1"]
         T2["🧪 Test 2"]
         T3["🧪 Test N"]
     end
 
-    subgraph COMMON["📋 tests/common.js"]
+    subgraph COMMON["📋 specs/common.js"]
         BE["beforeEach<br/>🧹 Clear INFOS<br/>🧹 Clear WARNINGS<br/>🧹 Clear ERRORS<br/>🧹 Clear SKIPPED<br/>🎯 Set Context<br/>🖥️ Bind Console"]
         AE["afterEach<br/>📸 Capture Screenshots<br/>🎬 Attach Video<br/>💾 Persist Diagnostics<br/>🧹 Clear Ref"]
     end
@@ -110,6 +102,25 @@ graph TB
 
 ---
 
+## 🧪 Current Test Inventory
+
+The repository currently contains **68 Playwright tests**. Playwright runs them
+with `fullyParallel: true`, across eight balanced CI shards with four workers
+per shard:
+
+| Spec file | Tests | Coverage |
+|-----------|------:|----------|
+| `specs/cart.spec.js` | 3 | Cart, checkout, export options |
+| `specs/launch.spec.js` | 1 | Application launch smoke test |
+| `specs/map.spec.js` | 10 | Search, map controls, AOI, uploads, navigation |
+| `specs/satellite.spec.js` | 43 | Satellite products, scenes, previews, metadata |
+| `specs/service.spec.js` | 11 | Service filters, workflows, and checkout |
+| **Total** | **68** | **All discovered tests** |
+
+The source files and Playwright's `--list` output are the source of truth for
+test count. The flow diagrams below document representative workflows and are
+not a numbered replacement for every individual test definition.
+
 ## 📁 Project Structure
 
 ```
@@ -117,9 +128,13 @@ Geowgs84-Datastore/
 ├── ⚙️ playwright.config.js              ← Workers, reporters, timeouts
 ├── 🔄 .github/workflows/playwright.yml ← Daily CI @ 12:00 IST
 │
-├── 📂 tests/
+├── 📂 specs/
 │   ├── 📄 common.js                    ← beforeEach / afterEach hooks
-│   └── 📄 datastore.spec.js            ← All 20 test definitions
+│   ├── 📄 map.spec.js                   ← Map and AOI tests
+│   ├── 📄 satellite.spec.js             ← Satellite service tests
+│   ├── 📄 cart.spec.js                  ← Cart and checkout tests
+│   ├── 📄 service.spec.js               ← Service workflow tests
+│   └── 📄 launch.spec.js                ← Launch smoke test
 │
 ├── 📂 pages/
 │   ├── 📄 BasePage.js                  ← Shared: highlight, click, wait
@@ -199,7 +214,7 @@ classDiagram
 
 ---
 
-## 🧪 Test Cases — Full Flow Diagrams
+## 🧭 Representative Flow Diagrams
 
 ### Test 1: Shopping Cart & Checkout
 
@@ -941,11 +956,25 @@ flowchart TD
 
 ## 📧 Email Reporting
 
+CI sends email from the single `email-report` aggregation job after every shard
+has completed. Shard jobs never send email directly, so recipients receive at
+most two messages per run:
+
+- **Daily summary:** one message containing totals for all 68 tests: passed,
+    failed, warnings, skipped logic, and skipped tests.
+- **Failure report:** one message sent only when one or more tests remain failed
+    after retries. It contains the consolidated results, per-test logs, errors,
+    warnings, skipped steps, screenshots, and videos collected from every shard.
+
+The report job uses the merged Playwright blob reports plus downloaded
+diagnostics. Configure `DAILY_REPORT_EMAILS` and `FAILURE_ALERT_EMAILS` as
+GitHub Actions secrets; do not put SMTP credentials in the repository.
+
 ```mermaid
 flowchart LR
     subgraph INPUT["Input Data"]
-        A[20 Test Results]
-        B[20 Diagnostic JSONs]
+        A[68 Test Results]
+        B[68 Diagnostic JSONs when generated]
         C[Screenshots + Videos]
     end
 
@@ -968,15 +997,15 @@ flowchart LR
         G5[🌍 Footer]
     end
 
-    subgraph EMAIL2["📋 Detailed Report"]
+    subgraph EMAIL2["📋 Failure Report (only when failures remain)"]
         H1[All of Daily Summary]
         H2[📋 Test Results Table]
         H3[Per-row:<br/>💥 Error pre<br/>⚠️ Warnings<br/>⏭️ Skipped steps<br/>📋 Scrollable logs]
         H4[📎 Attachments]
     end
 
-    EMAIL1 --> SMTP["📧 SMTP Send"]
-    EMAIL2 --> SMTP
+    EMAIL1 --> SMTP["📧 One daily email"]
+    EMAIL2 --> SMTP2["📧 One consolidated failure email"]
 ```
 
 **Attachment Decision Per Test:**
@@ -1012,18 +1041,18 @@ flowchart TD
     NPMCI["📦 npm ci"] --> PWINSTALL
     PWINSTALL["🎭 npx playwright<br/>install --with-deps"] --> RUN
 
-    subgraph RUN["🧪 Run Tests (90min timeout)"]
+    subgraph RUN["🧪 Run Tests (8 shards × 4 workers)"]
         ENV["🌍 Environment Variables<br/>BASE_URL, SMTP_*, HEADLESS=true<br/>PAUSE_MULTIPLIER=0.3, CI=true"]
-        CMD["npx playwright test<br/>6 workers, retries=2"]
+        CMD["npx playwright test<br/>8 shards, 4 workers each, retries=2"]
     end
 
     RUN --> ART1
     RUN --> ART2
     RUN --> ART3
 
-    ART1["📊 Upload playwright-report/<br/>3 days retain"]
-    ART2["📸 Upload test-results/<br/>3 days retain"]
-    ART3["💾 Upload diagnostics/<br/>3 days retain"]
+    ART1["📊 Upload blob + HTML reports<br/>7 days retain"]
+    ART2["📸 Upload test-results/<br/>7 days retain"]
+    ART3["💾 Upload diagnostics/<br/>7 days retain"]
 
     style TRIGGER fill:#8b5cf6,color:#fff
     style ART1 fill:#eff6ff,color:#2563eb
@@ -1038,9 +1067,9 @@ flowchart TD
 | `HEADLESS` | `false` | `true` |
 | `PAUSE_MULTIPLIER` | `0.55` | `0.3` ⚡ |
 | `retries` | `0` | `2` (CI=true) |
-| `workflow timeout` | N/A | `90 min` ⏰ |
-| Email | ✅ | ✅ |
-| Artifacts | ❌ | ✅ (3 days) |
+| `workflow timeout` | N/A | `60 min per shard` ⏰ |
+| Email | Optional local reporter | One daily summary + one failure report |
+| Artifacts | ❌ | ✅ (7 days) |
 
 ---
 
@@ -1130,5 +1159,5 @@ npx playwright show-report
 <p align="center">
   <img src="https://img.shields.io/badge/Built_with_❤️_for_GeoWGS84_Datastore-8B5CF6?style=for-the-badge" alt="Love" />
   <br/><br/>
-  <sub>🤖 Automated E2E · Playwright · Node.js 22 · 6 Workers · Daily CI</sub>
+    <sub>🤖 Automated E2E · Playwright · Node.js 22 · 8 Shards × 4 Workers · Daily CI</sub>
 </p>
