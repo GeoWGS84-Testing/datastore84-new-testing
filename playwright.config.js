@@ -19,11 +19,11 @@ if (process.env.CI) {
 export default defineConfig({
   testDir: ".",
   testMatch: ["tests/**/*.spec.js", "specs/**/*.spec.js"],
-  // The diagnostics helper keeps mutable state per worker process.
-  fullyParallel: false,
+  // Each worker owns its diagnostics state, so tests can run concurrently.
+  fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : Number(process.env.PW_WORKERS || 6),
+  workers: process.env.CI ? Number(process.env.PW_WORKERS || 4) : Number(process.env.PW_WORKERS || 6),
   timeout: 600000,
   expect: { timeout: 10000 },
 
