@@ -1786,6 +1786,7 @@ test(
         pause: 1200,
       });
 
+
  // ============================================================
 // STEP 9
 // SELECT SATELLITE
@@ -3352,6 +3353,8 @@ logInfo(
     }
   }
 );
+
+
 
 //=========================================
 // TC-4  SELECT AERIAL SERVICES AND CHECKOUT
@@ -16165,6 +16168,12 @@ test(
 
 
 
-//   npx playwright test specs/service.spec.js -g "\[P0\] 4" --headed --workers=1
- 
+// npx playwright test specs/service.spec.js -g "\[P0\] 4" --headed --workers=1
+ // npx playwright test specs/service.spec.js --workers=1 --headed 
+
+
+
+
+
+
  

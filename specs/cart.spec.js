@@ -6509,3 +6509,4 @@ await expect(
 
 
 //    npx playwright test specs/cart.spec.js -g "\[P0\] 1" --headed --workers=1
+//        npx playwright test specs/cart.spec.js --workers=1 --headed    

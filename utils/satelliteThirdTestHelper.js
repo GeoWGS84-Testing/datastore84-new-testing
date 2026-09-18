@@ -80,7 +80,7 @@ export async function runThirdSatelliteServiceTest(
    // ============================================================
    // NETWORK REQUEST FAILURE HANDLING
    // ============================================================
- 
+ /*
    page.on(
      'requestfailed',
      (request) => {
@@ -131,7 +131,85 @@ export async function runThirdSatelliteServiceTest(
        );
      }
    );
- 
+  */
+
+   // ============================================================
+// NETWORK REQUEST FAILURE HANDLING
+// ============================================================
+
+page.on(
+  'requestfailed',
+  (request) => {
+
+    const url =
+      request.url();
+
+    // ----------------------------------------------------------
+    // IGNORE ANALYTICS REQUESTS
+    // ----------------------------------------------------------
+
+    const ignoredAnalyticsRequest =
+      url.includes(
+        'google-analytics.com'
+      ) ||
+      url.includes(
+        'googletagmanager.com'
+      ) ||
+      url.includes(
+        'analytics.google.com'
+      );
+
+    if (
+      ignoredAnalyticsRequest
+    ) {
+      return;
+    }
+
+    // ----------------------------------------------------------
+    // IGNORE HARMLESS GOOGLE MAPS CURSOR REQUEST
+    // ----------------------------------------------------------
+
+    const ignoredGoogleMapsCursorRequest =
+      url.includes(
+        'maps.gstatic.com/mapfiles/closedhand_8_8.cur'
+      );
+
+    if (
+      ignoredGoogleMapsCursorRequest
+    ) {
+      return;
+    }
+
+    // ----------------------------------------------------------
+    // RECORD REAL NETWORK FAILURES
+    // ----------------------------------------------------------
+
+    const failureReason =
+      request.failure()?.errorText ||
+      'unknown';
+
+    failedRequests.push({
+      url,
+      method:
+        request.method(),
+      resourceType:
+        request.resourceType(),
+      failure:
+        failureReason,
+      step:
+        currentStep,
+      action:
+        currentAction,
+    });
+
+    logInfo(
+      `NETWORK REQUEST FAILED | Step: ${currentStep} | ` +
+      `Method: ${request.method()} | ` +
+      `URL: ${url} | ` +
+      `Reason: ${failureReason}`
+    );
+  }
+);
    // ============================================================
    // API / NETWORK RESPONSE LOGGING
    // ============================================================

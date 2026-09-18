@@ -979,4 +979,4 @@ test(
 
  //  npx playwright test specs/satellite.spec.js -g "\[P0\] 1" --headed --workers=1
  //  npx playwright test specs/satellite.spec.js -g "\[P0\] (19|20|21|22)" --headed --workers=1
- 
+ //  npx playwright test specs/satellite.spec.js --workers=1 --headed 

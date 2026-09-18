@@ -533,14 +533,15 @@ export async function assertVisible(locator, label) {
 // =========================================================
 // ROBUST CLICK
 // =========================================================
-
-export async function robustClick(page, locator, opts = {}) {
+ export async function robustClick(page, locator, opts = {}) {
   const { timeout = DEFAULT_WAIT, highlightBorder, retry = 1 } = opts;
 
   try {
     const visible = await waitForVisible(locator, timeout);
 
-    if (!visible) throw new Error("Element not visible to click");
+    if (!visible) {
+      throw new Error("Element not visible to click");
+    }
 
     try {
       await locator.scrollIntoViewIfNeeded({
@@ -562,6 +563,8 @@ export async function robustClick(page, locator, opts = {}) {
       });
     } catch (e) {}
 
+    let lastError = null;
+
     for (let attempt = 0; attempt <= retry; attempt++) {
       try {
         await locator.click({
@@ -576,30 +579,41 @@ export async function robustClick(page, locator, opts = {}) {
 
         return true;
       } catch (err) {
-        addWarning("robustClick attempt failed", {
-          attempt,
-          error: err.message,
-        });
+        lastError = err;
 
-        if (attempt === retry) {
-          try {
-            await locator.click({
-              force: true,
-            });
+        // Do NOT add warning here.
+        // This attempt may be recovered by retry/force click.
 
-            logInfo("robustClick succeeded with force: true", {
-              testcase: CURRENT_TESTCASE,
-            });
-
-            return true;
-          } catch (finalErr) {
-            throw finalErr;
-          }
+        if (attempt < retry) {
+          await new Promise((r) => setTimeout(r, 250));
+          continue;
         }
 
-        await new Promise((r) => setTimeout(r, 250));
+        // Final fallback: force click
+        try {
+          await locator.click({
+            timeout: 5000,
+            force: true,
+          });
+
+          logInfo("robustClick succeeded with force: true", {
+            testcase: CURRENT_TESTCASE,
+          });
+
+          return true;
+        } catch (finalErr) {
+          lastError = finalErr;
+        }
       }
     }
+
+    // Only report a warning when ALL click strategies failed.
+    addWarning("robustClick attempt failed", {
+      error: lastError?.message || "Unknown click error",
+      testcase: CURRENT_TESTCASE,
+    });
+
+    throw lastError || new Error("Unable to click element");
   } catch (err) {
     addError("robustClick failed", {
       error: err.message,
