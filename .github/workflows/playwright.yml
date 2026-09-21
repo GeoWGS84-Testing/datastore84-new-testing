@@ -62,6 +62,12 @@ on:
 
 # ══════════════════════════════════════════════════════════════════════════
 
+# Required so the cleanup job can remove previous completed workflow runs.
+# This does not grant write access to the repository contents.
+permissions:
+  contents: read
+  actions: write
+
 concurrency:
   group: playwright-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
@@ -70,8 +76,87 @@ concurrency:
 
 jobs:
 
+  # ── Delete previous runs before starting the current automation ──────────
+  cleanup-previous:
+    name: "🧹 Cleanup previous automation runs"
+    runs-on: ubuntu-24.04
+    # Cleanup must never prevent the actual test automation from running.
+    continue-on-error: true
+
+    steps:
+      - name: "🗑️ Delete previous completed runs of this workflow"
+        uses: actions/github-script@v9
+        env:
+          WORKFLOW_REF: ${{ github.workflow_ref }}
+        with:
+          script: |
+            const workflowRef = process.env.WORKFLOW_REF || '';
+            const match = workflowRef.match(/\.github\/workflows\/([^@]+)@/);
+
+            if (!match) {
+              core.warning(`Could not determine workflow file from github.workflow_ref: ${workflowRef}`);
+              return;
+            }
+
+            const workflowFile = match[1];
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const currentRunId = context.runId;
+
+            core.info(`Current run: ${currentRunId}`);
+            core.info(`Workflow: ${workflowFile}`);
+            core.info('Finding previous completed runs...');
+
+            const runs = await github.paginate(
+              github.rest.actions.listWorkflowRuns,
+              {
+                owner,
+                repo,
+                workflow_id: workflowFile,
+                status: 'completed',
+                per_page: 100
+              }
+            );
+
+            const previousRuns = runs.filter(run => run.id !== currentRunId);
+            core.info(`Previous completed runs found: ${previousRuns.length}`);
+
+            let deleted = 0;
+            let failed = 0;
+
+            // Deleting a workflow run also deletes its associated artifacts/logs.
+            // The current run is explicitly excluded.
+            for (const run of previousRuns) {
+              try {
+                await github.rest.actions.deleteWorkflowRun({
+                  owner,
+                  repo,
+                  run_id: run.id
+                });
+
+                deleted += 1;
+                core.info(`Deleted run #${run.run_number} (${run.id}) — ${run.conclusion || run.status}`);
+              } catch (error) {
+                failed += 1;
+                core.warning(`Could not delete run #${run.run_number} (${run.id}): ${error.message}`);
+              }
+            }
+
+            core.notice(`Cleanup complete: deleted ${deleted} previous run(s); ${failed} deletion(s) failed.`);
+            core.summary
+              .addHeading('🧹 Previous Run Cleanup')
+              .addTable([
+                [{data: 'Metric', header: true}, {data: 'Count', header: true}],
+                ['Previous completed runs found', String(previousRuns.length)],
+                ['Runs deleted', String(deleted)],
+                ['Deletion failures', String(failed)]
+              ])
+              .addRaw('\nOlder workflow runs were removed; GitHub also removes their associated artifacts and logs. The current run was preserved.')
+              .write();
+
   # ── Sharded parallel test matrix ────────────────────────────────────────
   test:
+    needs: cleanup-previous
     name: "🧪 Shard ${{ matrix.shard }}/8 · ${{ inputs.browser || 'chromium' }} · ${{ inputs.workers || '4' }}W"
     timeout-minutes: 60
     runs-on: ubuntu-24.04
@@ -114,13 +199,17 @@ jobs:
           [[ -n "$PW_GREP" ]] && GREP_ARGS+=(--grep "$PW_GREP")
 
           # pipefail + PIPESTATUS preserves the real Playwright exit code.
+          # Disable errexit only around the pipeline so PIPESTATUS can be read
+          # even when Playwright itself returns non-zero.
           set -o pipefail
+          set +e
           npx playwright test \
             --project="$PW_BROWSER" \
             --shard=${{ matrix.shard }}/8 \
             "${GREP_ARGS[@]}" 2>&1 | tee "shard-${{ matrix.shard }}.log"
 
           TEST_EXIT=${PIPESTATUS[0]}
+          set -e
           echo "$TEST_EXIT" > "shard-${{ matrix.shard }}-exit-code.txt"
           exit "$TEST_EXIT"
 
@@ -234,13 +323,12 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, out);
           NODE
 
-          # Add one visible GitHub annotation without changing pass/fail logic.
-          if [[ -f "shard-metrics.json" ]]; then
-            WARNINGS=$(node -p "require('./shard-metrics.json').warningLines")
-            ERRORS=$(node -p "require('./shard-metrics.json').errorLines")
-            [[ "$WARNINGS" -gt 0 ]] && echo "::warning::Shard $SHARD has $WARNINGS warning(s) reported by [DIAG-DEBUG] records."
-            [[ "$ERRORS" -gt 0 ]] && echo "::error::Shard $SHARD has $ERRORS error(s) reported by [DIAG-DEBUG] records."
-          fi
+          # Do NOT emit ::warning / ::error workflow commands here.
+          # Those commands create GitHub Annotations and make the run look like
+          # it contains platform errors even when the test job itself passed.
+          # Diagnostics remain visible in the tables/details below and in the
+          # uploaded shard-metrics artifacts.
+          exit 0
 
       - name: "📊 Upload shard metrics"
         if: always()
