@@ -99,7 +99,11 @@ jobs:
           PW_BROWSER: ${{ inputs.browser || 'chromium' }}
         run: npx playwright install --with-deps "$PW_BROWSER"
 
+      - name: "⏱️ Start the clock"
+        run: echo "battle_start=$(date +%s)" >> "$GITHUB_ENV"
+
       - name: "⚡ Enter the arena — party ${{ matrix.shard }} / 8"
+        id: battle
         env:
           HEADLESS:   ${{ inputs.headless  != 'false' && 'true' || 'false' }}
           PW_WORKERS: ${{ inputs.workers   || '4' }}
@@ -114,6 +118,23 @@ jobs:
             --project="$PW_BROWSER" \
             --shard=${{ matrix.shard }}/8 \
             "${GREP_ARGS[@]}"
+
+      - name: "🏅 Log battle outcome"
+        if: always()
+        run: |
+          duration=$(( $(date +%s) - battle_start ))
+          mkdir -p diagnostics
+          cat > "diagnostics/status-${{ matrix.shard }}.json" <<EOF
+          {"shard": ${{ matrix.shard }}, "outcome": "${{ steps.battle.outcome }}", "duration": $duration}
+          EOF
+          {
+            echo "### ⚔️ Party ${{ matrix.shard }} battle report"
+            echo ""
+            echo "| Stat | Value |"
+            echo "|---|---|"
+            echo "| Outcome | ${{ steps.battle.outcome }} |"
+            echo "| Duration | ${duration}s |"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: "💎 Collect blob loot"
         if: always()
@@ -212,3 +233,47 @@ jobs:
           SMTP_PASS:            ${{ secrets.SMTP_PASS }}
           SMTP_FROM:            ${{ secrets.SMTP_FROM }}
         run: npm run report:email
+
+      - name: "🗺️ Draw the battle map"
+        if: always()
+        run: |
+          {
+            echo "# 🏆 Playwright Arena — run summary"
+            echo ""
+            echo '```mermaid'
+            echo "flowchart LR"
+            echo "  T[\"🎮 Trigger\"] --> M{\"Arena\"}"
+            for f in diagnostics/status-*.json; do
+              [ -e "$f" ] || continue
+              shard=$(jq -r .shard "$f")
+              outcome=$(jq -r .outcome "$f")
+              dur=$(jq -r .duration "$f")
+              icon="💀"
+              [ "$outcome" = "success" ] && icon="✅"
+              echo "  M --> P${shard}[\"$icon Party $shard · ${dur}s\"]"
+              echo "  P${shard} --> H[\"📜 Herald\"]"
+            done
+            echo "  classDef win fill:#1D9E75,stroke:#0F6E56,color:#ffffff;"
+            echo "  classDef loss fill:#E24B4A,stroke:#A32D2D,color:#ffffff;"
+            for f in diagnostics/status-*.json; do
+              [ -e "$f" ] || continue
+              shard=$(jq -r .shard "$f")
+              outcome=$(jq -r .outcome "$f")
+              cls="loss"
+              [ "$outcome" = "success" ] && cls="win"
+              echo "  class P${shard} $cls"
+            done
+            echo '```'
+            echo ""
+            echo "| Party | Outcome | Duration |"
+            echo "|---|---|---|"
+            for f in diagnostics/status-*.json; do
+              [ -e "$f" ] || continue
+              shard=$(jq -r .shard "$f")
+              outcome=$(jq -r .outcome "$f")
+              dur=$(jq -r .duration "$f")
+              badge="💀 Defeat"
+              [ "$outcome" = "success" ] && badge="🏅 Victory"
+              echo "| Party $shard | $badge | ${dur}s |"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
