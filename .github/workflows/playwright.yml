@@ -18,13 +18,61 @@ on:
 
   # ── Manual trigger — customize your run ──────────────────────────────
   workflow_dispatch:
+    inputs:
+      browser:
+        description: "🌐 Browser"
+        required: false
+        default: chromium
+        type: choice
+        options:
+          - chromium
+          - firefox
+          - webkit
+
+      workers:
+        description: "⚡ Workers per shard"
+        required: false
+        default: "4"
+        type: choice
+        options: ["1", "2", "4", "8"]
+
+      test_grep:
+        description: "🔍 Filter tests by name / regex (leave blank to run all)"
+        required: false
+        default: ""
+        type: string
+
+      headless:
+        description: "👻 Run headless"
+        required: false
+        default: true
+        type: boolean
+
+      send_report:
+        description: "📧 Send email report after run"
+        required: false
+        default: true
+        type: boolean
+
+      debug_mode:
+        description: "🐛 Enable verbose Playwright debug logging"
+        required: false
+        default: false
+        type: boolean
+
+# ══════════════════════════════════════════════════════════════════════════
 
 concurrency:
   group: playwright-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
+# ══════════════════════════════════════════════════════════════════════════
+
 jobs:
+
+  # ── Sharded parallel test matrix ────────────────────────────────────────
   test:
+    name: "🧪 Shard ${{ matrix.shard }}/8 · ${{ inputs.browser || 'chromium' }} · ${{ inputs.workers || '4' }}W"
     timeout-minutes: 60
     runs-on: ubuntu-24.04
     strategy:
@@ -34,28 +82,178 @@ jobs:
         shard: [1, 2, 3, 4, 5, 6, 7, 8]
 
     steps:
-      - name: Checkout repository
+      - name: "📥 Checkout repository"
         uses: actions/checkout@v5
 
-      - name: Setup Node.js
+      - name: "⬢ Setup Node.js 22"
         uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
 
-      - name: Install dependencies
+      - name: "📦 Install dependencies"
         run: npm ci
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
-
-      - name: Run Playwright shard
+      - name: "🎭 Install Playwright browsers"
         env:
-          HEADLESS: "true"
-          PW_WORKERS: "4"
-        run: npx playwright test --project=chromium --shard=${{ matrix.shard }}/8
+          PW_BROWSER: ${{ inputs.browser || 'chromium' }}
+        run: npx playwright install --with-deps "$PW_BROWSER"
 
-      - name: Upload blob report
+      # ── ORIGINAL TEST EXECUTION ────────────────────────────────────────
+      # The Playwright command/options are unchanged. We only capture the
+      # output so that shard statistics can be displayed in GitHub.
+      - name: "🚀 Run Playwright — shard ${{ matrix.shard }} / 8"
+        env:
+          HEADLESS:   ${{ inputs.headless != 'false' && 'true' || 'false' }}
+          PW_WORKERS: ${{ inputs.workers || '4' }}
+          PW_BROWSER: ${{ inputs.browser || 'chromium' }}
+          PW_GREP:    ${{ inputs.test_grep || '' }}
+          DEBUG:      ${{ inputs.debug_mode == 'true' && 'pw:api,pw:browser' || '' }}
+        run: |
+          GREP_ARGS=()
+          [[ -n "$PW_GREP" ]] && GREP_ARGS+=(--grep "$PW_GREP")
+
+          # pipefail + PIPESTATUS preserves the real Playwright exit code.
+          set -o pipefail
+          npx playwright test \
+            --project="$PW_BROWSER" \
+            --shard=${{ matrix.shard }}/8 \
+            "${GREP_ARGS[@]}" 2>&1 | tee "shard-${{ matrix.shard }}.log"
+
+          TEST_EXIT=${PIPESTATUS[0]}
+          echo "$TEST_EXIT" > "shard-${{ matrix.shard }}-exit-code.txt"
+          exit "$TEST_EXIT"
+
+      # ── Parse Playwright output for this shard ──────────────────────────
+      - name: "📊 Generate shard metrics"
+        if: always()
+        env:
+          SHARD: ${{ matrix.shard }}
+          BROWSER: ${{ inputs.browser || 'chromium' }}
+          WORKERS: ${{ inputs.workers || '4' }}
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+
+          const shard = process.env.SHARD;
+          const browser = process.env.BROWSER;
+          const workers = process.env.WORKERS;
+          const logFile = `shard-${shard}.log`;
+          const exitFile = `shard-${shard}-exit-code.txt`;
+          const log = fs.existsSync(logFile) ? fs.readFileSync(logFile, 'utf8') : '';
+          const exitCode = fs.existsSync(exitFile)
+            ? Number(fs.readFileSync(exitFile, 'utf8').trim())
+            : 1;
+
+          // IMPORTANT: Only [DIAG-DEBUG] lines are used for test/warning/error
+          // metrics. Any unrelated browser/console/server/HTTP/Node/Playwright
+          // messages are intentionally ignored.
+          const diagLines = log
+            .split(/\r?\n/)
+            .filter(line => line.includes('[DIAG-DEBUG]'));
+
+          const diagRecords = diagLines.map(line => {
+            const getNumber = (name) => {
+              const match = line.match(new RegExp(`\\b${name}=(\\d+)\\b`));
+              return match ? Number(match[1]) : 0;
+            };
+            const statusMatch = line.match(/\bstatus=([A-Za-z_-]+)/i);
+            return {
+              line,
+              warnings: getNumber('warnings'),
+              errors: getNumber('errors'),
+              skipped: getNumber('skipped'),
+              status: statusMatch ? statusMatch[1].toLowerCase() : 'unknown'
+            };
+          });
+
+          const sum = (key) => diagRecords.reduce((total, record) => total + record[key], 0);
+          const passed = diagRecords.filter(r => r.status === 'passed').length;
+          const failed = diagRecords.filter(r => ['failed', 'error'].includes(r.status)).length;
+          const flaky = diagRecords.filter(r => r.status === 'flaky').length;
+          const skippedByStatus = diagRecords.filter(r => r.status === 'skipped').length;
+          const skippedByField = sum('skipped');
+
+          // Prefer the explicit skipped= field when present. If it is always 0
+          // but the diagnostic status itself is skipped, count the status instead.
+          const skipped = skippedByField > 0 ? skippedByField : skippedByStatus;
+
+          const signalRecords = diagRecords
+            .filter(r => r.warnings > 0 || r.errors > 0)
+            .slice(0, 12);
+
+          const metrics = {
+            shard: Number(shard),
+            browser,
+            workers: Number(workers),
+            exitCode,
+            status: exitCode === 0 ? 'passed' : 'failed',
+            passed,
+            failed,
+            skipped,
+            flaky,
+            didNotRun: 0,
+            warningLines: sum('warnings'),
+            errorLines: sum('errors'),
+            diagTestRecords: diagRecords.length,
+            signals: signalRecords.map(r => r.line)
+          };
+
+          fs.writeFileSync('shard-metrics.json', JSON.stringify(metrics, null, 2));
+          NODE
+
+      # ── Show shard status directly on the shard's GitHub job page ──────
+      - name: "📝 Publish shard summary"
+        if: always()
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const m = JSON.parse(fs.readFileSync('shard-metrics.json', 'utf8'));
+          const icon = m.status === 'passed' ? '✅' : '❌';
+
+          let out = `## ${icon} Shard ${String(m.shard).padStart(2, '0')} / 08\n\n`;
+          out += `| Metric | Count |\n|---|---:|\n`;
+          out += `| ✅ Passed | **${m.passed}** |\n`;
+          out += `| ❌ Failed | **${m.failed}** |\n`;
+          out += `| ⏭️ Skipped | **${m.skipped}** |\n`;
+          out += `| 🔁 Flaky | **${m.flaky}** |\n`;
+          out += `| ⏹️ Did not run | **${m.didNotRun}** |\n`;
+          out += `| ⚠️ DIAG-DEBUG warnings | **${m.warningLines}** |\n`;
+          out += `| 🚨 DIAG-DEBUG errors | **${m.errorLines}** |\n\n`;
+          out += `**Browser:** \`${m.browser}\` &nbsp; **Workers:** \`${m.workers}\` &nbsp; **Exit code:** \`${m.exitCode}\`\n\n`;
+
+          if (m.signals.length) {
+            out += `<details><summary>⚠️ First [DIAG-DEBUG] warning/error records</summary>\n\n`;
+            out += '```text\n' + m.signals.join('\n') + '\n```\n\n</details>\n';
+          } else {
+            out += '✅ No warning/error signal lines detected in the captured Playwright output.\n';
+          }
+
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, out);
+          NODE
+
+          # Add one visible GitHub annotation without changing pass/fail logic.
+          if [[ -f "shard-metrics.json" ]]; then
+            WARNINGS=$(node -p "require('./shard-metrics.json').warningLines")
+            ERRORS=$(node -p "require('./shard-metrics.json').errorLines")
+            [[ "$WARNINGS" -gt 0 ]] && echo "::warning::Shard $SHARD has $WARNINGS warning(s) reported by [DIAG-DEBUG] records."
+            [[ "$ERRORS" -gt 0 ]] && echo "::error::Shard $SHARD has $ERRORS error(s) reported by [DIAG-DEBUG] records."
+          fi
+
+      - name: "📊 Upload shard metrics"
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: shard-metrics-${{ matrix.shard }}
+          path: |
+            shard-metrics.json
+            shard-${{ matrix.shard }}.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: "📊 Upload blob report"
         if: always()
         uses: actions/upload-artifact@v6
         with:
@@ -63,7 +261,7 @@ jobs:
           path: blob-report/
           retention-days: 7
 
-      - name: Upload Playwright report
+      - name: "📋 Upload Playwright report"
         if: always()
         uses: actions/upload-artifact@v6
         with:
@@ -72,16 +270,16 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-      - name: Upload test results
+      - name: "🧩 Upload test results"
         if: always()
         uses: actions/upload-artifact@v6
         with:
           name: test-results-${{ matrix.shard }}
           path: test-results/
           if-no-files-found: ignore
-          retention-days: 7 
+          retention-days: 7
 
-      - name: Upload diagnostics
+      - name: "🔬 Upload diagnostics"
         if: always()
         uses: actions/upload-artifact@v6
         with:
@@ -90,61 +288,145 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-  email-report:
+  # ── Consolidated GitHub dashboard ───────────────────────────────────────
+  dashboard:
+    name: "📈 Shard Matrix Dashboard"
     if: always()
     needs: test
     runs-on: ubuntu-24.04
+
     steps:
-      - name: Checkout repository
+      - name: "⬇️ Download shard metrics"
+        uses: actions/download-artifact@v7
+        with:
+          pattern: shard-metrics-*
+          merge-multiple: true
+          path: shard-metrics
+
+      - name: "📈 Build consolidated shard dashboard"
+        if: always()
+        env:
+          TEST_RESULT: ${{ needs.test.result }}
+          BROWSER: ${{ inputs.browser || 'chromium' }}
+          WORKERS: ${{ inputs.workers || '4' }}
+          GREP: ${{ inputs.test_grep || 'all tests' }}
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+
+          const dir = 'shard-metrics';
+          const files = fs.existsSync(dir)
+            ? fs.readdirSync(dir).filter(f => f.endsWith('.json')).sort()
+            : [];
+
+          const rows = files
+            .map(f => JSON.parse(fs.readFileSync(`${dir}/${f}`, 'utf8')))
+            .sort((a, b) => a.shard - b.shard);
+
+          const sum = key => rows.reduce((n, r) => n + Number(r[key] || 0), 0);
+          const passedShards = rows.filter(r => r.status === 'passed').length;
+          const failedShards = rows.filter(r => r.status !== 'passed').length;
+          const overallIcon = process.env.TEST_RESULT === 'success' ? '✅' : '❌';
+
+          let out = `# ${overallIcon} Playwright Shard Dashboard\n\n`;
+          out += `**Browser:** \`${process.env.BROWSER}\` &nbsp; **Workers/shard:** \`${process.env.WORKERS}\` &nbsp; **Filter:** \`${process.env.GREP}\`\n\n`;
+          out += `### Run overview\n\n`;
+          out += `| Shards | Passed tests | Failed tests | Skipped | Flaky | Warnings* | Errors* |\n`;
+          out += `|---:|---:|---:|---:|---:|---:|---:|\n`;
+          out += `| **${passedShards}/${rows.length}** | **${sum('passed')}** | **${sum('failed')}** | **${sum('skipped')}** | **${sum('flaky')}** | **${sum('warningLines')}** | **${sum('errorLines')}** |\n\n`;
+          out += `*Warnings/errors are summed only from the \`warnings=\` and \`errors=\` fields on \`[DIAG-DEBUG]\` records. Unrelated console/server/browser log messages are ignored.*\n\n`;
+
+          out += `### Shard matrix\n\n`;
+          out += `| Shard | Status | Passed | Failed | Skipped | Flaky | Warn | Error | Browser | Workers |\n`;
+          out += `|---|---|---:|---:|---:|---:|---:|---:|---|---:|\n`;
+
+          for (const r of rows) {
+            const icon = r.status === 'passed' ? '✅ PASS' : '❌ FAIL';
+            out += `| **${String(r.shard).padStart(2, '0')} / 08** | ${icon} | ${r.passed} | ${r.failed} | ${r.skipped} | ${r.flaky} | ${r.warningLines} | ${r.errorLines} | ${r.browser} | ${r.workers} |\n`;
+          }
+
+          out += `\n### 🔎 Shard details\n\n`;
+          for (const r of rows) {
+            const icon = r.status === 'passed' ? '✅' : '❌';
+            out += `<details><summary>${icon} Shard ${String(r.shard).padStart(2, '0')} — ${r.passed} passed · ${r.failed} failed · ${r.warningLines} warn · ${r.errorLines} error</summary>\n\n`;
+            out += `**Exit code:** ${r.exitCode}\n\n`;
+            if (r.signals?.length) {
+              out += '```text\n' + r.signals.join('\n') + '\n```\n\n';
+            } else {
+              out += 'No `[DIAG-DEBUG]` warning/error records detected. Other console/server log errors are ignored.\n\n';
+            }
+            out += `</details>\n\n`;
+          }
+
+          if (failedShards > 0) {
+            out += `> ⚠️ **Action:** Open the failed shard job above to inspect its complete log and Playwright artifacts.\n`;
+          } else {
+            out += `> 🎉 **All ${rows.length} shards completed successfully.**\n`;
+          }
+
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, out);
+          NODE
+
+  # ── Consolidated email report (original behavior preserved) ─────────────
+  email-report:
+    name: "📨 Email Report"
+    # Skip on manual runs where the user opted out of the report
+    if: always() && (github.event_name != 'workflow_dispatch' || inputs.send_report == 'true')
+    needs: test
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: "📥 Checkout repository"
         uses: actions/checkout@v5
 
-      - name: Setup Node.js
+      - name: "⬢ Setup Node.js 22"
         uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
 
-      - name: Install dependencies
+      - name: "📦 Install dependencies"
         run: npm ci
 
-      - name: Download diagnostics
+      # ── Existing report inputs/artifacts ────────────────────────────────
+      - name: "⬇️ Download diagnostics"
         uses: actions/download-artifact@v7
         with:
           pattern: diagnostics-*
           merge-multiple: true
           path: diagnostics
 
-      - name: Download test results
+      - name: "⬇️ Download test results"
         uses: actions/download-artifact@v7
         with:
           pattern: test-results-*
           merge-multiple: true
           path: test-results
 
-      - name: Download Playwright reports
+      - name: "⬇️ Download Playwright reports"
         uses: actions/download-artifact@v7
         with:
           pattern: playwright-report-*
           merge-multiple: true
           path: playwright-report
 
-      - name: Download blob reports
+      - name: "⬇️ Download blob reports"
         uses: actions/download-artifact@v7
         with:
           pattern: blob-report-*
           merge-multiple: true
           path: blob-reports
 
-      - name: Send consolidated daily and failure reports
+      - name: "📨 Send consolidated report"
         if: always()
         env:
           CI: "true"
-          DAILY_REPORT_EMAILS: ${{ secrets.DAILY_REPORT_EMAILS }}
+          DAILY_REPORT_EMAILS:  ${{ secrets.DAILY_REPORT_EMAILS }}
           FAILURE_ALERT_EMAILS: ${{ secrets.FAILURE_ALERT_EMAILS }}
-          SMTP_HOST: ${{ secrets.SMTP_HOST }}
-          SMTP_PORT: ${{ secrets.SMTP_PORT }}
-          SMTP_SECURE: ${{ secrets.SMTP_SECURE }}
-          SMTP_USER: ${{ secrets.SMTP_USER }}
-          SMTP_PASS: ${{ secrets.SMTP_PASS }}
-          SMTP_FROM: ${{ secrets.SMTP_FROM }}
+          SMTP_HOST:            ${{ secrets.SMTP_HOST }}
+          SMTP_PORT:            ${{ secrets.SMTP_PORT }}
+          SMTP_SECURE:          ${{ secrets.SMTP_SECURE }}
+          SMTP_USER:            ${{ secrets.SMTP_USER }}
+          SMTP_PASS:            ${{ secrets.SMTP_PASS }}
+          SMTP_FROM:            ${{ secrets.SMTP_FROM }}
         run: npm run report:email
