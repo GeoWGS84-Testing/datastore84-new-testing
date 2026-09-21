@@ -16106,7 +16106,7 @@ test(
       // ============================================================
       // TC COMPLETE
       // ============================================================
-
+/*
       logInfo(
         "P0 TC-11 Satellite Date Range Filter + Search Imagery + Result Verification completed successfully"
       );
@@ -16162,8 +16162,104 @@ test(
       throw e;
     }
   }
-);
+); */
 
+      // ============================================================
+      // TC COMPLETE
+      // ============================================================
+
+      logInfo(
+        "P0 TC-11 Satellite Date Range Filter + Search Imagery + Result Verification completed successfully"
+      );
+
+      // ============================================================
+      // DIAGNOSTICS
+      // ============================================================
+
+      if (consoleErrors.length) {
+        addWarning(
+          "Browser console errors detected during Satellite Date Range flow",
+          {
+            errors: consoleErrors,
+          }
+        );
+      }
+
+      if (failedRequests.length) {
+        addWarning(
+          "Network request failures detected during Satellite Date Range flow",
+          {
+            failures: failedRequests,
+          }
+        );
+      }
+
+      logInfo(
+        `Total API/network responses captured: ${apiResponses.length}`
+      );
+
+      logInfo(
+        `Total failed network requests: ${failedRequests.length}`
+      );
+
+      logInfo(
+        `Total browser console errors: ${consoleErrors.length}`
+      );
+
+      // =========================================================
+      // DEBUG: ACTUAL CONSOLE ERRORS
+      // =========================================================
+
+      if (consoleErrors.length > 0) {
+        logInfo("========== BROWSER CONSOLE ERRORS ==========");
+
+        consoleErrors.forEach((error, index) => {
+          logInfo(
+            `CONSOLE ERROR ${index + 1}: ${JSON.stringify(error)}`
+          );
+        });
+
+        logInfo("========== END CONSOLE ERRORS ==========");
+      }
+
+      // =========================================================
+      // DEBUG: ACTUAL FAILED NETWORK REQUESTS
+      // =========================================================
+
+      if (failedRequests.length > 0) {
+        logInfo("========== FAILED NETWORK REQUESTS ==========");
+
+        failedRequests.forEach((request, index) => {
+          logInfo(
+            `FAILED REQUEST ${index + 1}: ${JSON.stringify({
+              method: request.method,
+              url: request.url,
+              failure: request.failure,
+            })}`
+          );
+        });
+
+        logInfo("========== END FAILED NETWORK REQUESTS ==========");
+      }
+
+    } catch (e) {
+
+      addError(
+        "Satellite Date Range flow failed: " +
+        (e?.message || e)
+      );
+
+      await saveMapScreenshot(
+        page,
+        "satellite",
+        "satellite_date_range_flow_failed",
+        true
+      ).catch(() => {});
+
+      throw e;
+    }
+  }
+);
 
 
 

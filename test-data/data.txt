@@ -1,314 +1,837 @@
- // tests/datastore.spec.js
+ [INFO] 2026-09-21T08:27:48.871Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - ========== CURRENT STEP: Step 7.3 ==========
+[INFO] 2026-09-21T08:27:48.871Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - CURRENT ACTION: Verify Denver location suggestion
+[INFO] 2026-09-21T08:27:51.040Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Denver, CO, USA location suggestion selected successfully
+[INFO] 2026-09-21T08:27:51.040Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - ========== CURRENT STEP: Step 7.4 ==========
+[INFO] 2026-09-21T08:27:51.040Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - CURRENT ACTION: Wait for map movement after Denver selection
+[INFO] 2026-09-21T08:27:52.655Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - World map is visible and loaded
+[INFO] 2026-09-21T08:27:54.216Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Map moved to selected Denver location
+[INFO] 2026-09-21T08:27:54.217Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - ========== CURRENT STEP: Step 7.5 ==========
+[INFO] 2026-09-21T08:27:54.217Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - CURRENT ACTION: Verify Denver map marker
+[INFO] 2026-09-21T08:27:56.059Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Map marker is visible
+[INFO] 2026-09-21T08:27:58.116Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Selected Denver location marker verified successfully
+[INFO] 2026-09-21T08:27:58.116Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - STEP PASSED: Step 7
+[INFO] 2026-09-21T08:27:58.116Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - ========== CURRENT STEP: Step 8 ==========
+[INFO] 2026-09-21T08:27:58.116Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - CURRENT ACTION: Open Map Camera Control, click Zoom + and open AOI Draw Tool
+[INFO] 2026-09-21T08:27:58.116Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Step 8: Open Map Camera Control, click Zoom + andopen AOI Draw Tool
+[INFO] 2026-09-21T08:27:59.309Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - ========== CURRENT STEP: Step 8.1 ==========
+[INFO] 2026-09-21T08:27:59.309Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - CURRENT ACTION: Verify and open Map Camera Control
+[INFO] 2026-09-21T08:28:02.416Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:28:03.526Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Map Camera Control opened successfully
+[INFO] 2026-09-21T08:28:03.526Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - ========== CURRENT STEP: Step 8.2 ==========
+[INFO] 2026-09-21T08:28:03.526Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - CURRENT ACTION: Verify and click Zoom in exactly once
+[INFO] 2026-09-21T08:28:06.721Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:28:09.079Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Zoom (+) clicked exactly once
+[INFO] 2026-09-21T08:28:09.079Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - ========== CURRENT STEP: Step 8.3 ==========
+[INFO] 2026-09-21T08:28:09.079Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - CURRENT ACTION: Verify and open AOI Draw Tool
+[INFO] 2026-09-21T08:28:10.731Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - AOI Draw Tool opened successfully
+[INFO] 2026-09-21T08:28:10.731Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - STEP PASSED: Step 8
+[INFO] 2026-09-21T08:28:10.731Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - ========== CURRENT STEP: Step 9 ==========
+[INFO] 2026-09-21T08:28:10.732Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - CURRENT ACTION: Select Rectangle AOI, draw AOI and verify Service popup
+[INFO] 2026-09-21T08:28:10.732Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Step 9: Select Rectangle AOI, draw AOI and verifyService popup
+[INFO] 2026-09-21T08:28:24.259Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - STEP PASSED: Step 9
+[INFO] 2026-09-21T08:28:24.259Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - ========== CURRENT STEP: Step 10 ==========
+[INFO] 2026-09-21T08:28:24.259Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - CURRENT ACTION: Select Satellite Service and SVN3-01(0.5m)
+[INFO] 2026-09-21T08:28:24.260Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Step 10: Select Satellite Service and SVN3-01(0.5m)
+[INFO] 2026-09-21T08:28:25.455Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - ========== CURRENT STEP: Step 10.1 ==========
+[INFO] 2026-09-21T08:28:25.455Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - CURRENT ACTION: Verify Service Grid
+[INFO] 2026-09-21T08:28:27.540Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Service grid verified successfully
+[INFO] 2026-09-21T08:28:27.540Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - ========== CURRENT STEP: Step 10.2 ==========
+[INFO] 2026-09-21T08:28:27.540Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - CURRENT ACTION: Select Satellite Service
+[INFO] 2026-09-21T08:28:31.845Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Satellite service selected successfully: Satellite
+[INFO] 2026-09-21T08:28:31.845Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Step 10.3: Remove all existing Satellite filters
+[INFO] 2026-09-21T08:28:33.158Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Existing satellite filters found: 5
+[INFO] 2026-09-21T08:28:44.458Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Step 10.4: Verify Satellite Filter is empty
+[INFO] 2026-09-21T08:28:45.770Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Satellite Filter is empty after removing all existing satellites
+[INFO] 2026-09-21T08:28:45.770Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - STEP PASSED: Step 10.4
+[INFO] 2026-09-21T08:28:45.771Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Step 10.5: Click Add Satellite
+[INFO] 2026-09-21T08:28:50.353Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Add Satellite dropdown opened successfully
+[INFO] 2026-09-21T08:28:50.354Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - STEP PASSED: Step 10.5
+[INFO] 2026-09-21T08:28:50.354Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - ========== CURRENT STEP: Step 10.6 ==========
+[INFO] 2026-09-21T08:28:50.354Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - CURRENT ACTION: Select satellite SVN3-01(0.5m)
+[INFO] 2026-09-21T08:28:50.354Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Step 10.6: Select satellite SVN3-01(0.5m)
+[INFO] 2026-09-21T08:28:55.822Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - SVN3-01(0.5m) checkbox selected successfully
+[INFO] 2026-09-21T08:28:55.822Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - STEP PASSED: Step 10.6
+[INFO] 2026-09-21T08:28:55.911Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Step 10.8: Verify and click Search Imagery button
+[INFO] 2026-09-21T08:29:00.984Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - STEP PASSED: Step 10.8
+[INFO] 2026-09-21T08:29:00.984Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - ============================================================
+[INFO] 2026-09-21T08:29:00.984Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - TC-37 COMPLETED: Satellite Filter -> SVN3-01(0.5m) -> Search Imagery -> API -> Scene -> Outline -> Preview -> Metadata -> Cancel
+[INFO] 2026-09-21T08:29:00.984Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - ============================================================
+[INFO] 2026-09-21T08:29:00.984Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - ================ DIAGNOSTICS ================
+[INFO] 2026-09-21T08:29:00.984Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Browser console errors: 0
+[INFO] 2026-09-21T08:29:00.984Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Network request failures: 0
+[INFO] 2026-09-21T08:29:00.984Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - API responses: 97
+[INFO] 2026-09-21T08:29:00.985Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Failed requests: 0
+[INFO] 2026-09-21T08:29:00.985Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Console errors: 0
+[INFO] 2026-09-21T08:29:00.985Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Last successful step: Step 10.8
+[INFO] 2026-09-21T08:29:00.985Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Test started at: 2026-09-21T08:27:19.013Z
+[INFO] 2026-09-21T08:29:00.985Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Test completed at: 2026-09-21T08:29:00.985Z
+[INFO] 2026-09-21T08:29:00.985Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - Final URL: https://datastore.geowgs84.com/#
+[INFO] 2026-09-21T08:29:00.986Z ([P0] 37 - Satellite Service SVN3-01(0.5m))  - P0 Satellite Service SVN3-01(0.5m) test completedsuccessfully
+[DIAG-DEBUG] testId="e663f80392f13f94c7f9-444227026465e391ff41" title="[P0] 37 - Satellite Service SVN3-01(0.5m)" warnings=0 errors=0 skipped=0 status=passed
+[DIAG-DEBUG] File EXISTS: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\diagnostics\e663f80392f13f94c7f9-444227026465e391ff41.json
+[DIAG-DEBUG] File contains: warnings=0 errors=0 skippedSteps=0
+  ✓  37 [chromium] › specs\satellite.spec.js:830:5 › [P0] 37 - Satellite Service SVN3-01(0.5m) (1.7m)
+     38 [chromium] › specs\satellite.spec.js:852:5 › [P0] 38 - Satellite Service SVN3-02(0.5m)
+[INFO] 2026-09-21T08:29:02.189Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Context set
+[INFO] 2026-09-21T08:29:02.195Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - ========== CURRENT STEP: Step 1 ==========
+[INFO] 2026-09-21T08:29:02.196Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - CURRENT ACTION: Navigate to the DataStore URL
+[INFO] 2026-09-21T08:29:02.196Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Step 1: Navigate to the DataStore URL
+[INFO] 2026-09-21T08:29:14.731Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - DataStore root returned HTTP 200
+[INFO] 2026-09-21T08:29:14.731Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - DataStore URL opened successfully
+[INFO] 2026-09-21T08:29:14.731Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - STEP PASSED: Step 1
+[INFO] 2026-09-21T08:29:14.731Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - ========== CURRENT STEP: Step 2 ==========
+[INFO] 2026-09-21T08:29:14.732Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - CURRENT ACTION: Wait for page loader and highlight the loader/logo
+[INFO] 2026-09-21T08:29:14.732Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Step 2: Wait for page loader and highlight the loader/logo
+[INFO] 2026-09-21T08:29:18.275Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Page loader became hidden
+[INFO] 2026-09-21T08:29:18.275Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Page loader/logo processed successfully
+[INFO] 2026-09-21T08:29:18.275Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - STEP PASSED: Step 2
+[INFO] 2026-09-21T08:29:18.275Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - ========== CURRENT STEP: Step 3 ==========
+[INFO] 2026-09-21T08:29:18.275Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - CURRENT ACTION: Close the tutorial
+[INFO] 2026-09-21T08:29:18.275Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Step 3: Close the tutorial
+[INFO] 2026-09-21T08:29:20.881Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:29:22.260Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Tutorial modal closed
+[INFO] 2026-09-21T08:29:22.260Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Tutorial closed successfully
+[INFO] 2026-09-21T08:29:22.260Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - STEP PASSED: Step 3
+[INFO] 2026-09-21T08:29:22.260Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - ========== CURRENT STEP: Step 4 ==========
+[INFO] 2026-09-21T08:29:22.261Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - CURRENT ACTION: Wait for the map to load
+[INFO] 2026-09-21T08:29:22.261Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Step 4: Wait for the map to load
+[INFO] 2026-09-21T08:29:25.073Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - World map is visible and loaded
+[INFO] 2026-09-21T08:29:25.073Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Map loaded successfully
+[INFO] 2026-09-21T08:29:25.073Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - STEP PASSED: Step 4
+[INFO] 2026-09-21T08:29:25.073Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - ========== CURRENT STEP: Step 5 ==========
+[INFO] 2026-09-21T08:29:25.073Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - CURRENT ACTION: Locate and highlight the Search icon
+[INFO] 2026-09-21T08:29:25.073Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Step 5: Locate and highlight the Search icon
+[INFO] 2026-09-21T08:29:27.809Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Search icon located successfully
+[INFO] 2026-09-21T08:29:27.809Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - STEP PASSED: Step 5
+[INFO] 2026-09-21T08:29:27.809Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - ========== CURRENT STEP: Step 6 ==========
+[INFO] 2026-09-21T08:29:27.809Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - CURRENT ACTION: Click the Search icon
+[INFO] 2026-09-21T08:29:27.809Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Step 6: Click the Search icon
+[INFO] 2026-09-21T08:29:31.042Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Search icon clicked successfully
+[INFO] 2026-09-21T08:29:31.042Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - STEP PASSED: Step 6
+[INFO] 2026-09-21T08:29:31.042Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - ========== CURRENT STEP: Step 7 ==========
+[INFO] 2026-09-21T08:29:31.042Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - CURRENT ACTION: Search Denver, select the location and verify marker
+[INFO] 2026-09-21T08:29:31.042Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Step 7: Search Denver, select the location and verify the selected marker
+[INFO] 2026-09-21T08:29:32.211Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - ========== CURRENT STEP: Step 7.1 ==========
+[INFO] 2026-09-21T08:29:32.211Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - CURRENT ACTION: Verify Search input
+[INFO] 2026-09-21T08:29:33.959Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - ========== CURRENT STEP: Step 7.2 ==========
+[INFO] 2026-09-21T08:29:33.959Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - CURRENT ACTION: Fill Denver and verify Google Places Autocomplete API
+[INFO] 2026-09-21T08:29:35.146Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Denver Search API response status: 200
+[INFO] 2026-09-21T08:29:35.146Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - ========== CURRENT STEP: Step 7.3 ==========
+[INFO] 2026-09-21T08:29:35.146Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - CURRENT ACTION: Verify Denver location suggestion
+[INFO] 2026-09-21T08:29:37.334Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Denver, CO, USA location suggestion selected successfully
+[INFO] 2026-09-21T08:29:37.334Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - ========== CURRENT STEP: Step 7.4 ==========
+[INFO] 2026-09-21T08:29:37.334Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - CURRENT ACTION: Wait for map movement after Denver selection
+[INFO] 2026-09-21T08:29:38.976Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - World map is visible and loaded
+[INFO] 2026-09-21T08:29:40.520Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Map moved to selected Denver location
+[INFO] 2026-09-21T08:29:40.521Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - ========== CURRENT STEP: Step 7.5 ==========
+[INFO] 2026-09-21T08:29:40.521Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - CURRENT ACTION: Verify Denver map marker
+[INFO] 2026-09-21T08:29:42.290Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Map marker is visible
+[INFO] 2026-09-21T08:29:44.329Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Selected Denver location marker verified successfully
+[INFO] 2026-09-21T08:29:44.329Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - STEP PASSED: Step 7
+[INFO] 2026-09-21T08:29:44.329Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - ========== CURRENT STEP: Step 8 ==========
+[INFO] 2026-09-21T08:29:44.329Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - CURRENT ACTION: Open Map Camera Control, click Zoom + and open AOI Draw Tool
+[INFO] 2026-09-21T08:29:44.329Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Step 8: Open Map Camera Control, click Zoom + andopen AOI Draw Tool
+[INFO] 2026-09-21T08:29:45.514Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - ========== CURRENT STEP: Step 8.1 ==========
+[INFO] 2026-09-21T08:29:45.514Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - CURRENT ACTION: Verify and open Map Camera Control
+[INFO] 2026-09-21T08:29:48.570Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:29:49.691Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Map Camera Control opened successfully
+[INFO] 2026-09-21T08:29:49.691Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - ========== CURRENT STEP: Step 8.2 ==========
+[INFO] 2026-09-21T08:29:49.691Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - CURRENT ACTION: Verify and click Zoom in exactly once
+[INFO] 2026-09-21T08:29:53.018Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:29:55.433Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Zoom (+) clicked exactly once
+[INFO] 2026-09-21T08:29:55.434Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - ========== CURRENT STEP: Step 8.3 ==========
+[INFO] 2026-09-21T08:29:55.434Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - CURRENT ACTION: Verify and open AOI Draw Tool
+[INFO] 2026-09-21T08:29:57.047Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - AOI Draw Tool opened successfully
+[INFO] 2026-09-21T08:29:57.047Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - STEP PASSED: Step 8
+[INFO] 2026-09-21T08:29:57.047Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - ========== CURRENT STEP: Step 9 ==========
+[INFO] 2026-09-21T08:29:57.047Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - CURRENT ACTION: Select Rectangle AOI, draw AOI and verify Service popup
+[INFO] 2026-09-21T08:29:57.047Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Step 9: Select Rectangle AOI, draw AOI and verifyService popup
+[INFO] 2026-09-21T08:30:10.146Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - STEP PASSED: Step 9
+[INFO] 2026-09-21T08:30:10.147Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - ========== CURRENT STEP: Step 10 ==========
+[INFO] 2026-09-21T08:30:10.147Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - CURRENT ACTION: Select Satellite Service and SVN3-02(0.5m)
+[INFO] 2026-09-21T08:30:10.147Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Step 10: Select Satellite Service and SVN3-02(0.5m)
+[INFO] 2026-09-21T08:30:11.276Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - ========== CURRENT STEP: Step 10.1 ==========
+[INFO] 2026-09-21T08:30:11.276Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - CURRENT ACTION: Verify Service Grid
+[INFO] 2026-09-21T08:30:13.288Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Service grid verified successfully
+[INFO] 2026-09-21T08:30:13.288Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - ========== CURRENT STEP: Step 10.2 ==========
+[INFO] 2026-09-21T08:30:13.288Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - CURRENT ACTION: Select Satellite Service
+[INFO] 2026-09-21T08:30:17.322Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Satellite service selected successfully: Satellite
+[INFO] 2026-09-21T08:30:17.322Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Step 10.3: Remove all existing Satellite filters
+[INFO] 2026-09-21T08:30:18.582Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Existing satellite filters found: 5
+[INFO] 2026-09-21T08:30:29.839Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Step 10.4: Verify Satellite Filter is empty
+[INFO] 2026-09-21T08:30:31.097Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Satellite Filter is empty after removing all existing satellites
+[INFO] 2026-09-21T08:30:31.097Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - STEP PASSED: Step 10.4
+[INFO] 2026-09-21T08:30:31.097Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Step 10.5: Click Add Satellite
+[INFO] 2026-09-21T08:30:35.662Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Add Satellite dropdown opened successfully
+[INFO] 2026-09-21T08:30:35.663Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - STEP PASSED: Step 10.5
+[INFO] 2026-09-21T08:30:35.663Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - ========== CURRENT STEP: Step 10.6 ==========
+[INFO] 2026-09-21T08:30:35.663Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - CURRENT ACTION: Select satellite SVN3-02(0.5m)
+[INFO] 2026-09-21T08:30:35.663Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Step 10.6: Select satellite SVN3-02(0.5m)
+[INFO] 2026-09-21T08:30:41.424Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - SVN3-02(0.5m) checkbox selected successfully
+[INFO] 2026-09-21T08:30:41.424Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - STEP PASSED: Step 10.6
+[INFO] 2026-09-21T08:30:41.478Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Step 10.8: Verify and click Search Imagery button
+[INFO] 2026-09-21T08:30:46.644Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - STEP PASSED: Step 10.8
+[INFO] 2026-09-21T08:30:46.645Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - ============================================================
+[INFO] 2026-09-21T08:30:46.645Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - TC-38 COMPLETED: Satellite Filter -> SVN3-02(0.5m) -> Search Imagery -> API -> Scene -> Outline -> Preview -> Metadata -> Cancel
+[INFO] 2026-09-21T08:30:46.645Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - ============================================================
+[INFO] 2026-09-21T08:30:46.645Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - ================ DIAGNOSTICS ================
+[INFO] 2026-09-21T08:30:46.646Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Browser console errors: 0
+[INFO] 2026-09-21T08:30:46.646Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Network request failures: 0
+[INFO] 2026-09-21T08:30:46.646Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - API responses: 97
+[INFO] 2026-09-21T08:30:46.647Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Failed requests: 0
+[INFO] 2026-09-21T08:30:46.647Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Console errors: 0
+[INFO] 2026-09-21T08:30:46.647Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Last successful step: Step 10.8
+[INFO] 2026-09-21T08:30:46.647Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Test started at: 2026-09-21T08:29:02.193Z
+[INFO] 2026-09-21T08:30:46.647Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Test completed at: 2026-09-21T08:30:46.647Z
+[INFO] 2026-09-21T08:30:46.648Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - Final URL: https://datastore.geowgs84.com/#
+[INFO] 2026-09-21T08:30:46.648Z ([P0] 38 - Satellite Service SVN3-02(0.5m))  - P0 Satellite Service SVN3-02(0.5m) test completedsuccessfully
+[DIAG-DEBUG] testId="e663f80392f13f94c7f9-20bee603f1f499d78974" title="[P0] 38 - Satellite Service SVN3-02(0.5m)" warnings=0 errors=0 skipped=0 status=passed
+[DIAG-DEBUG] File EXISTS: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\diagnostics\e663f80392f13f94c7f9-20bee603f1f499d78974.json
+[DIAG-DEBUG] File contains: warnings=0 errors=0 skippedSteps=0
+  ✓  38 [chromium] › specs\satellite.spec.js:852:5 › [P0] 38 - Satellite Service SVN3-02(0.5m) (1.8m)
+     39 [chromium] › specs\satellite.spec.js:874:5 › [P0] 39 - Satellite Service JL1KF02A(0.5m)
+[INFO] 2026-09-21T08:30:47.862Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Context set
+[INFO] 2026-09-21T08:30:47.869Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - ========== CURRENT STEP: Step 1 ==========
+[INFO] 2026-09-21T08:30:47.870Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - CURRENT ACTION: Navigate to the DataStore URL
+[INFO] 2026-09-21T08:30:47.870Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Step 1: Navigate to the DataStore URL
+[INFO] 2026-09-21T08:30:57.496Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - DataStore root returned HTTP 200
+[INFO] 2026-09-21T08:30:57.496Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - DataStore URL opened successfully
+[INFO] 2026-09-21T08:30:57.496Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - STEP PASSED: Step 1
+[INFO] 2026-09-21T08:30:57.496Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - ========== CURRENT STEP: Step 2 ==========
+[INFO] 2026-09-21T08:30:57.496Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - CURRENT ACTION: Wait for page loader and highlight the loader/logo
+[INFO] 2026-09-21T08:30:57.496Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Step 2: Wait for page loader and highlight the loader/logo
+[INFO] 2026-09-21T08:31:00.966Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Page loader became hidden
+[INFO] 2026-09-21T08:31:00.966Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Page loader/logo processed successfully
+[INFO] 2026-09-21T08:31:00.966Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - STEP PASSED: Step 2
+[INFO] 2026-09-21T08:31:00.966Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - ========== CURRENT STEP: Step 3 ==========
+[INFO] 2026-09-21T08:31:00.966Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - CURRENT ACTION: Close the tutorial
+[INFO] 2026-09-21T08:31:00.966Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Step 3: Close the tutorial
+[INFO] 2026-09-21T08:31:03.566Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:31:04.926Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Tutorial modal closed
+[INFO] 2026-09-21T08:31:04.926Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Tutorial closed successfully
+[INFO] 2026-09-21T08:31:04.926Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - STEP PASSED: Step 3
+[INFO] 2026-09-21T08:31:04.926Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - ========== CURRENT STEP: Step 4 ==========
+[INFO] 2026-09-21T08:31:04.927Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - CURRENT ACTION: Wait for the map to load
+[INFO] 2026-09-21T08:31:04.927Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Step 4: Wait for the map to load
+[INFO] 2026-09-21T08:31:07.699Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - World map is visible and loaded
+[INFO] 2026-09-21T08:31:07.699Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Map loaded successfully
+[INFO] 2026-09-21T08:31:07.699Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - STEP PASSED: Step 4
+[INFO] 2026-09-21T08:31:07.699Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - ========== CURRENT STEP: Step 5 ==========
+[INFO] 2026-09-21T08:31:07.699Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - CURRENT ACTION: Locate and highlight the Search icon
+[INFO] 2026-09-21T08:31:07.699Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Step 5: Locate and highlight the Search icon
+[INFO] 2026-09-21T08:31:10.372Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Search icon located successfully
+[INFO] 2026-09-21T08:31:10.372Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - STEP PASSED: Step 5
+[INFO] 2026-09-21T08:31:10.372Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - ========== CURRENT STEP: Step 6 ==========
+[INFO] 2026-09-21T08:31:10.372Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - CURRENT ACTION: Click the Search icon
+[INFO] 2026-09-21T08:31:10.373Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Step 6: Click the Search icon
+[INFO] 2026-09-21T08:31:13.527Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Search icon clicked successfully
+[INFO] 2026-09-21T08:31:13.527Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - STEP PASSED: Step 6
+[INFO] 2026-09-21T08:31:13.527Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - ========== CURRENT STEP: Step 7 ==========
+[INFO] 2026-09-21T08:31:13.527Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - CURRENT ACTION: Search Denver, select the location and verify marker
+[INFO] 2026-09-21T08:31:13.528Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Step 7: Search Denver, select the location and verify the selected marker
+[INFO] 2026-09-21T08:31:14.747Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - ========== CURRENT STEP: Step 7.1 ==========
+[INFO] 2026-09-21T08:31:14.747Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - CURRENT ACTION: Verify Search input
+[INFO] 2026-09-21T08:31:16.595Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - ========== CURRENT STEP: Step 7.2 ==========
+[INFO] 2026-09-21T08:31:16.595Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - CURRENT ACTION: Fill Denver and verify Google Places Autocomplete API
+[INFO] 2026-09-21T08:31:17.351Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Denver Search API response status: 200
+[INFO] 2026-09-21T08:31:17.352Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - ========== CURRENT STEP: Step 7.3 ==========
+[INFO] 2026-09-21T08:31:17.352Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - CURRENT ACTION: Verify Denver location suggestion
+[INFO] 2026-09-21T08:31:19.627Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Denver, CO, USA location suggestion selected successfully
+[INFO] 2026-09-21T08:31:19.627Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - ========== CURRENT STEP: Step 7.4 ==========
+[INFO] 2026-09-21T08:31:19.627Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - CURRENT ACTION: Wait for map movement after Denver selection
+[INFO] 2026-09-21T08:31:21.295Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - World map is visible and loaded
+[INFO] 2026-09-21T08:31:22.851Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Map moved to selected Denver location
+[INFO] 2026-09-21T08:31:22.851Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - ========== CURRENT STEP: Step 7.5 ==========
+[INFO] 2026-09-21T08:31:22.852Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - CURRENT ACTION: Verify Denver map marker
+[INFO] 2026-09-21T08:31:24.597Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Map marker is visible
+[INFO] 2026-09-21T08:31:26.655Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Selected Denver location marker verified successfully
+[INFO] 2026-09-21T08:31:26.655Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - STEP PASSED: Step 7
+[INFO] 2026-09-21T08:31:26.655Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - ========== CURRENT STEP: Step 8 ==========
+[INFO] 2026-09-21T08:31:26.655Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - CURRENT ACTION: Open Map Camera Control, click Zoom + and open AOI Draw Tool
+[INFO] 2026-09-21T08:31:26.655Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Step 8: Open Map Camera Control, click Zoom + and open AOI Draw Tool
+[INFO] 2026-09-21T08:31:27.809Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - ========== CURRENT STEP: Step 8.1 ==========
+[INFO] 2026-09-21T08:31:27.810Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - CURRENT ACTION: Verify and open Map Camera Control
+[INFO] 2026-09-21T08:31:31.077Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:31:32.185Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Map Camera Control opened successfully
+[INFO] 2026-09-21T08:31:32.185Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - ========== CURRENT STEP: Step 8.2 ==========
+[INFO] 2026-09-21T08:31:32.185Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - CURRENT ACTION: Verify and click Zoom in exactlyonce
+[INFO] 2026-09-21T08:31:35.609Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:31:37.939Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Zoom (+) clicked exactly once
+[INFO] 2026-09-21T08:31:37.939Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - ========== CURRENT STEP: Step 8.3 ==========
+[INFO] 2026-09-21T08:31:37.939Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - CURRENT ACTION: Verify and open AOI Draw Tool
+[INFO] 2026-09-21T08:31:39.585Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - AOI Draw Tool opened successfully
+[INFO] 2026-09-21T08:31:39.586Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - STEP PASSED: Step 8
+[INFO] 2026-09-21T08:31:39.586Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - ========== CURRENT STEP: Step 9 ==========
+[INFO] 2026-09-21T08:31:39.586Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - CURRENT ACTION: Select Rectangle AOI, draw AOI and verify Service popup
+[INFO] 2026-09-21T08:31:39.586Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Step 9: Select Rectangle AOI, draw AOI and verify Service popup
+[INFO] 2026-09-21T08:31:52.676Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - STEP PASSED: Step 9
+[INFO] 2026-09-21T08:31:52.677Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - ========== CURRENT STEP: Step 10 ==========
+[INFO] 2026-09-21T08:31:52.677Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - CURRENT ACTION: Select Satellite Service and JL1KF02A(0.5m)
+[INFO] 2026-09-21T08:31:52.677Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Step 10: Select Satellite Service and JL1KF02A(0.5m)
+[INFO] 2026-09-21T08:31:53.833Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - ========== CURRENT STEP: Step 10.1 ==========
+[INFO] 2026-09-21T08:31:53.833Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - CURRENT ACTION: Verify Service Grid
+[INFO] 2026-09-21T08:31:55.878Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Service grid verified successfully
+[INFO] 2026-09-21T08:31:55.878Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - ========== CURRENT STEP: Step 10.2 ==========
+[INFO] 2026-09-21T08:31:55.878Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - CURRENT ACTION: Select Satellite Service
+[INFO] 2026-09-21T08:32:00.090Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Satellite service selected successfully: Satellite
+[INFO] 2026-09-21T08:32:00.090Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Step 10.3: Remove all existing Satellite filters
+[INFO] 2026-09-21T08:32:01.373Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Existing satellite filters found: 5
+[INFO] 2026-09-21T08:32:12.198Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Step 10.4: Verify Satellite Filter is empty
+[INFO] 2026-09-21T08:32:13.549Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Satellite Filter is empty after removing all existing satellites
+[INFO] 2026-09-21T08:32:13.550Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - STEP PASSED: Step 10.4
+[INFO] 2026-09-21T08:32:13.550Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Step 10.5: Click Add Satellite
+[INFO] 2026-09-21T08:32:18.036Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Add Satellite dropdown opened successfully
+[INFO] 2026-09-21T08:32:18.036Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - STEP PASSED: Step 10.5
+[INFO] 2026-09-21T08:32:18.036Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - ========== CURRENT STEP: Step 10.6 ==========
+[INFO] 2026-09-21T08:32:18.036Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - CURRENT ACTION: Select satellite JL1KF02A(0.5m)
+[INFO] 2026-09-21T08:32:18.036Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Step 10.6: Select satellite JL1KF02A(0.5m)
+[INFO] 2026-09-21T08:32:23.372Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - JL1KF02A(0.5m) checkbox selected successfully
+[INFO] 2026-09-21T08:32:23.372Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - STEP PASSED: Step 10.6
+[INFO] 2026-09-21T08:32:23.418Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Step 10.8: Verify and click Search Imagery button
+[INFO] 2026-09-21T08:32:28.460Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - STEP PASSED: Step 10.8
+[INFO] 2026-09-21T08:32:28.460Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - ============================================================
+[INFO] 2026-09-21T08:32:28.460Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - TC-39 COMPLETED: Satellite Filter -> JL1KF02A(0.5m) -> Search Imagery -> API -> Scene -> Outline -> Preview -> Metadata -> Cancel
+[INFO] 2026-09-21T08:32:28.461Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - ============================================================
+[INFO] 2026-09-21T08:32:28.461Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - ================ DIAGNOSTICS ================
+[INFO] 2026-09-21T08:32:28.461Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Browser console errors: 0
+[INFO] 2026-09-21T08:32:28.461Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Network request failures: 0
+[INFO] 2026-09-21T08:32:28.461Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - API responses: 97
+[INFO] 2026-09-21T08:32:28.461Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Failed requests: 0
+[INFO] 2026-09-21T08:32:28.461Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Console errors: 0
+[INFO] 2026-09-21T08:32:28.461Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Last successful step: Step 10.8
+[INFO] 2026-09-21T08:32:28.461Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Test started at: 2026-09-21T08:30:47.866Z
+[INFO] 2026-09-21T08:32:28.461Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Test completed at: 2026-09-21T08:32:28.461Z
+[INFO] 2026-09-21T08:32:28.462Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - Final URL: https://datastore.geowgs84.com/#
+[INFO] 2026-09-21T08:32:28.462Z ([P0] 39 - Satellite Service JL1KF02A(0.5m))  - P0 Satellite Service JL1KF02A(0.5m) test completed successfully
+[DIAG-DEBUG] testId="e663f80392f13f94c7f9-8b2ae7a118a48d2631d2" title="[P0] 39 - Satellite Service JL1KF02A(0.5m)" warnings=0 errors=0 skipped=0 status=passed
+[DIAG-DEBUG] File EXISTS: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\diagnostics\e663f80392f13f94c7f9-8b2ae7a118a48d2631d2.json
+[DIAG-DEBUG] File contains: warnings=0 errors=0 skippedSteps=0
+  ✓  39 [chromium] › specs\satellite.spec.js:874:5 › [P0] 39 - Satellite Service JL1KF02A(0.5m) (1.7m)
+     40 [chromium] › specs\satellite.spec.js:896:5 › [P0] 40 - Satellite Service JL1KF02B04(0.5m)
+[INFO] 2026-09-21T08:32:29.729Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Context set
+[INFO] 2026-09-21T08:32:29.736Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - ========== CURRENT STEP: Step 1 ==========
+[INFO] 2026-09-21T08:32:29.736Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - CURRENT ACTION: Navigate to the DataStore URL
+[INFO] 2026-09-21T08:32:29.736Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Step 1: Navigate to the DataStore URL
+[INFO] 2026-09-21T08:32:38.197Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - DataStore root returned HTTP 200
+[INFO] 2026-09-21T08:32:38.198Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - DataStore URL opened successfully
+[INFO] 2026-09-21T08:32:38.198Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - STEP PASSED: Step 1
+[INFO] 2026-09-21T08:32:38.198Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - ========== CURRENT STEP: Step 2 ==========
+[INFO] 2026-09-21T08:32:38.198Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - CURRENT ACTION: Wait for page loader and highlight the loader/logo
+[INFO] 2026-09-21T08:32:38.199Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Step 2: Wait for page loader and highlight theloader/logo
+[INFO] 2026-09-21T08:32:42.938Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Page loader became hidden
+[INFO] 2026-09-21T08:32:42.938Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Page loader/logo processed successfully
+[INFO] 2026-09-21T08:32:42.938Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - STEP PASSED: Step 2
+[INFO] 2026-09-21T08:32:42.938Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - ========== CURRENT STEP: Step 3 ==========
+[INFO] 2026-09-21T08:32:42.938Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - CURRENT ACTION: Close the tutorial
+[INFO] 2026-09-21T08:32:42.938Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Step 3: Close the tutorial
+[INFO] 2026-09-21T08:32:45.491Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:32:46.885Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Tutorial modal closed
+[INFO] 2026-09-21T08:32:46.885Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Tutorial closed successfully
+[INFO] 2026-09-21T08:32:46.886Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - STEP PASSED: Step 3
+[INFO] 2026-09-21T08:32:46.886Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - ========== CURRENT STEP: Step 4 ==========
+[INFO] 2026-09-21T08:32:46.886Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - CURRENT ACTION: Wait for the map to load
+[INFO] 2026-09-21T08:32:46.886Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Step 4: Wait for the map to load
+[INFO] 2026-09-21T08:32:49.685Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - World map is visible and loaded
+[INFO] 2026-09-21T08:32:49.686Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Map loaded successfully
+[INFO] 2026-09-21T08:32:49.686Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - STEP PASSED: Step 4
+[INFO] 2026-09-21T08:32:49.686Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - ========== CURRENT STEP: Step 5 ==========
+[INFO] 2026-09-21T08:32:49.686Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - CURRENT ACTION: Locate and highlight the Search icon
+[INFO] 2026-09-21T08:32:49.686Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Step 5: Locate and highlight the Search icon
+[INFO] 2026-09-21T08:32:52.412Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Search icon located successfully
+[INFO] 2026-09-21T08:32:52.412Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - STEP PASSED: Step 5
+[INFO] 2026-09-21T08:32:52.412Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - ========== CURRENT STEP: Step 6 ==========
+[INFO] 2026-09-21T08:32:52.412Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - CURRENT ACTION: Click the Search icon
+[INFO] 2026-09-21T08:32:52.412Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Step 6: Click the Search icon
+[INFO] 2026-09-21T08:32:55.649Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Search icon clicked successfully
+[INFO] 2026-09-21T08:32:55.650Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - STEP PASSED: Step 6
+[INFO] 2026-09-21T08:32:55.650Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - ========== CURRENT STEP: Step 7 ==========
+[INFO] 2026-09-21T08:32:55.650Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - CURRENT ACTION: Search Denver, select the location and verify marker
+[INFO] 2026-09-21T08:32:55.650Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Step 7: Search Denver, select the location andverify the selected marker
+[INFO] 2026-09-21T08:32:56.798Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - ========== CURRENT STEP: Step 7.1 ==========
+[INFO] 2026-09-21T08:32:56.798Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - CURRENT ACTION: Verify Search input
+[INFO] 2026-09-21T08:32:58.645Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - ========== CURRENT STEP: Step 7.2 ==========
+[INFO] 2026-09-21T08:32:58.645Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - CURRENT ACTION: Fill Denver and verify Google Places Autocomplete API
+[INFO] 2026-09-21T08:32:59.739Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Denver Search API response status: 200
+[INFO] 2026-09-21T08:32:59.740Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - ========== CURRENT STEP: Step 7.3 ==========
+[INFO] 2026-09-21T08:32:59.740Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - CURRENT ACTION: Verify Denver location suggestion
+[INFO] 2026-09-21T08:33:01.917Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Denver, CO, USA location suggestion selected successfully
+[INFO] 2026-09-21T08:33:01.917Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - ========== CURRENT STEP: Step 7.4 ==========
+[INFO] 2026-09-21T08:33:01.917Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - CURRENT ACTION: Wait for map movement after Denver selection
+[INFO] 2026-09-21T08:33:03.594Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - World map is visible and loaded
+[INFO] 2026-09-21T08:33:05.158Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Map moved to selected Denver location
+[INFO] 2026-09-21T08:33:05.158Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - ========== CURRENT STEP: Step 7.5 ==========
+[INFO] 2026-09-21T08:33:05.158Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - CURRENT ACTION: Verify Denver map marker
+[INFO] 2026-09-21T08:33:07.001Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Map marker is visible
+[INFO] 2026-09-21T08:33:09.064Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Selected Denver location marker verified successfully
+[INFO] 2026-09-21T08:33:09.065Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - STEP PASSED: Step 7
+[INFO] 2026-09-21T08:33:09.065Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - ========== CURRENT STEP: Step 8 ==========
+[INFO] 2026-09-21T08:33:09.065Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - CURRENT ACTION: Open Map Camera Control, clickZoom + and open AOI Draw Tool
+[INFO] 2026-09-21T08:33:09.065Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Step 8: Open Map Camera Control, click Zoom + and open AOI Draw Tool
+[INFO] 2026-09-21T08:33:10.215Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - ========== CURRENT STEP: Step 8.1 ==========
+[INFO] 2026-09-21T08:33:10.215Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - CURRENT ACTION: Verify and open Map Camera Control
+[INFO] 2026-09-21T08:33:13.358Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:33:14.449Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Map Camera Control opened successfully
+[INFO] 2026-09-21T08:33:14.449Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - ========== CURRENT STEP: Step 8.2 ==========
+[INFO] 2026-09-21T08:33:14.449Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - CURRENT ACTION: Verify and click Zoom in exactly once
+[INFO] 2026-09-21T08:33:17.637Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:33:19.956Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Zoom (+) clicked exactly once
+[INFO] 2026-09-21T08:33:19.956Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - ========== CURRENT STEP: Step 8.3 ==========
+[INFO] 2026-09-21T08:33:19.956Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - CURRENT ACTION: Verify and open AOI Draw Tool
+[INFO] 2026-09-21T08:33:21.620Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - AOI Draw Tool opened successfully
+[INFO] 2026-09-21T08:33:21.621Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - STEP PASSED: Step 8
+[INFO] 2026-09-21T08:33:21.621Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - ========== CURRENT STEP: Step 9 ==========
+[INFO] 2026-09-21T08:33:21.621Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - CURRENT ACTION: Select Rectangle AOI, draw AOIand verify Service popup
+[INFO] 2026-09-21T08:33:21.621Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Step 9: Select Rectangle AOI, draw AOI and verify Service popup
+[INFO] 2026-09-21T08:33:34.794Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - STEP PASSED: Step 9
+[INFO] 2026-09-21T08:33:34.794Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - ========== CURRENT STEP: Step 10 ==========
+[INFO] 2026-09-21T08:33:34.794Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - CURRENT ACTION: Select Satellite Service and JL1KF02B04(0.5m)
+[INFO] 2026-09-21T08:33:34.794Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Step 10: Select Satellite Service and JL1KF02B04(0.5m)
+[INFO] 2026-09-21T08:33:35.972Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - ========== CURRENT STEP: Step 10.1 ==========
+[INFO] 2026-09-21T08:33:35.972Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - CURRENT ACTION: Verify Service Grid
+[INFO] 2026-09-21T08:33:38.013Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Service grid verified successfully
+[INFO] 2026-09-21T08:33:38.013Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - ========== CURRENT STEP: Step 10.2 ==========
+[INFO] 2026-09-21T08:33:38.013Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - CURRENT ACTION: Select Satellite Service
+[INFO] 2026-09-21T08:33:42.124Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Satellite service selected successfully: Satellite
+[INFO] 2026-09-21T08:33:42.124Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Step 10.3: Remove all existing Satellite filters
+[INFO] 2026-09-21T08:33:43.375Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Existing satellite filters found: 5
+[INFO] 2026-09-21T08:33:54.207Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Step 10.4: Verify Satellite Filter is empty
+[INFO] 2026-09-21T08:33:55.543Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Satellite Filter is empty after removing all existing satellites
+[INFO] 2026-09-21T08:33:55.543Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - STEP PASSED: Step 10.4
+[INFO] 2026-09-21T08:33:55.544Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Step 10.5: Click Add Satellite
+[INFO] 2026-09-21T08:34:00.158Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Add Satellite dropdown opened successfully
+[INFO] 2026-09-21T08:34:00.158Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - STEP PASSED: Step 10.5
+[INFO] 2026-09-21T08:34:00.158Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - ========== CURRENT STEP: Step 10.6 ==========
+[INFO] 2026-09-21T08:34:00.158Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - CURRENT ACTION: Select satellite JL1KF02B04(0.5m)
+[INFO] 2026-09-21T08:34:00.158Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Step 10.6: Select satellite JL1KF02B04(0.5m)
+[INFO] 2026-09-21T08:34:05.540Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - JL1KF02B04(0.5m) checkbox selected successfully
+[INFO] 2026-09-21T08:34:05.540Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - STEP PASSED: Step 10.6
+[INFO] 2026-09-21T08:34:05.597Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Step 10.8: Verify and click Search Imagery button
+[INFO] 2026-09-21T08:34:10.665Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - STEP PASSED: Step 10.8
+[INFO] 2026-09-21T08:34:10.665Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - ============================================================
+[INFO] 2026-09-21T08:34:10.665Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - TC-40 COMPLETED: Satellite Filter -> JL1KF02B04(0.5m) -> Search Imagery -> API -> Scene -> Outline -> Preview -> Metadata -> Cancel
+[INFO] 2026-09-21T08:34:10.665Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - ============================================================
+[INFO] 2026-09-21T08:34:10.665Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - ================ DIAGNOSTICS ================
+[INFO] 2026-09-21T08:34:10.665Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Browser console errors: 0
+[INFO] 2026-09-21T08:34:10.665Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Network request failures: 0
+[INFO] 2026-09-21T08:34:10.665Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - API responses: 97
+[INFO] 2026-09-21T08:34:10.666Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Failed requests: 0
+[INFO] 2026-09-21T08:34:10.666Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Console errors: 0
+[INFO] 2026-09-21T08:34:10.666Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Last successful step: Step 10.8
+[INFO] 2026-09-21T08:34:10.666Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Test started at: 2026-09-21T08:32:29.733Z
+[INFO] 2026-09-21T08:34:10.666Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Test completed at: 2026-09-21T08:34:10.666Z
+[INFO] 2026-09-21T08:34:10.666Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - Final URL: https://datastore.geowgs84.com/#
+[INFO] 2026-09-21T08:34:10.667Z ([P0] 40 - Satellite Service JL1KF02B04(0.5m))  - P0 Satellite Service JL1KF02B04(0.5m) test completed successfully
+[DIAG-DEBUG] testId="e663f80392f13f94c7f9-e8e303c5fa0e50f7907b" title="[P0] 40 - Satellite Service JL1KF02B04(0.5m)" warnings=0 errors=0 skipped=0 status=passed
+[DIAG-DEBUG] File EXISTS: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\diagnostics\e663f80392f13f94c7f9-e8e303c5fa0e50f7907b.json
+[DIAG-DEBUG] File contains: warnings=0 errors=0 skippedSteps=0
+  ✓  40 [chromium] › specs\satellite.spec.js:896:5 › [P0] 40 - Satellite Service JL1KF02B04(0.5m) (1.7m)
+     41 [chromium] › specs\satellite.spec.js:918:5 › [P0] 41 - Satellite Service JL1KF02B05(0.5m)
+[INFO] 2026-09-21T08:34:11.865Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Context set
+[INFO] 2026-09-21T08:34:11.869Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - ========== CURRENT STEP: Step 1 ==========
+[INFO] 2026-09-21T08:34:11.869Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - CURRENT ACTION: Navigate to the DataStore URL
+[INFO] 2026-09-21T08:34:11.869Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Step 1: Navigate to the DataStore URL
+[INFO] 2026-09-21T08:34:18.784Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - DataStore root returned HTTP 200
+[INFO] 2026-09-21T08:34:18.784Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - DataStore URL opened successfully
+[INFO] 2026-09-21T08:34:18.785Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - STEP PASSED: Step 1
+[INFO] 2026-09-21T08:34:18.785Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - ========== CURRENT STEP: Step 2 ==========
+[INFO] 2026-09-21T08:34:18.785Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - CURRENT ACTION: Wait for page loader and highlight the loader/logo
+[INFO] 2026-09-21T08:34:18.785Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Step 2: Wait for page loader and highlight theloader/logo
+[INFO] 2026-09-21T08:34:22.491Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Page loader became hidden
+[INFO] 2026-09-21T08:34:22.491Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Page loader/logo processed successfully
+[INFO] 2026-09-21T08:34:22.491Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - STEP PASSED: Step 2
+[INFO] 2026-09-21T08:34:22.491Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - ========== CURRENT STEP: Step 3 ==========
+[INFO] 2026-09-21T08:34:22.491Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - CURRENT ACTION: Close the tutorial
+[INFO] 2026-09-21T08:34:22.492Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Step 3: Close the tutorial
+[INFO] 2026-09-21T08:34:25.045Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:34:26.417Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Tutorial modal closed
+[INFO] 2026-09-21T08:34:26.417Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Tutorial closed successfully
+[INFO] 2026-09-21T08:34:26.417Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - STEP PASSED: Step 3
+[INFO] 2026-09-21T08:34:26.417Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - ========== CURRENT STEP: Step 4 ==========
+[INFO] 2026-09-21T08:34:26.417Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - CURRENT ACTION: Wait for the map to load
+[INFO] 2026-09-21T08:34:26.418Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Step 4: Wait for the map to load
+[INFO] 2026-09-21T08:34:29.215Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - World map is visible and loaded
+[INFO] 2026-09-21T08:34:29.215Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Map loaded successfully
+[INFO] 2026-09-21T08:34:29.216Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - STEP PASSED: Step 4
+[INFO] 2026-09-21T08:34:29.216Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - ========== CURRENT STEP: Step 5 ==========
+[INFO] 2026-09-21T08:34:29.216Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - CURRENT ACTION: Locate and highlight the Search icon
+[INFO] 2026-09-21T08:34:29.216Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Step 5: Locate and highlight the Search icon
+[INFO] 2026-09-21T08:34:31.984Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Search icon located successfully
+[INFO] 2026-09-21T08:34:31.984Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - STEP PASSED: Step 5
+[INFO] 2026-09-21T08:34:31.984Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - ========== CURRENT STEP: Step 6 ==========
+[INFO] 2026-09-21T08:34:31.985Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - CURRENT ACTION: Click the Search icon
+[INFO] 2026-09-21T08:34:31.985Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Step 6: Click the Search icon
+[INFO] 2026-09-21T08:34:35.225Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Search icon clicked successfully
+[INFO] 2026-09-21T08:34:35.225Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - STEP PASSED: Step 6
+[INFO] 2026-09-21T08:34:35.225Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - ========== CURRENT STEP: Step 7 ==========
+[INFO] 2026-09-21T08:34:35.225Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - CURRENT ACTION: Search Denver, select the location and verify marker
+[INFO] 2026-09-21T08:34:35.226Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Step 7: Search Denver, select the location andverify the selected marker
+[INFO] 2026-09-21T08:34:36.473Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - ========== CURRENT STEP: Step 7.1 ==========
+[INFO] 2026-09-21T08:34:36.473Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - CURRENT ACTION: Verify Search input
+[INFO] 2026-09-21T08:34:38.280Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - ========== CURRENT STEP: Step 7.2 ==========
+[INFO] 2026-09-21T08:34:38.280Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - CURRENT ACTION: Fill Denver and verify Google Places Autocomplete API
+[INFO] 2026-09-21T08:34:39.993Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Denver Search API response status: 200
+[INFO] 2026-09-21T08:34:39.993Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - ========== CURRENT STEP: Step 7.3 ==========
+[INFO] 2026-09-21T08:34:39.993Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - CURRENT ACTION: Verify Denver location suggestion
+[INFO] 2026-09-21T08:34:42.196Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Denver, CO, USA location suggestion selected successfully
+[INFO] 2026-09-21T08:34:42.196Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - ========== CURRENT STEP: Step 7.4 ==========
+[INFO] 2026-09-21T08:34:42.196Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - CURRENT ACTION: Wait for map movement after Denver selection
+[INFO] 2026-09-21T08:34:43.818Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - World map is visible and loaded
+[INFO] 2026-09-21T08:34:45.426Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Map moved to selected Denver location
+[INFO] 2026-09-21T08:34:45.427Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - ========== CURRENT STEP: Step 7.5 ==========
+[INFO] 2026-09-21T08:34:45.427Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - CURRENT ACTION: Verify Denver map marker
+[INFO] 2026-09-21T08:34:47.199Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Map marker is visible
+[INFO] 2026-09-21T08:34:49.236Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Selected Denver location marker verified successfully
+[INFO] 2026-09-21T08:34:49.237Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - STEP PASSED: Step 7
+[INFO] 2026-09-21T08:34:49.237Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - ========== CURRENT STEP: Step 8 ==========
+[INFO] 2026-09-21T08:34:49.237Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - CURRENT ACTION: Open Map Camera Control, clickZoom + and open AOI Draw Tool
+[INFO] 2026-09-21T08:34:49.237Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Step 8: Open Map Camera Control, click Zoom + and open AOI Draw Tool
+[INFO] 2026-09-21T08:34:50.421Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - ========== CURRENT STEP: Step 8.1 ==========
+[INFO] 2026-09-21T08:34:50.421Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - CURRENT ACTION: Verify and open Map Camera Control
+[INFO] 2026-09-21T08:34:53.556Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:34:54.650Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Map Camera Control opened successfully
+[INFO] 2026-09-21T08:34:54.650Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - ========== CURRENT STEP: Step 8.2 ==========
+[INFO] 2026-09-21T08:34:54.650Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - CURRENT ACTION: Verify and click Zoom in exactly once
+[INFO] 2026-09-21T08:34:57.834Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:35:00.132Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Zoom (+) clicked exactly once
+[INFO] 2026-09-21T08:35:00.132Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - ========== CURRENT STEP: Step 8.3 ==========
+[INFO] 2026-09-21T08:35:00.132Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - CURRENT ACTION: Verify and open AOI Draw Tool
+[INFO] 2026-09-21T08:35:01.751Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - AOI Draw Tool opened successfully
+[INFO] 2026-09-21T08:35:01.752Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - STEP PASSED: Step 8
+[INFO] 2026-09-21T08:35:01.752Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - ========== CURRENT STEP: Step 9 ==========
+[INFO] 2026-09-21T08:35:01.752Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - CURRENT ACTION: Select Rectangle AOI, draw AOIand verify Service popup
+[INFO] 2026-09-21T08:35:01.752Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Step 9: Select Rectangle AOI, draw AOI and verify Service popup
+[INFO] 2026-09-21T08:35:14.861Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - STEP PASSED: Step 9
+[INFO] 2026-09-21T08:35:14.862Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - ========== CURRENT STEP: Step 10 ==========
+[INFO] 2026-09-21T08:35:14.862Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - CURRENT ACTION: Select Satellite Service and JL1KF02B05(0.5m)
+[INFO] 2026-09-21T08:35:14.862Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Step 10: Select Satellite Service and JL1KF02B05(0.5m)
+[INFO] 2026-09-21T08:35:16.120Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - ========== CURRENT STEP: Step 10.1 ==========
+[INFO] 2026-09-21T08:35:16.120Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - CURRENT ACTION: Verify Service Grid
+[INFO] 2026-09-21T08:35:18.163Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Service grid verified successfully
+[INFO] 2026-09-21T08:35:18.163Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - ========== CURRENT STEP: Step 10.2 ==========
+[INFO] 2026-09-21T08:35:18.163Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - CURRENT ACTION: Select Satellite Service
+[INFO] 2026-09-21T08:35:22.317Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Satellite service selected successfully: Satellite
+[INFO] 2026-09-21T08:35:22.317Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Step 10.3: Remove all existing Satellite filters
+[INFO] 2026-09-21T08:35:23.598Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Existing satellite filters found: 5
+[INFO] 2026-09-21T08:35:34.360Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Step 10.4: Verify Satellite Filter is empty
+[INFO] 2026-09-21T08:35:35.596Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Satellite Filter is empty after removing all existing satellites
+[INFO] 2026-09-21T08:35:35.596Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - STEP PASSED: Step 10.4
+[INFO] 2026-09-21T08:35:35.596Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Step 10.5: Click Add Satellite
+[INFO] 2026-09-21T08:35:40.029Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Add Satellite dropdown opened successfully
+[INFO] 2026-09-21T08:35:40.029Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - STEP PASSED: Step 10.5
+[INFO] 2026-09-21T08:35:40.029Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - ========== CURRENT STEP: Step 10.6 ==========
+[INFO] 2026-09-21T08:35:40.029Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - CURRENT ACTION: Select satellite JL1KF02B05(0.5m)
+[INFO] 2026-09-21T08:35:40.029Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Step 10.6: Select satellite JL1KF02B05(0.5m)
+[INFO] 2026-09-21T08:35:45.369Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - JL1KF02B05(0.5m) checkbox selected successfully
+[INFO] 2026-09-21T08:35:45.369Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - STEP PASSED: Step 10.6
+[INFO] 2026-09-21T08:35:45.423Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Step 10.8: Verify and click Search Imagery button
+[INFO] 2026-09-21T08:35:50.456Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - STEP PASSED: Step 10.8
+[INFO] 2026-09-21T08:35:50.456Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - ============================================================
+[INFO] 2026-09-21T08:35:50.457Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - TC-41 COMPLETED: Satellite Filter -> JL1KF02B05(0.5m) -> Search Imagery -> API -> Scene -> Outline -> Preview -> Metadata -> Cancel
+[INFO] 2026-09-21T08:35:50.457Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - ============================================================
+[INFO] 2026-09-21T08:35:50.457Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - ================ DIAGNOSTICS ================
+[INFO] 2026-09-21T08:35:50.457Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Browser console errors: 0
+[INFO] 2026-09-21T08:35:50.457Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Network request failures: 0
+[INFO] 2026-09-21T08:35:50.457Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - API responses: 97
+[INFO] 2026-09-21T08:35:50.457Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Failed requests: 0
+[INFO] 2026-09-21T08:35:50.458Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Console errors: 0
+[INFO] 2026-09-21T08:35:50.458Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Last successful step: Step 10.8
+[INFO] 2026-09-21T08:35:50.458Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Test started at: 2026-09-21T08:34:11.867Z
+[INFO] 2026-09-21T08:35:50.458Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Test completed at: 2026-09-21T08:35:50.458Z
+[INFO] 2026-09-21T08:35:50.458Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - Final URL: https://datastore.geowgs84.com/#
+[INFO] 2026-09-21T08:35:50.458Z ([P0] 41 - Satellite Service JL1KF02B05(0.5m))  - P0 Satellite Service JL1KF02B05(0.5m) test completed successfully
+[DIAG-DEBUG] testId="e663f80392f13f94c7f9-ae7d382fcd1a033a4904" title="[P0] 41 - Satellite Service JL1KF02B05(0.5m)" warnings=0 errors=0 skipped=0 status=passed
+[DIAG-DEBUG] File EXISTS: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\diagnostics\e663f80392f13f94c7f9-ae7d382fcd1a033a4904.json
+[DIAG-DEBUG] File contains: warnings=0 errors=0 skippedSteps=0
+  ✓  41 [chromium] › specs\satellite.spec.js:918:5 › [P0] 41 - Satellite Service JL1KF02B05(0.5m) (1.7m)
+     42 [chromium] › specs\satellite.spec.js:940:5 › [P0] 42 - Satellite Service JL1KF02B06(0.5m)
+[INFO] 2026-09-21T08:35:51.614Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Context set
+[INFO] 2026-09-21T08:35:51.618Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - ========== CURRENT STEP: Step 1 ==========
+[INFO] 2026-09-21T08:35:51.618Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - CURRENT ACTION: Navigate to the DataStore URL
+[INFO] 2026-09-21T08:35:51.618Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Step 1: Navigate to the DataStore URL
+[INFO] 2026-09-21T08:36:01.171Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - DataStore root returned HTTP 200
+[INFO] 2026-09-21T08:36:01.172Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - DataStore URL opened successfully
+[INFO] 2026-09-21T08:36:01.172Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - STEP PASSED: Step 1
+[INFO] 2026-09-21T08:36:01.172Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - ========== CURRENT STEP: Step 2 ==========
+[INFO] 2026-09-21T08:36:01.172Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - CURRENT ACTION: Wait for page loader and highlight the loader/logo
+[INFO] 2026-09-21T08:36:01.172Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Step 2: Wait for page loader and highlight theloader/logo
+[INFO] 2026-09-21T08:36:04.630Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Page loader became hidden
+[INFO] 2026-09-21T08:36:04.630Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Page loader/logo processed successfully
+[INFO] 2026-09-21T08:36:04.630Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - STEP PASSED: Step 2
+[INFO] 2026-09-21T08:36:04.630Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - ========== CURRENT STEP: Step 3 ==========
+[INFO] 2026-09-21T08:36:04.630Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - CURRENT ACTION: Close the tutorial
+[INFO] 2026-09-21T08:36:04.630Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Step 3: Close the tutorial
+[INFO] 2026-09-21T08:36:07.196Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:36:08.567Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Tutorial modal closed
+[INFO] 2026-09-21T08:36:08.567Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Tutorial closed successfully
+[INFO] 2026-09-21T08:36:08.567Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - STEP PASSED: Step 3
+[INFO] 2026-09-21T08:36:08.567Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - ========== CURRENT STEP: Step 4 ==========
+[INFO] 2026-09-21T08:36:08.568Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - CURRENT ACTION: Wait for the map to load
+[INFO] 2026-09-21T08:36:08.568Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Step 4: Wait for the map to load
+[INFO] 2026-09-21T08:36:11.382Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - World map is visible and loaded
+[INFO] 2026-09-21T08:36:11.383Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Map loaded successfully
+[INFO] 2026-09-21T08:36:11.383Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - STEP PASSED: Step 4
+[INFO] 2026-09-21T08:36:11.383Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - ========== CURRENT STEP: Step 5 ==========
+[INFO] 2026-09-21T08:36:11.383Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - CURRENT ACTION: Locate and highlight the Search icon
+[INFO] 2026-09-21T08:36:11.383Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Step 5: Locate and highlight the Search icon
+[INFO] 2026-09-21T08:36:14.055Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Search icon located successfully
+[INFO] 2026-09-21T08:36:14.055Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - STEP PASSED: Step 5
+[INFO] 2026-09-21T08:36:14.055Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - ========== CURRENT STEP: Step 6 ==========
+[INFO] 2026-09-21T08:36:14.055Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - CURRENT ACTION: Click the Search icon
+[INFO] 2026-09-21T08:36:14.056Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Step 6: Click the Search icon
+[INFO] 2026-09-21T08:36:17.265Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Search icon clicked successfully
+[INFO] 2026-09-21T08:36:17.265Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - STEP PASSED: Step 6
+[INFO] 2026-09-21T08:36:17.265Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - ========== CURRENT STEP: Step 7 ==========
+[INFO] 2026-09-21T08:36:17.266Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - CURRENT ACTION: Search Denver, select the location and verify marker
+[INFO] 2026-09-21T08:36:17.266Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Step 7: Search Denver, select the location andverify the selected marker
+[INFO] 2026-09-21T08:36:18.471Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - ========== CURRENT STEP: Step 7.1 ==========
+[INFO] 2026-09-21T08:36:18.471Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - CURRENT ACTION: Verify Search input
+[INFO] 2026-09-21T08:36:20.301Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - ========== CURRENT STEP: Step 7.2 ==========
+[INFO] 2026-09-21T08:36:20.301Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - CURRENT ACTION: Fill Denver and verify Google Places Autocomplete API
+[INFO] 2026-09-21T08:36:21.781Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Denver Search API response status: 200
+[INFO] 2026-09-21T08:36:21.781Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - ========== CURRENT STEP: Step 7.3 ==========
+[INFO] 2026-09-21T08:36:21.781Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - CURRENT ACTION: Verify Denver location suggestion
+[INFO] 2026-09-21T08:36:23.951Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Denver, CO, USA location suggestion selected successfully
+[INFO] 2026-09-21T08:36:23.952Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - ========== CURRENT STEP: Step 7.4 ==========
+[INFO] 2026-09-21T08:36:23.952Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - CURRENT ACTION: Wait for map movement after Denver selection
+[INFO] 2026-09-21T08:36:25.668Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - World map is visible and loaded
+[INFO] 2026-09-21T08:36:27.233Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Map moved to selected Denver location
+[INFO] 2026-09-21T08:36:27.233Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - ========== CURRENT STEP: Step 7.5 ==========
+[INFO] 2026-09-21T08:36:27.234Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - CURRENT ACTION: Verify Denver map marker
+[INFO] 2026-09-21T08:36:29.167Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Map marker is visible
+[INFO] 2026-09-21T08:36:31.220Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Selected Denver location marker verified successfully
+[INFO] 2026-09-21T08:36:31.220Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - STEP PASSED: Step 7
+[INFO] 2026-09-21T08:36:31.221Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - ========== CURRENT STEP: Step 8 ==========
+[INFO] 2026-09-21T08:36:31.221Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - CURRENT ACTION: Open Map Camera Control, clickZoom + and open AOI Draw Tool
+[INFO] 2026-09-21T08:36:31.221Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Step 8: Open Map Camera Control, click Zoom + and open AOI Draw Tool
+[INFO] 2026-09-21T08:36:32.427Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - ========== CURRENT STEP: Step 8.1 ==========
+[INFO] 2026-09-21T08:36:32.427Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - CURRENT ACTION: Verify and open Map Camera Control
+[INFO] 2026-09-21T08:36:35.581Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:36:36.690Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Map Camera Control opened successfully
+[INFO] 2026-09-21T08:36:36.690Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - ========== CURRENT STEP: Step 8.2 ==========
+[INFO] 2026-09-21T08:36:36.690Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - CURRENT ACTION: Verify and click Zoom in exactly once
+[INFO] 2026-09-21T08:36:39.907Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:36:42.249Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Zoom (+) clicked exactly once
+[INFO] 2026-09-21T08:36:42.249Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - ========== CURRENT STEP: Step 8.3 ==========
+[INFO] 2026-09-21T08:36:42.249Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - CURRENT ACTION: Verify and open AOI Draw Tool
+[INFO] 2026-09-21T08:36:43.950Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - AOI Draw Tool opened successfully
+[INFO] 2026-09-21T08:36:43.951Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - STEP PASSED: Step 8
+[INFO] 2026-09-21T08:36:43.951Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - ========== CURRENT STEP: Step 9 ==========
+[INFO] 2026-09-21T08:36:43.951Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - CURRENT ACTION: Select Rectangle AOI, draw AOIand verify Service popup
+[INFO] 2026-09-21T08:36:43.951Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Step 9: Select Rectangle AOI, draw AOI and verify Service popup
+[INFO] 2026-09-21T08:36:57.153Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - STEP PASSED: Step 9
+[INFO] 2026-09-21T08:36:57.153Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - ========== CURRENT STEP: Step 10 ==========
+[INFO] 2026-09-21T08:36:57.153Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - CURRENT ACTION: Select Satellite Service and JL1KF02B06(0.5m)
+[INFO] 2026-09-21T08:36:57.153Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Step 10: Select Satellite Service and JL1KF02B06(0.5m)
+[INFO] 2026-09-21T08:36:58.376Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - ========== CURRENT STEP: Step 10.1 ==========
+[INFO] 2026-09-21T08:36:58.376Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - CURRENT ACTION: Verify Service Grid
+[INFO] 2026-09-21T08:37:00.561Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Service grid verified successfully
+[INFO] 2026-09-21T08:37:00.561Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - ========== CURRENT STEP: Step 10.2 ==========
+[INFO] 2026-09-21T08:37:00.561Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - CURRENT ACTION: Select Satellite Service
+[INFO] 2026-09-21T08:37:04.849Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Satellite service selected successfully: Satellite
+[INFO] 2026-09-21T08:37:04.849Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Step 10.3: Remove all existing Satellite filters
+[INFO] 2026-09-21T08:37:06.118Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Existing satellite filters found: 5
+[INFO] 2026-09-21T08:37:16.851Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Step 10.4: Verify Satellite Filter is empty
+[INFO] 2026-09-21T08:37:18.145Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Satellite Filter is empty after removing all existing satellites
+[INFO] 2026-09-21T08:37:18.145Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - STEP PASSED: Step 10.4
+[INFO] 2026-09-21T08:37:18.145Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Step 10.5: Click Add Satellite
+[INFO] 2026-09-21T08:37:22.601Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Add Satellite dropdown opened successfully
+[INFO] 2026-09-21T08:37:22.601Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - STEP PASSED: Step 10.5
+[INFO] 2026-09-21T08:37:22.601Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - ========== CURRENT STEP: Step 10.6 ==========
+[INFO] 2026-09-21T08:37:22.602Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - CURRENT ACTION: Select satellite JL1KF02B06(0.5m)
+[INFO] 2026-09-21T08:37:22.602Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Step 10.6: Select satellite JL1KF02B06(0.5m)
+[INFO] 2026-09-21T08:37:27.912Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - JL1KF02B06(0.5m) checkbox selected successfully
+[INFO] 2026-09-21T08:37:27.912Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - STEP PASSED: Step 10.6
+[INFO] 2026-09-21T08:37:27.964Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Step 10.8: Verify and click Search Imagery button
+[INFO] 2026-09-21T08:37:33.013Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - STEP PASSED: Step 10.8
+[INFO] 2026-09-21T08:37:33.013Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - ============================================================
+[INFO] 2026-09-21T08:37:33.014Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - TC-42 COMPLETED: Satellite Filter -> JL1KF02B06(0.5m) -> Search Imagery -> API -> Scene -> Outline -> Preview -> Metadata -> Cancel
+[INFO] 2026-09-21T08:37:33.014Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - ============================================================
+[INFO] 2026-09-21T08:37:33.014Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - ================ DIAGNOSTICS ================
+[INFO] 2026-09-21T08:37:33.014Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Browser console errors: 0
+[INFO] 2026-09-21T08:37:33.015Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Network request failures: 0
+[INFO] 2026-09-21T08:37:33.015Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - API responses: 97
+[INFO] 2026-09-21T08:37:33.015Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Failed requests: 0
+[INFO] 2026-09-21T08:37:33.015Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Console errors: 0
+[INFO] 2026-09-21T08:37:33.016Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Last successful step: Step 10.8
+[INFO] 2026-09-21T08:37:33.016Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Test started at: 2026-09-21T08:35:51.616Z
+[INFO] 2026-09-21T08:37:33.016Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Test completed at: 2026-09-21T08:37:33.016Z
+[INFO] 2026-09-21T08:37:33.017Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - Final URL: https://datastore.geowgs84.com/#
+[INFO] 2026-09-21T08:37:33.017Z ([P0] 42 - Satellite Service JL1KF02B06(0.5m))  - P0 Satellite Service JL1KF02B06(0.5m) test completed successfully
+[DIAG-DEBUG] testId="e663f80392f13f94c7f9-f53dba85f606aa7908ce" title="[P0] 42 - Satellite Service JL1KF02B06(0.5m)" warnings=0 errors=0 skipped=0 status=passed
+[DIAG-DEBUG] File EXISTS: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\diagnostics\e663f80392f13f94c7f9-f53dba85f606aa7908ce.json
+[DIAG-DEBUG] File contains: warnings=0 errors=0 skippedSteps=0
+  ✓  42 [chromium] › specs\satellite.spec.js:940:5 › [P0] 42 - Satellite Service JL1KF02B06(0.5m) (1.7m)
+     43 [chromium] › specs\satellite.spec.js:962:5 › [P0] 43 - Satellite Service LJ3II(0.5m)
+[INFO] 2026-09-21T08:37:34.205Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Context set
+[INFO] 2026-09-21T08:37:34.217Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 1 ==========
+[INFO] 2026-09-21T08:37:34.217Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Navigate to the DataStore URL
+[INFO] 2026-09-21T08:37:34.217Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 1: Navigate to the DataStore URL
+[INFO] 2026-09-21T08:37:44.516Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - DataStore root returned HTTP 200
+[INFO] 2026-09-21T08:37:44.516Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - DataStore URL opened successfully
+[INFO] 2026-09-21T08:37:44.516Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - STEP PASSED: Step 1
+[INFO] 2026-09-21T08:37:44.516Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 2 ==========
+[INFO] 2026-09-21T08:37:44.516Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Wait for page loader and highlight the loader/logo
+[INFO] 2026-09-21T08:37:44.517Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 2: Wait for page loader and highlight the loader/logo
+[INFO] 2026-09-21T08:37:47.716Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Page loader became hidden
+[INFO] 2026-09-21T08:37:47.716Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Page loader/logo processed successfully
+[INFO] 2026-09-21T08:37:47.716Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - STEP PASSED: Step 2
+[INFO] 2026-09-21T08:37:47.716Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 3 ==========
+[INFO] 2026-09-21T08:37:47.716Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Close the tutorial
+[INFO] 2026-09-21T08:37:47.716Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 3: Close the tutorial
+[INFO] 2026-09-21T08:37:50.296Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:37:51.620Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Tutorial modal closed
+[INFO] 2026-09-21T08:37:51.620Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Tutorial closed successfully
+[INFO] 2026-09-21T08:37:51.621Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - STEP PASSED: Step 3
+[INFO] 2026-09-21T08:37:51.621Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 4 ==========
+[INFO] 2026-09-21T08:37:51.621Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Wait for the map to load
+[INFO] 2026-09-21T08:37:51.621Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 4: Wait for the map to load
+[INFO] 2026-09-21T08:37:54.429Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - World map is visible and loaded
+[INFO] 2026-09-21T08:37:54.429Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Map loaded successfully
+[INFO] 2026-09-21T08:37:54.429Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - STEP PASSED: Step 4
+[INFO] 2026-09-21T08:37:54.429Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 5 ==========
+[INFO] 2026-09-21T08:37:54.429Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Locate and highlight the Search icon
+[INFO] 2026-09-21T08:37:54.429Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 5: Locate and highlight the Search icon
+[INFO] 2026-09-21T08:37:57.055Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Search icon located successfully
+[INFO] 2026-09-21T08:37:57.055Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - STEP PASSED: Step 5
+[INFO] 2026-09-21T08:37:57.056Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 6 ==========
+[INFO] 2026-09-21T08:37:57.056Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Click the Search icon
+[INFO] 2026-09-21T08:37:57.056Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 6: Click the Search icon
+[INFO] 2026-09-21T08:38:00.177Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Search icon clicked successfully
+[INFO] 2026-09-21T08:38:00.178Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - STEP PASSED: Step 6
+[INFO] 2026-09-21T08:38:00.178Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 7 ==========
+[INFO] 2026-09-21T08:38:00.178Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Search Denver, select the location and verify marker
+[INFO] 2026-09-21T08:38:00.178Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 7: Search Denver, select the location and verify the selected marker
+[INFO] 2026-09-21T08:38:01.402Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 7.1 ==========
+[INFO] 2026-09-21T08:38:01.402Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Verify Search input
+[INFO] 2026-09-21T08:38:03.149Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 7.2 ==========
+[INFO] 2026-09-21T08:38:03.150Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Fill Denver and verify Google Places Autocomplete API
+[INFO] 2026-09-21T08:38:04.177Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Denver Search API response status: 200
+[INFO] 2026-09-21T08:38:04.177Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 7.3 ==========
+[INFO] 2026-09-21T08:38:04.177Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Verify Denver location suggestion
+[INFO] 2026-09-21T08:38:06.489Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Denver, CO, USA location suggestion selected successfully
+[INFO] 2026-09-21T08:38:06.489Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 7.4 ==========
+[INFO] 2026-09-21T08:38:06.489Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Wait for map movement after Denver selection
+[INFO] 2026-09-21T08:38:08.199Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - World map is visible and loaded
+[INFO] 2026-09-21T08:38:09.773Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Map moved to selected Denver location
+[INFO] 2026-09-21T08:38:09.774Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 7.5 ==========
+[INFO] 2026-09-21T08:38:09.774Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Verify Denver map marker
+[INFO] 2026-09-21T08:38:11.617Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Map marker is visible
+[INFO] 2026-09-21T08:38:13.674Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Selected Denver location marker verified successfully
+[INFO] 2026-09-21T08:38:13.674Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - STEP PASSED: Step 7
+[INFO] 2026-09-21T08:38:13.674Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 8 ==========
+[INFO] 2026-09-21T08:38:13.675Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Open Map Camera Control, click Zoom+ and open AOI Draw Tool
+[INFO] 2026-09-21T08:38:13.675Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 8: Open Map Camera Control, click Zoom + and open AOI Draw Tool
+[INFO] 2026-09-21T08:38:14.896Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 8.1 ==========
+[INFO] 2026-09-21T08:38:14.896Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Verify and open Map Camera Control
+[INFO] 2026-09-21T08:38:18.251Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:38:19.363Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Map Camera Control opened successfully
+[INFO] 2026-09-21T08:38:19.363Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 8.2 ==========
+[INFO] 2026-09-21T08:38:19.363Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Verify and click Zoom in exactly once
+[INFO] 2026-09-21T08:38:22.922Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:38:25.268Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Zoom (+) clicked exactly once
+[INFO] 2026-09-21T08:38:25.269Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 8.3 ==========
+[INFO] 2026-09-21T08:38:25.269Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Verify and open AOI Draw Tool
+[INFO] 2026-09-21T08:38:27.001Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - AOI Draw Tool opened successfully
+[INFO] 2026-09-21T08:38:27.001Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - STEP PASSED: Step 8
+[INFO] 2026-09-21T08:38:27.002Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 9 ==========
+[INFO] 2026-09-21T08:38:27.002Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Select Rectangle AOI, draw AOI and verify Service popup
+[INFO] 2026-09-21T08:38:27.002Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 9: Select Rectangle AOI, draw AOI and verify Service popup
+[INFO] 2026-09-21T08:38:40.589Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - STEP PASSED: Step 9
+[INFO] 2026-09-21T08:38:40.589Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 10 ==========
+[INFO] 2026-09-21T08:38:40.589Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Select Satellite Service and LJ3II(0.5m)
+[INFO] 2026-09-21T08:38:40.589Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 10: Select Satellite Service and LJ3II(0.5m)
+[INFO] 2026-09-21T08:38:41.878Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 10.1 ==========
+[INFO] 2026-09-21T08:38:41.878Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Verify Service Grid
+[INFO] 2026-09-21T08:38:44.020Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Service grid verified successfully
+[INFO] 2026-09-21T08:38:44.020Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 10.2 ==========
+[INFO] 2026-09-21T08:38:44.020Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Select Satellite Service
+[INFO] 2026-09-21T08:38:48.288Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Satellite service selected successfully: Satellite
+[INFO] 2026-09-21T08:38:48.288Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 10.3: Remove all existing Satellite filters
+[INFO] 2026-09-21T08:38:49.640Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Existing satellite filters found: 5
+[INFO] 2026-09-21T08:39:01.348Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 10.4: Verify Satellite Filter is empty
+[INFO] 2026-09-21T08:39:02.690Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Satellite Filter is empty after removing all existing satellites
+[INFO] 2026-09-21T08:39:02.690Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - STEP PASSED: Step 10.4
+[INFO] 2026-09-21T08:39:02.690Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 10.5: Click Add Satellite
+[INFO] 2026-09-21T08:39:07.332Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Add Satellite dropdown opened successfully
+[INFO] 2026-09-21T08:39:07.332Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - STEP PASSED: Step 10.5
+[INFO] 2026-09-21T08:39:07.332Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 10.6: Select LJ3II(0.5m)
+[INFO] 2026-09-21T08:39:08.602Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Satellite option located successfully: LJ3II(0.5m)
+[INFO] 2026-09-21T08:39:09.138Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - LJ3II(0.5m) satellite selected successfully
+[INFO] 2026-09-21T08:39:09.175Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Verified selected satellite filter: TV:315 (LJ3II(0.5m))
+[INFO] 2026-09-21T08:39:09.222Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 10.8: Verify and click Search Imagery button
+[INFO] 2026-09-21T08:39:14.386Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - STEP PASSED: Step 10.8
+[INFO] 2026-09-21T08:39:14.386Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 10.9: Wait for satellite imagery results to load
+[INFO] 2026-09-21T08:39:20.998Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Satellite imagery table loaded successfully
+[INFO] 2026-09-21T08:39:20.998Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - STEP PASSED: Step 10.9
+[INFO] 2026-09-21T08:39:20.998Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 11: Verify satellite scene data rows
+[INFO] 2026-09-21T08:39:22.257Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Satellite scene rows available: 4
+[INFO] 2026-09-21T08:39:22.257Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - STEP PASSED: Step 11
+[INFO] 2026-09-21T08:39:22.257Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 12: Verify Outline, Preview, Metadata and Cancel for LJ3II(0.5m)
+[INFO] 2026-09-21T08:39:25.259Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - STEP PASSED: Step 12.1
+[INFO] 2026-09-21T08:39:25.260Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 12.2: Select Outline and verify outline on map
+[INFO] 2026-09-21T08:39:30.061Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:39:37.116Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Satellite scene Outline verified on map: 15 map element(s)
+[INFO] 2026-09-21T08:39:37.116Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 12.3 ==========
+[INFO] 2026-09-21T08:39:37.116Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Select Preview and verify preview image on map
+[INFO] 2026-09-21T08:39:37.116Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 12.3: Select Preview and verify preview image on map
+[INFO] 2026-09-21T08:39:41.761Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:39:41.761Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 12.3: Wait for preview image to load on map
+[INFO] 2026-09-21T08:39:43.266Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Preview image loaded successfully. src=/static/map/icons/marker.png
+[INFO] 2026-09-21T08:39:45.299Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - STEP PASSED: Step 12.3
+[INFO] 2026-09-21T08:39:45.300Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 12.4 ==========
+[INFO] 2026-09-21T08:39:45.300Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Open metadata popup
+[INFO] 2026-09-21T08:39:45.300Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 12.4: Open Metadata popup
+[INFO] 2026-09-21T08:39:50.034Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:39:50.035Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 12.4: Wait for Metadata popup to open
+[INFO] 2026-09-21T08:39:51.379Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Metadata popup opened successfully
+[INFO] 2026-09-21T08:39:51.379Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 12.4.1 ==========
+[INFO] 2026-09-21T08:39:51.379Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Wait for metadata image to load
+[INFO] 2026-09-21T08:39:51.380Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 12.4.1: Wait until metadata image is loaded
+[INFO] 2026-09-21T08:39:54.407Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Metadata image element appeared and loaded successfully.
+[INFO] 2026-09-21T08:39:54.506Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Metadata image loaded successfully: 1540x1543
+[INFO] 2026-09-21T08:39:56.652Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 12.4.2 ==========
+[INFO] 2026-09-21T08:39:56.653Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Verify metadata Details section
+[INFO] 2026-09-21T08:39:56.653Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 12.4: Verify metadata Details section
+[INFO] 2026-09-21T08:40:02.906Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Metadata Image and Details sections verified successfully
+[INFO] 2026-09-21T08:40:02.906Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - STEP PASSED: Step 12.4
+[INFO] 2026-09-21T08:40:02.907Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 12.5 ==========
+[INFO] 2026-09-21T08:40:02.907Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Close metadata popup using Cancel
+[INFO] 2026-09-21T08:40:02.907Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 12.5: Close metadata popup using Cancel
+[INFO] 2026-09-21T08:40:07.438Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:40:08.790Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Metadata popup closed successfully using Cancel
+[INFO] 2026-09-21T08:40:08.790Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - STEP PASSED: Step 12.5
+[INFO] 2026-09-21T08:40:08.790Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ========== CURRENT STEP: Step 12.6 ==========
+[INFO] 2026-09-21T08:40:08.790Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - CURRENT ACTION: Click row Cancel and remove scene from map
+[INFO] 2026-09-21T08:40:08.790Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Step 12.6: Click row Cancel (X) and verify outline/preview is removed from map
+[INFO] 2026-09-21T08:40:12.218Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Removing active LJ3II(0.5m) satellite scene: TV:315- 01_L1
+[INFO] 2026-09-21T08:40:13.663Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - robustClick succeeded
+[INFO] 2026-09-21T08:40:17.595Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - LJ3II(0.5m) satellite scene TV:315 - 01_L1 removed successfully; outline/preview cleanup completed
+[INFO] 2026-09-21T08:40:17.595Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - STEP PASSED: Step 12.6
+[INFO] 2026-09-21T08:40:17.595Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ============================================================
+[INFO] 2026-09-21T08:40:17.595Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - TC-43 COMPLETED: Satellite Filter -> LJ3II(0.5m) ->Search Imagery -> API -> Scene -> Outline -> Preview -> Metadata -> Cancel
+[INFO] 2026-09-21T08:40:17.595Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ============================================================
+[INFO] 2026-09-21T08:40:17.595Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - ================ DIAGNOSTICS ================
+[INFO] 2026-09-21T08:40:17.596Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Browser console errors: 0
+[INFO] 2026-09-21T08:40:17.596Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Network request failures: 0
+[INFO] 2026-09-21T08:40:17.596Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - API responses: 108
+[INFO] 2026-09-21T08:40:17.596Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Failed requests: 0
+[INFO] 2026-09-21T08:40:17.596Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Console errors: 0
+[INFO] 2026-09-21T08:40:17.596Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Last successful step: Step 12.6
+[INFO] 2026-09-21T08:40:17.596Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Test started at: 2026-09-21T08:37:34.208Z
+[INFO] 2026-09-21T08:40:17.597Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Test completed at: 2026-09-21T08:40:17.597Z
+[INFO] 2026-09-21T08:40:17.597Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - Final URL: https://datastore.geowgs84.com/#
+[INFO] 2026-09-21T08:40:17.597Z ([P0] 43 - Satellite Service LJ3II(0.5m))  - P0 Satellite Service LJ3II(0.5m) test completed successfully
+[DIAG-DEBUG] testId="e663f80392f13f94c7f9-6da8f3137c45acf13937" title="[P0] 43 - Satellite Service LJ3II(0.5m)" warnings=0 errors=0 skipped=0 status=passed
+[DIAG-DEBUG] File EXISTS: C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright\diagnostics\e663f80392f13f94c7f9-6da8f3137c45acf13937.json
+[DIAG-DEBUG] File contains: warnings=0 errors=0 skippedSteps=0
+  ✓  43 [chromium] › specs\satellite.spec.js:962:5 › [P0] 43 - Satellite Service LJ3II(0.5m) (2.8m)
 
-//import { test, expect } from './common.';
-import { test, expect } from './common.js';
+  Slow test file: [chromium] › specs\satellite.spec.js (1.5h)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  43 passed (1.5h)
 
-import { SatellitePage } from '../pages/SatellitePage';
-import { CartPage } from '../pages/CartPage';
-import { 
-  setContext, getWarnings, logInfo, addWarning, saveMapScreenshot, highlight, waitForAOIOnMap, getElementMetrics 
-} from '../utils/helpers';
+To open last HTML report run:
 
-test.describe('GeoWGS84 Full Suite', () => {
-  let mapPage, satellitePage, cartPage;
+  npx playwright show-report
 
-  test.beforeEach(async ({ page }) => {
-    mapPage = new MapPage(page);
-    satellitePage = new SatellitePage(page);
-    cartPage = new CartPage(page);
-  });
-
-  // 1. Shopping Cart
-  test('[P0] 1: Shopping Cart and checkout page', async ({ page }) => {
-    await mapPage.showStep('Step 1: Opening datastore landing page');
-    await mapPage.openLanding(); 
-
-    await mapPage.showStep('Step 2: Closing wizard modal');
-    await mapPage.closeWizardModal();
-
-    await mapPage.showStep('Step 3: Search for a place and Drawing AOI');
-    await mapPage.searchPlace('Indore');
-
-    await mapPage.showStep('Step 4: Open Satellite Imagery section');
-    await satellitePage.openSatelliteSection();
-
-    await mapPage.showStep('Step 5: Waiting for table to load');
-    await satellitePage.waitForSatelliteTable();
-
-    await mapPage.showStep('Step 6: Click Add to cart for FIRST row in satellite table');
-    await cartPage.addItemToCartAndVerifyPopup();
-
-    await mapPage.showStep('Step 7: Waiting for "Item added to cart" popup / Verify cart (first-row match)');
-    await cartPage.openCartAndVerifyItem();
-
-    await mapPage.showStep('Step 8: Click Checkout / Fill form / Submit order');
-    await cartPage.checkoutAndFillForm();
-
-    await mapPage.showStep('Step 9: ✅ Redirected to thank_you page — TEST PASSED');
-  });
-
-  // Dynamic Product Tests
-  const PRODUCT_TESTS = [
-    { id: '2', titleSuffix: 'WorldView01', productName: 'WorldView01' },
-    { id: '2.1', titleSuffix: 'WorldView02', productName: 'WorldView02' },
-    { id: '2.2', titleSuffix: 'WorldView03', productName: 'WorldView03' },
-    { id: '2.3', titleSuffix: 'WorldView04', productName: 'WorldView04' },
-    { id: '2.4', titleSuffix: 'GeoEye1', productName: 'GeoEye1' },
-    { id: '2.5', titleSuffix: 'QuickBird', productName: 'QuickBird' },
-    { id: '2.6', titleSuffix: 'IKONOS', productName: 'IKONOS' },
-    { id: '2.7', titleSuffix: '21AT 30cm Archive', productName: '21AT 30cm Archive' },
-    { id: '2.8', titleSuffix: '21AT 50cm Archive', productName: '21AT 50cm Archive' },
-    { id: '2.9', titleSuffix: '21AT 80cm Archive', productName: '21AT 80cm Archive' },
-    { id: '2.10', titleSuffix: 'WV-Legion01', productName: 'WV-Legion01' },
-    { id: '2.11', titleSuffix: 'WV-Legion02', productName: 'WV-Legion02' }
-  ];
-
-  for (const t of PRODUCT_TESTS) {
-    test(`[P0] ${t.id}: Satellite scenes — ${t.titleSuffix}`, async ({ page }) => {
-      await mapPage.showStep('Step 1: Open Landing and Close Modal');
-      await mapPage.openLanding();
-      await mapPage.closeWizardModal();
-      
-      await mapPage.showStep('Step 2: Search Location and Draw AOI');
-      await mapPage.searchPlace('Indore');
-      
-      await mapPage.showStep('Step 3: Open Satellite Section');
-      await satellitePage.openSatelliteSection();
-      
-      await mapPage.showStep('Step 4: Wait for Product Table');
-      await satellitePage.waitForSatelliteTable();
-      
-      await mapPage.showStep(`Step 5: Locate and Select Product "${t.productName}"`);
-      const found = await satellitePage.selectProduct(t.productName);
-      if (!found) return; 
-
-      await mapPage.showStep('Step 6: Wait for Scenes Table (up to 3 minutes)');
-      const scenesStatus = await satellitePage.waitForScenesTable();
-
-      if (scenesStatus === 'empty') {
-        await mapPage.showStep(`No scenes available for "${t.productName}" at this AOI after 3 min — skipping scene processing`);
-        // Test PASSES but is marked with WARNING/SKIPPED in email
-        return;
-      }
-      if (scenesStatus === 'error') {
-        await mapPage.showStep(`Error loading scenes table for "${t.productName}" — skipping`);
-        return;
-      }
-
-      // Data loaded — process the first scene
-      await mapPage.showStep('Step 7: Process First Scene (Outline, Preview, Details)');
-      const firstRow = satellitePage.scenesRows.first();
-      await satellitePage.processScene(firstRow);
-    });
-  }
-
-  // 3. Search UI — FIXED: wait for pac-item visibility before clicking
-  test('[P1] 3: Search UI — search location (draw AOI)', async ({ page }) => {
-    await mapPage.showStep('Step 1: Open Landing and Close Modal');
-    await mapPage.openLanding();
-    await mapPage.closeWizardModal();
-    
-    await mapPage.showStep('Step 2: Click Search Icon');
-    try {
-        await mapPage.robustClick(mapPage.worldSearchButton);
-    } catch {
-        await mapPage.worldSearchButton.click();
-    }
-    
-    await mapPage.showStep('Step 3: Verify Search Input Appears');
-    await expect(mapPage.pacInput).toBeVisible({ timeout: 10000 });
-    
-    await mapPage.showStep('Step 4: Type "Indore" and Select Suggestion');
-    // Click input first to ensure it's focused
-    await mapPage.pacInput.click();
-    await page.waitForTimeout(300);
-    
-    // Type the search query
-    await mapPage.pacInput.fill('Indore');
-    
-    // Wait for the autocomplete dropdown suggestions to become VISIBLE
-    // The .pac-item may exist in DOM but be hidden until the API responds
-    const firstSuggestion = page.locator('.pac-item').first();
-    await firstSuggestion.waitFor({ state: 'visible', timeout: 15000 });
-    
-    // Small pause to let the dropdown fully render its position
-    await page.waitForTimeout(300);
-    await firstSuggestion.click();
-    
-    await mapPage.showStep('Step 5: Wait for Map to Load');
-    await mapPage.waitForMapToLoad();
-
-    await mapPage.showStep('Step 6: Wait for Marker to Render (5s)');
-    await page.waitForTimeout(5000);
-
-    await mapPage.showStep('Step 7: Verify Search Result Marker is Present');
-    await mapPage.verifyMapMarker(); 
-  });
-
-  // 4. Coordinates
-  test('[P1] 4: Coordinates — enter lat/lon and zoom to place', async ({ page }) => {
-    await mapPage.showStep('Step 1: Open Landing and Close Modal');
-    await mapPage.openLanding();
-    await mapPage.closeWizardModal();
-    
-    await mapPage.showStep('Step 2: Open Coordinates Modal and Enter Data');
-    await mapPage.enterCoordinates('18.5246', '73.8786');
-
-    await mapPage.showStep('Step 3: Wait for Map to Render Marker (5s)');
-    await page.waitForTimeout(5000);
-
-    await mapPage.showStep('Step 4: Verify Map Marker is Visible');
-    await mapPage.verifyMapMarker(); 
-  });
-
-  // 5. Upload KMZ
-  test('[P1] 5: Upload KMZ and verify map info window', async ({ page }) => {
-    await mapPage.showStep('Step 1: Open Landing and Close Modal');
-    await mapPage.openLanding();
-    await mapPage.closeWizardModal();
-    
-    await mapPage.showStep('Step 2: Upload KMZ File');
-    await mapPage.uploadKMZ('utils/test-data/MadhyaPradesh.kmz');
-    
-    await mapPage.showStep('Step 3: Click Map Until Info Window Appears');
-    const found = await mapPage.clickMapUntilInfoWindow();
-    
-    await mapPage.showStep('Step 4: Validate Info Window Found');
-    expect(found).toBeTruthy();
-  });
-
-  // 6. Locate
-  test('[P1] 6: Locate (go to current location)', async ({ page }) => {
-    await mapPage.showStep('Step 1: Open Landing and Close Modal');
-    await mapPage.openLanding();
-    await mapPage.closeWizardModal();
-    
-    await mapPage.showStep('Step 2: Grant Permission and Set Location');
-    setContext({ flow: 'locate' });
-    await mapPage.locateCurrentLocation(22.7196, 75.8577);
-    
-    await mapPage.showStep('Step 3: Verify Location Marker');
-    await mapPage.verifyMapMarker(); 
-  });
-
-  // 7. Hover
-  test('[P1] 7: Hover locationer — show coordinates on mouse hover', async ({ page }) => {
-    await mapPage.showStep('Step 1: Open Landing and Close Modal');
-    await mapPage.openLanding();
-    await mapPage.closeWizardModal();
-    
-    await mapPage.showStep('Step 2: Enable Hover Location Toggle');
-    setContext({ flow: 'hover' });
-    try {
-      await mapPage.enableHoverLocation();
-    } catch (e) {
-      addWarning('Unable to enable hover location toggle: ' + (e?.message || e));
-      return;
-    }
-    
-    await mapPage.showStep('Step 3: Hover on Map to Get Coordinates');
-    const hasCoords = await mapPage.verifyHoverCoordinates();
-    
-    await mapPage.showStep('Step 4: Validate Coordinates Displayed');
-    expect(hasCoords).toBeTruthy();
-  });
-
-  // 8. AOI View
-  test('[P1] 8: AOI_view (zoom back to AOI) and World View', async ({ page }) => {
-    await mapPage.showStep('Step 1: Open Landing and Close Modal');
-    await mapPage.openLanding();
-    await mapPage.closeWizardModal();
-    
-    await mapPage.showStep('Step 2: Draw AOI');
-    await mapPage.zoomUntilAOI();
-    await mapPage.openAndDrawRectangleAOI();
-    
-    const initialAoi = await waitForAOIOnMap(page, 10000);
-    if (!initialAoi) throw new Error('Initial AOI not found');
-    
-    const initialMetrics = await getElementMetrics(initialAoi.locator);
-    logInfo(`Initial AOI Metrics: ${JSON.stringify(initialMetrics)}`);
-
-    await mapPage.showStep('Step 3: Click World View');
-    await mapPage.switchToWorldView();
-    await mapPage.waitForMapToLoad(); 
-
-    await saveMapScreenshot(page, 'view', 'world_view_state', false);
-
-    let worldViewValid = false;
-    const worldMetrics = await getElementMetrics(initialAoi.locator);
-
-    if (!worldMetrics) {
-        logInfo('VALIDATED: AOI disappeared or moved off-screen in World View.');
-        worldViewValid = true;
-    } else {
-        logInfo(`World View Metrics: ${JSON.stringify(worldMetrics)}`);
-        const areaShrunk = worldMetrics.area < (initialMetrics.area * 0.9);
-        const centerShiftX = Math.abs((worldMetrics.x + worldMetrics.width/2) - (initialMetrics.x + initialMetrics.width/2));
-        const centerShiftY = Math.abs((worldMetrics.y + worldMetrics.height/2) - (initialMetrics.y + initialMetrics.height/2));
-        const movedSignificantly = (centerShiftX > 50 || centerShiftY > 50);
-
-        if (areaShrunk) {
-            logInfo(`VALIDATED: AOI area shrunk from ${initialMetrics.area} to ${worldMetrics.area}.`);
-            worldViewValid = true;
-        } else if (movedSignificantly) {
-            logInfo(`VALIDATED: AOI moved significantly (Shift X:${centerShiftX}, Y:${centerShiftY}).`);
-            worldViewValid = true;
-        } else {
-            addWarning(`World View clicked, but AOI size/position did not change significantly.`);
-        }
-    }
-
-    if (!worldViewValid) {
-        await saveMapScreenshot(page, 'view', 'world_view_validation_failed', true);
-    }
-
-    await mapPage.showStep('Step 4: Click AOI View');
-    await mapPage.switchToAoiView();
-    await mapPage.waitForMapToLoad();
-
-    const restoredAoi = await waitForAOIOnMap(page, 15000);
-    if (!restoredAoi) throw new Error('FAILURE: AOI did not reappear after clicking AOI View.');
-
-    const restoredMetrics = await getElementMetrics(restoredAoi.locator);
-    logInfo(`Restored AOI Metrics: ${JSON.stringify(restoredMetrics)}`);
-    
-    const areaSimilar = Math.abs(restoredMetrics.area - initialMetrics.area) < (initialMetrics.area * 0.2);
-    
-    if (areaSimilar) {
-        logInfo('VALIDATED: AOI returned to original size.');
-        await highlight(page, restoredAoi.locator, { borderColor: 'lime', pause: 1000 });
-    } else {
-        addWarning(`AOI size mismatch. Initial: ${initialMetrics.area}, Restored: ${restoredMetrics.area}`);
-        await highlight(page, restoredAoi.locator, { borderColor: 'orange', pause: 1000 });
-    }
-
-    await saveMapScreenshot(page, 'view', 'aoi_view_restored', false);
-    
-    await mapPage.showStep('Step 5: Final Validation');
-    expect(worldViewValid).toBe(true);
-  });
-
-  // 9. AOI Info Window
-  test('[P1] 9: AOI info window validation with close + reset behavior', async ({ page }) => {
-    await mapPage.showStep('Step 1: Open Landing and Close Modal');
-    await mapPage.openLanding();
-    await mapPage.closeWizardModal();
-    
-    await mapPage.showStep('Step 2: Search Place and Draw AOI');
-    await mapPage.searchPlace('Vijay Nagar'); 
-    
-    await mapPage.showStep('Step 3: Validate Info Window Presence');
-    await mapPage.infoWindow.waitFor({ state: 'visible' });
-    
-    await mapPage.showStep('Step 4: Close Info Window');
-    await mapPage.closeInfoWindow();
-    
-    await mapPage.showStep('Step 5: Reset AOI');
-    await mapPage.resetAOI();
-    
-    await mapPage.showStep('Step 6: Validate Info Window is Gone');
-    await expect(mapPage.infoWindow).not.toBeVisible();
-  });
-
-});
+PS C:\Users\ehars\Downloads\Datastore_geowgs84 - Main - working_production\playwright> 

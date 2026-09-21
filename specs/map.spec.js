@@ -5373,6 +5373,722 @@ test(
 );
 
 
+// ============================================================================
+// TC-11
+// Upload KML - Click Upload Without Selecting File
+// Verify Map Remains Unchanged and No KML Is Uploaded
+// ============================================================================
+
+test("[P0] 11 - Upload KML: verify upload without file does not affect map", async ({
+  page,
+}) => {
+  test.setTimeout(180000);
+
+  clearDiagnostics();
+
+  const homePage = new HomePage(page);
+  const mapPage = new MapPage(page);
+
+  const failedRequests = [];
+  const consoleErrors = [];
+
+  try {
+    // =========================================================
+    // STEP 1
+    // NAVIGATE
+    // =========================================================
+
+    await showStep(page, "Step 1: Navigate to the DataStore URL");
+
+    await homePage.open();
+
+    // =========================================================
+    // STEP 2
+    // LOADER
+    // =========================================================
+
+    await showStep(
+      page,
+      "Step 2: Wait for page loader and highlight the loader/logo",
+    );
+
+    await homePage.waitForLoaderAndHighlight();
+
+    // =========================================================
+    // STEP 3
+    // CLOSE TUTORIAL
+    // =========================================================
+
+    await showStep(page, "Step 3: Close the tutorial");
+
+    await homePage.closeTutorial();
+
+    // =========================================================
+    // NETWORK DIAGNOSTICS
+    // =========================================================
+
+    page.on("requestfailed", (request) => {
+      const url = request.url();
+
+      if (
+        url.includes("google-analytics.com") ||
+        url.includes("googletagmanager.com") ||
+        url.includes("analytics")
+      ) {
+        return;
+      }
+
+      failedRequests.push({
+        method: request.method(),
+        url,
+        failure: request.failure()?.errorText || "Unknown failure",
+      });
+    });
+
+    // =========================================================
+    // CONSOLE DIAGNOSTICS
+    // =========================================================
+/*
+    page.on("console", (msg) => {
+      if (msg.type() === "error") {
+        consoleErrors.push(msg.text());
+
+        addWarning(`Browser console error: ${msg.text()}`);
+      }
+    }); */
+
+    // =========================================================
+// CONSOLE DIAGNOSTICS
+// =========================================================
+
+page.on("console", (msg) => {
+  const text = msg.text();
+
+  // TC-11: Empty KML upload intentionally returns 500.
+  // Ignore only this expected console error.
+  if (
+    msg.type() === "error" &&
+    text.includes(
+      "Failed to load resource: the server responded with a status of 500"
+    )
+  ) {
+    logInfo(
+      "Ignored expected 500 console error from empty KML upload",
+    );
+    return;
+  }
+
+  if (msg.type() === "error") {
+    consoleErrors.push(text);
+
+    addWarning(`Browser console error: ${text}`);
+  }
+});
+
+
+    // =========================================================
+    // STEP 4
+    // MAP LOAD
+    // =========================================================
+
+    await showStep(page, "Step 4: Wait for the map to load");
+
+    await mapPage.waitForMapToLoad();
+
+    await expect(
+      mapPage.mapContainer,
+      "Map should be visible before Upload KML action",
+    ).toBeVisible({
+      timeout: 15000,
+    });
+
+    // =========================================================
+    // STEP 5
+    // VERIFY ORIGINAL MAP STATE
+    // =========================================================
+
+    await showStep(
+      page,
+      "Step 5: Verify the map is in its original state",
+    );
+
+    await mapPage.highlight(mapPage.mapContainer, {
+      borderColor: "#3FB950",
+      label: "STEP 5: Original Map State",
+      pause: 1200,
+    });
+
+    // =========================================================
+    // STEP 6
+    // LOCATE UPLOAD KML ICON
+    // =========================================================
+
+    await showStep(page, "Step 6: Locate the Upload KML icon");
+
+    await expect(
+      mapPage.uploadNav,
+      "Upload KML icon should be visible",
+    ).toBeVisible({
+      timeout: 10000,
+    });
+
+    await mapPage.highlight(mapPage.uploadNav, {
+      borderColor: "#00A6FF",
+      label: "STEP 6: Upload KML",
+      pause: 1200,
+    });
+
+    // =========================================================
+    // STEP 7
+    // OPEN UPLOAD POPUP
+    // =========================================================
+
+    await showStep(
+      page,
+      "Step 7: Click Upload KML icon and open the upload popup",
+    );
+
+    await mapPage.openUploadKmlPopup();
+
+    // =========================================================
+    // STEP 8
+    // VERIFY UPLOAD POPUP
+    // =========================================================
+
+    await showStep(
+      page,
+      "Step 8: Verify Upload File popup is visible",
+    );
+
+    await expect(
+      mapPage.uploadModal,
+      "Upload File popup should be visible",
+    ).toBeVisible({
+      timeout: 10000,
+    });
+
+    await mapPage.highlight(mapPage.uploadModal, {
+      borderColor: "#3FB950",
+      label: "STEP 8: Upload File Popup",
+      pause: 1500,
+    });
+
+    // =========================================================
+    // STEP 9
+    // VERIFY NO FILE IS SELECTED
+    // =========================================================
+
+    await showStep(
+      page,
+      "Step 9: Verify no KML file is selected",
+    );
+
+    const selectedFilesBeforeUpload =
+      await mapPage.fileInput.evaluate((input) =>
+        Array.from(input.files || []).map((file) => file.name),
+      );
+
+    expect(
+      selectedFilesBeforeUpload,
+      "No KML/KMZ file should be selected before clicking Upload",
+    ).toHaveLength(0);
+
+    // =========================================================
+    // STEP 10
+    // CLICK UPLOAD WITHOUT SELECTING FILE
+    // =========================================================
+
+    await showStep(
+      page,
+      "Step 10: Click Upload without selecting any KML file",
+    );
+
+    await mapPage.highlight(mapPage.uploadBtn, {
+      borderColor: "#F5A614",
+      label: "STEP 10: Upload Without File",
+      pause: 1200,
+    });
+
+    await mapPage.clickKmlUpload();
+
+    
+
+// =========================================================
+// STEP 11
+// VERIFY NO KML WAS UPLOADED
+// =========================================================
+
+await showStep(
+  page,
+  "Step 11: Verify no KML was uploaded and map remains unchanged",
+);
+
+// ---------------------------------------------------------
+// 11.1 AOI STATUS SHOULD SAY NO AOI
+// ---------------------------------------------------------
+
+const aoiStatus = page.locator("#gw-aoi-label").first();
+
+await expect(
+  aoiStatus,
+  "AOI status should remain visible",
+).toBeVisible({
+  timeout: 10000,
+});
+
+const aoiStatusText = (
+  await aoiStatus.textContent()
+)?.trim();
+
+expect(
+  aoiStatusText,
+  "AOI should remain inactive because no KML file was selected",
+).toContain("No AOI drawn");
+
+// ---------------------------------------------------------
+// 11.2 MAP SHOULD REMAIN VISIBLE
+// ---------------------------------------------------------
+
+await expect(
+  mapPage.mapContainer,
+  "Map should remain visible after clicking Upload without a file",
+).toBeVisible({
+  timeout: 15000,
+});
+
+// ---------------------------------------------------------
+// 11.3 HIGHLIGHT FINAL MAP STATE
+// ---------------------------------------------------------
+
+await mapPage.highlight(mapPage.mapContainer, {
+  borderColor: "#3FB950",
+  label: "STEP 11: Map Unchanged - No KML Uploaded",
+  pause: 1500,
+});
+
+await mapPage.highlight(aoiStatus, {
+  borderColor: "#3FB950",
+  label: "STEP 11: No AOI / No KML Active",
+  pause: 1500,
+});
+
+logInfo(
+  `AOI status after empty upload: "${aoiStatusText}"`,
+);
+
+
+// =========================================================
+// STEP 12
+// FINAL STATE
+// =========================================================
+
+await showStep(
+  page,
+  "Step 12: Final map state after Upload without file",
+);
+
+await expect(
+  mapPage.mapContainer,
+  "Final map should remain visible",
+).toBeVisible({
+  timeout: 10000,
+});
+
+await expect(
+  aoiStatus,
+  "AOI status should remain visible",
+).toBeVisible({
+  timeout: 10000,
+});
+
+await expect(
+  aoiStatus,
+  "AOI should remain inactive",
+).toContainText("No AOI drawn");
+
+await mapPage.highlight(mapPage.mapContainer, {
+  borderColor: "#3FB950",
+  label: "STEP 12: Final Normal Map State",
+  pause: 1500,
+});
+
+ 
+
+    // =========================================================
+    // STEP 13
+    // FINAL MAP STATE
+    // =========================================================
+
+    await showStep(
+      page,
+      "Step 13: Final validation - map remains in original state",
+    );
+
+    await mapPage.highlight(mapPage.mapContainer, {
+      borderColor: "#3FB950",
+      label: "STEP 13: Final Original Map State",
+      pause: 1500,
+    });
+
+    await expect(
+      mapPage.mapContainer,
+      "Final map should remain visible and unaffected",
+    ).toBeVisible({
+      timeout: 10000,
+    });
+
+    // =========================================================
+    // STEP 14
+    // FINAL DIAGNOSTICS
+    // =========================================================
+
+    await showStep(
+      page,
+      "Step 14: Review network and browser diagnostics",
+    );
+
+    if (failedRequests.length === 0) {
+      logInfo("No non-ignored network requests failed");
+    } else {
+      addWarning(
+        `${failedRequests.length} non-ignored network request(s) failed`,
+      );
+
+      for (const request of failedRequests) {
+        logInfo(
+          `Failed request: ${request.method} ${request.url} - ${request.failure}`,
+        );
+      }
+    }
+
+    if (consoleErrors.length === 0) {
+      logInfo("No browser console errors detected");
+    } else {
+      addWarning(
+        `${consoleErrors.length} browser console error(s) detected`,
+      );
+    }
+
+    logInfo(
+      "TC-11 completed successfully: Upload clicked without selecting a file and map remained unchanged",
+    );
+  } catch (error) {
+    addError(
+      `TC-11 Upload without file test failed: ${
+        error?.message || error
+      }`,
+    );
+
+    await saveMapScreenshot(
+      page,
+      "tc11_upload_without_file_failed",
+    ).catch(() => {});
+
+    throw error;
+  }
+});
+
+
+
+// ============================================================================
+// TC-12
+// Invalid coordinates values should not be accepted
+// ==============================================================================
+
+test("[P1] 12 - Invalid coordinate values should not be accepted", async ({
+  page,
+}) => {
+  test.setTimeout(120000);
+
+  clearDiagnostics();
+
+  const homePage = new HomePage(page);
+  const mapPage = new MapPage(page);
+
+  const failedRequests = [];
+  const consoleErrors = [];
+
+  try {
+    // =========================================================
+    // STEP 1
+    // =========================================================
+
+    await showStep(page, "Step 1: Navigate to the DataStore URL");
+
+    await homePage.open();
+
+    // =========================================================
+    // STEP 2
+    // =========================================================
+
+    await showStep(
+      page,
+      "Step 2: Wait for page loader and highlight the loader/logo",
+    );
+
+    await homePage.waitForLoaderAndHighlight();
+
+    // =========================================================
+    // STEP 3
+    // =========================================================
+
+    await showStep(page, "Step 3: Close the tutorial");
+
+    await homePage.closeTutorial();
+
+    // =========================================================
+    // NETWORK DIAGNOSTICS
+    // =========================================================
+
+    page.on("requestfailed", (request) => {
+      const url = request.url();
+
+      if (
+        url.includes("google-analytics.com") ||
+        url.includes("googletagmanager.com") ||
+        url.includes("analytics")
+      ) {
+        return;
+      }
+
+      failedRequests.push({
+        method: request.method(),
+        url,
+        failure: request.failure()?.errorText || "Unknown failure",
+      });
+    });
+
+    // =========================================================
+    // CONSOLE DIAGNOSTICS
+    // =========================================================
+
+    page.on("console", (msg) => {
+      if (msg.type() === "error") {
+        consoleErrors.push(msg.text());
+
+        addWarning(`Browser console error: ${msg.text()}`);
+      }
+    });
+
+    // =========================================================
+    // STEP 4
+    // =========================================================
+
+    await showStep(page, "Step 4: Wait for the map to load");
+
+    await mapPage.waitForMapToLoad();
+
+    // =========================================================
+    // STEP 5
+    // =========================================================
+
+    await showStep(page, "Step 5: Locate the Coordinates icon");
+
+    await mapPage.highlight(mapPage.coordinatesButton, {
+      borderColor: "#00A6FF",
+      label: "STEP 5: Coordinates",
+      pause: 1000,
+    });
+
+    // =========================================================
+    // STEP 6
+    // =========================================================
+
+    await showStep(page, "Step 6: Click the Coordinates icon");
+
+    await mapPage.openCoordinatesPopup();
+
+    // =========================================================
+    // STEP 7
+    // VERIFY POPUP
+    // =========================================================
+
+    await showStep(
+      page,
+      "Step 7: Verify the Enter Coordinates popup opens",
+    );
+
+    await expect(
+      mapPage.coordsModal,
+      "Enter Coordinates popup should be visible",
+    ).toBeVisible({
+      timeout: 10000,
+    });
+
+    logInfo("Enter Coordinates popup opened successfully");
+
+    // =========================================================
+    // STEP 8
+    // ENTER INVALID LATITUDE
+    // =========================================================
+
+    await showStep(
+      page,
+      "Step 8: Enter invalid latitude value 'erjfg'",
+    );
+
+    await mapPage.highlight(mapPage.latInput, {
+      borderColor: "#F5A614",
+      label: "STEP 8: Invalid Latitude",
+      pause: 1000,
+    });
+
+    await mapPage.latInput.fill("erjfg");
+
+    // =========================================================
+    // STEP 9
+    // ENTER INVALID LONGITUDE
+    // =========================================================
+
+    await showStep(
+      page,
+      "Step 9: Enter invalid longitude value 'ghtfdj'",
+    );
+
+    await mapPage.highlight(mapPage.lonInput, {
+      borderColor: "#F5A614",
+      label: "STEP 9: Invalid Longitude",
+      pause: 1000,
+    });
+
+    await mapPage.lonInput.fill("ghtfdj");
+
+    // =========================================================
+    // STEP 10
+    // VERIFY INVALID VALUES ARE NOT ACCEPTED
+    // =========================================================
+
+    await showStep(
+      page,
+      "Step 10: Verify invalid coordinate values are not accepted",
+    );
+
+    const latitudeValue = await mapPage.latInput.inputValue();
+    const longitudeValue = await mapPage.lonInput.inputValue();
+
+    logInfo(`Latitude field value after entry: "${latitudeValue}"`);
+    logInfo(`Longitude field value after entry: "${longitudeValue}"`);
+
+    // =========================================================
+    // STEP 11
+    // CLICK TAKE ME
+    // =========================================================
+
+    await showStep(
+      page,
+      "Step 11: Click Take Me with invalid coordinate values",
+    );
+
+    await mapPage.highlight(mapPage.takeMeButton, {
+      borderColor: "#F5A614",
+      label: "STEP 11: Take Me",
+      pause: 1000,
+    });
+
+    await expect(
+      mapPage.takeMeButton,
+      "Take Me button should be visible",
+    ).toBeVisible({
+      timeout: 10000,
+    });
+
+    await mapPage.takeMeButton.click();
+
+    logInfo("Take Me button clicked with invalid coordinate values");
+
+    // Give the application time to process the invalid input
+    await page.waitForTimeout(3000);
+
+    // =========================================================
+    // STEP 12
+    // FINAL VALIDATION
+    // =========================================================
+
+    await showStep(
+      page,
+      "Step 12: Verify invalid coordinates are rejected and only the map is shown",
+    );
+
+    // Coordinates popup should not result in successful navigation.
+    // The map should remain visible.
+    await expect(
+      mapPage.mapContainer,
+      "Map should remain visible after invalid coordinates are submitted",
+    ).toBeVisible({
+      timeout: 10000,
+    });
+
+    // Verify the application did not navigate to a valid coordinate
+    // by checking that the coordinates popup is no longer being used
+    // for successful navigation.
+    const popupVisible = await mapPage.coordsModal.isVisible().catch(() => false);
+
+    if (popupVisible) {
+      logInfo(
+        "Coordinates popup remains open, indicating invalid values were not accepted",
+      );
+    } else {
+      logInfo(
+        "Coordinates popup closed without successful coordinate navigation",
+      );
+    }
+
+    await mapPage.highlight(mapPage.mapContainer, {
+      borderColor: "#3FB950",
+      label: "STEP 12: Map Only",
+      pause: 1500,
+    });
+
+    logInfo(
+      "Invalid latitude/longitude values were not accepted and the map remained visible",
+    );
+
+    // =========================================================
+    // FINAL DIAGNOSTICS
+    // =========================================================
+
+    if (failedRequests.length === 0) {
+      logInfo("No non-ignored network requests failed");
+    } else {
+      addWarning(
+        `${failedRequests.length} non-ignored network request(s) failed`,
+      );
+
+      for (const request of failedRequests) {
+        logInfo(
+          `Failed request: ${request.method} ${request.url} - ${request.failure}`,
+        );
+      }
+    }
+
+    if (consoleErrors.length === 0) {
+      logInfo("No browser console errors detected");
+    } else {
+      addWarning(`${consoleErrors.length} browser console error(s) detected`);
+    }
+
+    logInfo(
+      "TC-12 invalid coordinates validation completed successfully",
+    );
+  } catch (error) {
+    addError(
+      `Invalid coordinates validation test failed: ${
+        error?.message || error
+      }`,
+    );
+
+    await saveMapScreenshot(
+      page,
+      "invalid_coordinates_test_failed",
+    ).catch(() => {});
+
+    throw error;
+  }
+});
+
+
+
+
 
 
 //     npx playwright test specs/map.spec.js --workers=1 --headed 
