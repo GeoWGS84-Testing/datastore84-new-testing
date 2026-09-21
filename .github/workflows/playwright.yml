@@ -459,12 +459,83 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - name: "⬇️ Download shard metrics"
+      # IMPORTANT: keep every shard artifact in its own directory.
+      # All shard artifacts contain the same file name (shard-metrics.json);
+      # merge-multiple=true would overwrite 7 of the 8 files.
+      - name: "⬇️ Download shard metrics (one directory per shard)"
         uses: actions/download-artifact@v8
         with:
           pattern: shard-metrics-*
-          merge-multiple: true
+          merge-multiple: false
           path: shard-metrics
+
+      - name: "🔍 Collect GitHub run metadata"
+        uses: actions/github-script@v9
+        env:
+          BROWSER: ${{ inputs.browser || 'chromium' }}
+          WORKERS: ${{ inputs.workers || '4' }}
+          GREP: ${{ inputs.test_grep || 'all tests' }}
+          SEND_REPORT: ${{ github.event_name != 'workflow_dispatch' || inputs.send_report == true }}
+        with:
+          script: |
+            const fs = require('fs');
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const runId = context.runId;
+
+            const [{ data: run }, { data: artifactsPage }] = await Promise.all([
+              github.rest.actions.getWorkflowRun({ owner, repo, run_id: runId }),
+              github.rest.actions.listWorkflowRunArtifacts({ owner, repo, run_id: runId, per_page: 100 })
+            ]);
+
+            const artifacts = artifactsPage.artifacts || [];
+            const artifactBytes = artifacts.reduce((n, a) => n + Number(a.size_in_bytes || 0), 0);
+
+            const formatBytes = (bytes) => {
+              if (!bytes) return '0 B';
+              const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+              let n = bytes;
+              let i = 0;
+              while (n >= 1024 && i < units.length - 1) { n /= 1024; i++; }
+              return `${n.toFixed(i >= 2 ? 1 : 0)} ${units[i]}`;
+            };
+
+            const started = run.run_started_at || run.created_at;
+            let durationSeconds = null;
+            if (started && run.updated_at) {
+              durationSeconds = Math.max(0, Math.round((new Date(run.updated_at) - new Date(started)) / 1000));
+            }
+
+            fs.writeFileSync('run-metadata.json', JSON.stringify({
+              run: {
+                id: run.id,
+                number: run.run_number,
+                name: run.name,
+                status: run.status,
+                conclusion: run.conclusion,
+                event: run.event,
+                branch: run.head_branch || run.head_ref || '',
+                sha: run.head_sha || '',
+                actor: run.actor?.login || '',
+                url: run.html_url,
+                createdAt: run.created_at,
+                startedAt: started,
+                updatedAt: run.updated_at,
+                durationSeconds
+              },
+              config: {
+                browser: process.env.BROWSER,
+                workers: Number(process.env.WORKERS),
+                grep: process.env.GREP,
+                sendReport: process.env.SEND_REPORT
+              },
+              artifacts: {
+                count: artifacts.filter(a => !a.expired).length,
+                sizeBytes: artifactBytes,
+                sizeHuman: formatBytes(artifactBytes)
+              }
+            }, null, 2));
+
 
       - name: "📈 Build consolidated shard dashboard"
         if: always()
@@ -482,9 +553,19 @@ jobs:
           const metricsByShard = new Map();
 
           if (fs.existsSync(dir)) {
-            for (const file of fs.readdirSync(dir).filter(f => f.endsWith('.json'))) {
+            const walk = (root) => {
+              const results = [];
+              for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
+                const full = `${root}/${entry.name}`;
+                if (entry.isDirectory()) results.push(...walk(full));
+                else results.push(full);
+              }
+              return results;
+            };
+
+            for (const file of walk(dir).filter(f => f.endsWith('.json'))) {
               try {
-                const metric = JSON.parse(fs.readFileSync(`${dir}/${file}`, 'utf8'));
+                const metric = JSON.parse(fs.readFileSync(file, 'utf8'));
                 if (Number.isInteger(metric.shard)) {
                   metricsByShard.set(metric.shard, metric);
                 }
@@ -493,6 +574,12 @@ jobs:
                 // be represented as NOT REPORTED below.
               }
             }
+          }
+
+          let runMeta = null;
+          if (fs.existsSync('run-metadata.json')) {
+            try { runMeta = JSON.parse(fs.readFileSync('run-metadata.json', 'utf8')); }
+            catch (_) { runMeta = null; }
           }
 
           const rows = Array.from({ length: TOTAL_SHARDS }, (_, index) => {
@@ -542,12 +629,33 @@ jobs:
 
           let out = `# ${overallIcon} Playwright Shard Matrix — ${overallText}\n\n`;
           out += `> **DataStore GeoWGS84** · 8-way parallel execution · metrics are based only on valid \`[DIAG-DEBUG]\` test-result records.\n\n`;
-          out += `**Browser:** \`${process.env.BROWSER}\` &nbsp; **Workers/shard:** \`${process.env.WORKERS}\` &nbsp; **Filter:** \`${process.env.GREP}\` &nbsp; **Playwright job result:** \`${process.env.TEST_RESULT}\`\n\n`;
+
+          if (runMeta?.run) {
+            const r = runMeta.run;
+            const local = (value) => value ? new Date(value).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '—';
+            const duration = r.durationSeconds == null ? '—' : (() => {
+              const h = Math.floor(r.durationSeconds / 3600);
+              const m = Math.floor((r.durationSeconds % 3600) / 60);
+              const sec = r.durationSeconds % 60;
+              return h ? `${h}h ${m}m ${sec}s` : `${m}m ${sec}s`;
+            })();
+
+            out += '## 🧾 Run information\n\n';
+            out += '| Run | Trigger | Branch | Commit | Actor | Started (IST) | Duration | Artifacts |\n';
+            out += '|---:|---|---|---|---|---|---:|---:|\n';
+            out += `| [**#${r.number}**](${r.url}) | \`${r.event}\` | \`${r.branch || '—'}\` | \`${(r.sha || '').slice(0, 10) || '—'}\` | \`${r.actor || '—'}\` | ${local(r.startedAt)} | **${duration}** | **${runMeta.artifacts?.count ?? '—'}** (${runMeta.artifacts?.sizeHuman ?? '—'}) |\n\n`;
+          }
+
+          out += '## ⚙️ Execution configuration\n\n';
+          out += '| Browser | Workers / shard | Test filter | Email report | Playwright matrix result |\n';
+          out += '|---|---:|---|---|---|\n';
+          out += `| \`${process.env.BROWSER}\` | **${process.env.WORKERS}** | \`${process.env.GREP}\` | ${runMeta?.config?.sendReport === 'true' ? '📧 Enabled' : '📭 Disabled'} | \`${process.env.TEST_RESULT}\` |\n\n`;
 
           out += '## 📊 Run overview\n\n';
-          out += '| Matrix health | Shards | Tests passed | Tests failed | Skipped | Flaky | DIAG warnings | DIAG errors |\n';
-          out += '|---|---:|---:|---:|---:|---:|---:|---:|\n';
-          out += `| **${passedShards}/${TOTAL_SHARDS} clean** | **${reportedRows.length}/${TOTAL_SHARDS} reported** | **${sum('passed')}** | **${sum('failed')}** | **${sum('skipped')}** | **${sum('flaky')}** | **${sum('warnings')}** | **${sum('errors')}** |\n\n`;
+          out += '| Matrix health | Shards | Tests | Passed | Failed | Skipped | Flaky | DIAG warnings | DIAG errors |\n';
+          out += '|---|---:|---:|---:|---:|---:|---:|---:|---:|\n';
+          const totalTests = reportedRows.reduce((n, r) => n + Number(r.diagTestRecords || 0), 0);
+          out += `| **${passedShards}/${TOTAL_SHARDS} clean** | **${reportedRows.length}/${TOTAL_SHARDS} reported** | **${totalTests}** | **${sum('passed')}** | **${sum('failed')}** | **${sum('skipped')}** | **${sum('flaky')}** | **${sum('warnings')}** | **${sum('errors')}** |\n\n`;
 
           if (failedShards > 0) {
             out += `> ❌ **${failedShards} shard(s)** have a non-zero Playwright exit code.\n\n`;
@@ -623,8 +731,43 @@ jobs:
           out += '- **⏺️ NOT REPORTED:** no metrics artifact was available for that shard.\n\n';
           out += '> **Important:** The dashboard does not count generic browser, console, HTTP, server, Node, or Playwright log messages as DIAG warnings/errors. Only exact `[DIAG-DEBUG]` test-result records are used.\n';
 
+          out += `\n[🔗 Open this GitHub Actions run](${runMeta?.run?.url || `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`})\n`;
+
           fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, out);
+          fs.writeFileSync('run-matrix.json', JSON.stringify({
+            run: runMeta?.run || null,
+            config: runMeta?.config || null,
+            artifacts: runMeta?.artifacts || null,
+            totals: {
+              shardsTotal: TOTAL_SHARDS,
+              shardsReported: reportedRows.length,
+              shardsMissing: missingShards,
+              cleanShards: passedShards,
+              diagFailureShards,
+              diagWarningShards,
+              playwrightFailureShards: failedShards,
+              tests: totalTests,
+              passed: sum('passed'),
+              failed: sum('failed'),
+              skipped: sum('skipped'),
+              flaky: sum('flaky'),
+              warnings: sum('warnings'),
+              errors: sum('errors')
+            },
+            shards: rows
+          }, null, 2));
           NODE
+
+      - name: "📦 Upload consolidated run data"
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: run-matrix-data
+          path: |
+            run-metadata.json
+            run-matrix.json
+          if-no-files-found: ignore
+          retention-days: 7
 
   # ════════════════════════════════════════════════════════════════════════
   # 📨 ORIGINAL CONSOLIDATED EMAIL REPORT
@@ -632,24 +775,82 @@ jobs:
   # ════════════════════════════════════════════════════════════════════════
   email-report:
     name: "📨 Email Report"
-    if: always() && (github.event_name != 'workflow_dispatch' || inputs.send_report == 'true')
-    needs: test
+    # Always create the job so the run clearly shows whether email was sent
+    # or intentionally disabled on a manual run.
+    if: always()
+    needs: [test, dashboard]
     runs-on: ubuntu-24.04
 
     steps:
+      - name: "📧 Email report decision"
+        env:
+          SHOULD_SEND: ${{ github.event_name != 'workflow_dispatch' || inputs.send_report == true }}
+        run: |
+          if [[ "$SHOULD_SEND" == "true" ]]; then
+            echo "📧 Email report is enabled for this run."
+            { echo '## 📧 Email Report'; echo; echo '✅ Email sending is **enabled** for this run.'; echo; } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "📭 Email report disabled by manual input."
+            { echo '## 📧 Email Report'; echo; echo '⏭️ Email sending was **disabled** by the `send_report` manual input.'; echo; } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: "🔐 Check email configuration (names only)"
+        if: github.event_name != 'workflow_dispatch' || inputs.send_report == true
+        env:
+          DAILY_REPORT_EMAILS:  ${{ secrets.DAILY_REPORT_EMAILS }}
+          FAILURE_ALERT_EMAILS: ${{ secrets.FAILURE_ALERT_EMAILS }}
+          SMTP_HOST:            ${{ secrets.SMTP_HOST }}
+          SMTP_PORT:            ${{ secrets.SMTP_PORT }}
+          SMTP_SECURE:          ${{ secrets.SMTP_SECURE }}
+          SMTP_USER:            ${{ secrets.SMTP_USER }}
+          SMTP_PASS:            ${{ secrets.SMTP_PASS }}
+          SMTP_FROM:            ${{ secrets.SMTP_FROM }}
+        run: |
+          has_value() { [[ -n "${!1:-}" ]] && echo '✅ configured' || echo '❌ missing'; }
+          echo "DAILY_REPORT_EMAILS:  $(has_value DAILY_REPORT_EMAILS)"
+          echo "FAILURE_ALERT_EMAILS: $(has_value FAILURE_ALERT_EMAILS)"
+          echo "SMTP_HOST:            $(has_value SMTP_HOST)"
+          echo "SMTP_PORT:            $(has_value SMTP_PORT)"
+          echo "SMTP_SECURE:          $(has_value SMTP_SECURE)"
+          echo "SMTP_USER:            $(has_value SMTP_USER)"
+          echo "SMTP_PASS:            $(has_value SMTP_PASS)"
+          echo "SMTP_FROM:            $(has_value SMTP_FROM)"
+
+          {
+            echo '## 🔐 Email configuration';
+            echo;
+            echo '| Setting | Status |';
+            echo '|---|---|';
+            echo "| DAILY_REPORT_EMAILS | $(has_value DAILY_REPORT_EMAILS) |";
+            echo "| FAILURE_ALERT_EMAILS | $(has_value FAILURE_ALERT_EMAILS) |";
+            echo "| SMTP_HOST | $(has_value SMTP_HOST) |";
+            echo "| SMTP_PORT | $(has_value SMTP_PORT) |";
+            echo "| SMTP_SECURE | $(has_value SMTP_SECURE) |";
+            echo "| SMTP_USER | $(has_value SMTP_USER) |";
+            echo "| SMTP_PASS | $(has_value SMTP_PASS) |";
+            echo "| SMTP_FROM | $(has_value SMTP_FROM) |";
+            echo;
+            echo '> Secret values are not printed.';
+            echo;
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: "📥 Checkout repository"
+        if: github.event_name != 'workflow_dispatch' || inputs.send_report == true
         uses: actions/checkout@v7
 
       - name: "⬢ Setup Node.js 22"
+        if: github.event_name != 'workflow_dispatch' || inputs.send_report == true
         uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
 
       - name: "📦 Install dependencies"
+        if: github.event_name != 'workflow_dispatch' || inputs.send_report == true
         run: npm ci
 
       - name: "⬇️ Download diagnostics"
+        if: github.event_name != 'workflow_dispatch' || inputs.send_report == true
         uses: actions/download-artifact@v8
         with:
           pattern: diagnostics-*
@@ -657,6 +858,7 @@ jobs:
           path: diagnostics
 
       - name: "⬇️ Download test results"
+        if: github.event_name != 'workflow_dispatch' || inputs.send_report == true
         uses: actions/download-artifact@v8
         with:
           pattern: test-results-*
@@ -664,6 +866,7 @@ jobs:
           path: test-results
 
       - name: "⬇️ Download Playwright reports"
+        if: github.event_name != 'workflow_dispatch' || inputs.send_report == true
         uses: actions/download-artifact@v8
         with:
           pattern: playwright-report-*
@@ -671,6 +874,7 @@ jobs:
           path: playwright-report
 
       - name: "⬇️ Download blob reports"
+        if: github.event_name != 'workflow_dispatch' || inputs.send_report == true
         uses: actions/download-artifact@v8
         with:
           pattern: blob-report-*
@@ -678,7 +882,7 @@ jobs:
           path: blob-reports
 
       - name: "📨 Send consolidated report"
-        if: always()
+        if: github.event_name != 'workflow_dispatch' || inputs.send_report == true
         env:
           CI: "true"
           DAILY_REPORT_EMAILS:  ${{ secrets.DAILY_REPORT_EMAILS }}
@@ -689,4 +893,18 @@ jobs:
           SMTP_USER:            ${{ secrets.SMTP_USER }}
           SMTP_PASS:            ${{ secrets.SMTP_PASS }}
           SMTP_FROM:            ${{ secrets.SMTP_FROM }}
-        run: npm run report:email
+        run: |
+          set +e
+          npm run report:email
+          EMAIL_EXIT=$?
+          set -e
+
+          if [[ "$EMAIL_EXIT" -eq 0 ]]; then
+            echo "✅ Email report command completed successfully."
+            { echo '## 📬 Email delivery result'; echo; echo '✅ `npm run report:email` completed successfully.'; echo; } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "❌ Email report command failed with exit code $EMAIL_EXIT."
+            { echo '## 📬 Email delivery result'; echo; echo "❌ \`npm run report:email\` failed with exit code **$EMAIL_EXIT**. Check the step log and SMTP/recipient secrets."; echo; } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          exit "$EMAIL_EXIT"
