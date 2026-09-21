@@ -1,6 +1,14 @@
 # ══════════════════════════════════════════════════════════════════════════
-# 🎭 Playwright Test Suite
-# Triggers: push/PR to main  ·  daily @ 1 PM IST  ·  manual dispatch
+# 🎭 Playwright Test Suite — DataStore GeoWGS84
+#
+# Execution remains the original 8-shard Playwright workflow.
+# Added only:
+#   • pre-run cleanup of older completed runs of THIS workflow
+#   • per-shard diagnostic metrics
+#   • consolidated GitHub Actions dashboard
+#   • safer log/exit-code capture
+#
+# [DIAG-DEBUG] is the ONLY source used for warning/error/test metrics.
 # ══════════════════════════════════════════════════════════════════════════
 
 name: 🎭 Playwright Tests
@@ -12,11 +20,10 @@ on:
   pull_request:
     branches: [main]
 
-  # ── Daily at 1:00 PM IST (07:30 UTC) ─────────────────────────────────
+  # Daily at 1:00 PM IST (07:30 UTC)
   schedule:
     - cron: "30 7 * * *"
 
-  # ── Manual trigger — customize your run ──────────────────────────────
   workflow_dispatch:
     inputs:
       browser:
@@ -60,27 +67,26 @@ on:
         default: false
         type: boolean
 
-# ══════════════════════════════════════════════════════════════════════════
-
-# Required so the cleanup job can remove previous completed workflow runs.
-# This does not grant write access to the repository contents.
+# Required by the cleanup job to delete older completed runs of this workflow.
 permissions:
   contents: read
   actions: write
 
 concurrency:
   group: playwright-${{ github.workflow }}-${{ github.ref }}
+  # Keep the original behavior: do not cancel a run that is already in progress.
   cancel-in-progress: false
-
-# ══════════════════════════════════════════════════════════════════════════
 
 jobs:
 
-  # ── Delete previous runs before starting the current automation ──────────
+  # ════════════════════════════════════════════════════════════════════════
+  # 🧹 PRE-RUN CLEANUP
+  # Deletes older COMPLETED runs of this workflow before the current matrix
+  # starts. The current run is always preserved.
+  # ════════════════════════════════════════════════════════════════════════
   cleanup-previous:
     name: "🧹 Cleanup previous automation runs"
     runs-on: ubuntu-24.04
-    # Cleanup must never prevent the actual test automation from running.
     continue-on-error: true
 
     steps:
@@ -94,7 +100,11 @@ jobs:
             const match = workflowRef.match(/\.github\/workflows\/([^@]+)@/);
 
             if (!match) {
-              core.warning(`Could not determine workflow file from github.workflow_ref: ${workflowRef}`);
+              core.info(`Could not determine workflow file from github.workflow_ref: ${workflowRef}`);
+              core.summary
+                .addHeading('🧹 Previous Run Cleanup')
+                .addRaw('Could not determine the workflow file, so no previous runs were deleted. The current run is preserved.')
+                .write();
               return;
             }
 
@@ -102,10 +112,6 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const currentRunId = context.runId;
-
-            core.info(`Current run: ${currentRunId}`);
-            core.info(`Workflow: ${workflowFile}`);
-            core.info('Finding previous completed runs...');
 
             const runs = await github.paginate(
               github.rest.actions.listWorkflowRuns,
@@ -118,14 +124,13 @@ jobs:
               }
             );
 
-            const previousRuns = runs.filter(run => run.id !== currentRunId);
-            core.info(`Previous completed runs found: ${previousRuns.length}`);
+            const previousRuns = runs
+              .filter(run => run.id !== currentRunId)
+              .sort((a, b) => b.id - a.id);
 
             let deleted = 0;
             let failed = 0;
 
-            // Deleting a workflow run also deletes its associated artifacts/logs.
-            // The current run is explicitly excluded.
             for (const run of previousRuns) {
               try {
                 await github.rest.actions.deleteWorkflowRun({
@@ -135,26 +140,34 @@ jobs:
                 });
 
                 deleted += 1;
-                core.info(`Deleted run #${run.run_number} (${run.id}) — ${run.conclusion || run.status}`);
+                core.info(`Deleted previous run #${run.run_number} (${run.id})`);
               } catch (error) {
                 failed += 1;
-                core.warning(`Could not delete run #${run.run_number} (${run.id}): ${error.message}`);
+                // Keep cleanup failures out of GitHub's warning/error annotation list.
+                core.info(`Could not delete run #${run.run_number} (${run.id}): ${error.message}`);
               }
             }
 
-            core.notice(`Cleanup complete: deleted ${deleted} previous run(s); ${failed} deletion(s) failed.`);
-            core.summary
+            core.info(`Cleanup complete: deleted ${deleted} previous run(s); ${failed} deletion(s) failed.`);
+
+            await core.summary
               .addHeading('🧹 Previous Run Cleanup')
               .addTable([
-                [{data: 'Metric', header: true}, {data: 'Count', header: true}],
+                [
+                  { data: 'Metric', header: true },
+                  { data: 'Count', header: true }
+                ],
                 ['Previous completed runs found', String(previousRuns.length)],
                 ['Runs deleted', String(deleted)],
                 ['Deletion failures', String(failed)]
               ])
-              .addRaw('\nOlder workflow runs were removed; GitHub also removes their associated artifacts and logs. The current run was preserved.')
+              .addRaw('\nOlder completed runs of this workflow were removed. The current run was preserved.')
               .write();
 
-  # ── Sharded parallel test matrix ────────────────────────────────────────
+  # ════════════════════════════════════════════════════════════════════════
+  # 🧪 ORIGINAL 8-SHARD TEST MATRIX
+  # The actual Playwright invocation/options are intentionally unchanged.
+  # ════════════════════════════════════════════════════════════════════════
   test:
     needs: cleanup-previous
     name: "🧪 Shard ${{ matrix.shard }}/8 · ${{ inputs.browser || 'chromium' }} · ${{ inputs.workers || '4' }}W"
@@ -168,10 +181,10 @@ jobs:
 
     steps:
       - name: "📥 Checkout repository"
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: "⬢ Setup Node.js 22"
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -185,8 +198,8 @@ jobs:
         run: npx playwright install --with-deps "$PW_BROWSER"
 
       # ── ORIGINAL TEST EXECUTION ────────────────────────────────────────
-      # The Playwright command/options are unchanged. We only capture the
-      # output so that shard statistics can be displayed in GitHub.
+      # Only the stdout/stderr capture was added. The Playwright arguments
+      # remain the same as the original workflow.
       - name: "🚀 Run Playwright — shard ${{ matrix.shard }} / 8"
         env:
           HEADLESS:   ${{ inputs.headless != 'false' && 'true' || 'false' }}
@@ -196,11 +209,12 @@ jobs:
           DEBUG:      ${{ inputs.debug_mode == 'true' && 'pw:api,pw:browser' || '' }}
         run: |
           GREP_ARGS=()
-          [[ -n "$PW_GREP" ]] && GREP_ARGS+=(--grep "$PW_GREP")
+          if [[ -n "$PW_GREP" ]]; then
+            GREP_ARGS+=(--grep "$PW_GREP")
+          fi
 
-          # pipefail + PIPESTATUS preserves the real Playwright exit code.
-          # Disable errexit only around the pipeline so PIPESTATUS can be read
-          # even when Playwright itself returns non-zero.
+          # Capture the complete Playwright output while preserving the real
+          # Playwright process exit code.
           set -o pipefail
           set +e
           npx playwright test \
@@ -213,7 +227,10 @@ jobs:
           echo "$TEST_EXIT" > "shard-${{ matrix.shard }}-exit-code.txt"
           exit "$TEST_EXIT"
 
-      # ── Parse Playwright output for this shard ──────────────────────────
+      # ════════════════════════════════════════════════════════════════════
+      # 📊 SHARD METRICS
+      # ONLY exact [DIAG-DEBUG] test-result records are parsed.
+      # ════════════════════════════════════════════════════════════════════
       - name: "📊 Generate shard metrics"
         if: always()
         env:
@@ -224,115 +241,168 @@ jobs:
           node <<'NODE'
           const fs = require('fs');
 
-          const shard = process.env.SHARD;
+          const shard = Number(process.env.SHARD);
           const browser = process.env.BROWSER;
-          const workers = process.env.WORKERS;
+          const workers = Number(process.env.WORKERS);
           const logFile = `shard-${shard}.log`;
           const exitFile = `shard-${shard}-exit-code.txt`;
-          const log = fs.existsSync(logFile) ? fs.readFileSync(logFile, 'utf8') : '';
-          const exitCode = fs.existsSync(exitFile)
-            ? Number(fs.readFileSync(exitFile, 'utf8').trim())
-            : 1;
 
-          // IMPORTANT: Only [DIAG-DEBUG] lines are used for test/warning/error
-          // metrics. Any unrelated browser/console/server/HTTP/Node/Playwright
-          // messages are intentionally ignored.
-          const diagLines = log
-            .split(/\r?\n/)
-            .filter(line => line.includes('[DIAG-DEBUG]'));
+          const log = fs.existsSync(logFile)
+            ? fs.readFileSync(logFile, 'utf8')
+            : '';
 
-          const diagRecords = diagLines.map(line => {
-            const getNumber = (name) => {
-              const match = line.match(new RegExp(`\\b${name}=(\\d+)\\b`));
-              return match ? Number(match[1]) : 0;
-            };
-            const statusMatch = line.match(/\bstatus=([A-Za-z_-]+)/i);
-            return {
+          const rawExitCode = fs.existsSync(exitFile)
+            ? fs.readFileSync(exitFile, 'utf8').trim()
+            : '';
+
+          const exitCode = rawExitCode === '' || Number.isNaN(Number(rawExitCode))
+            ? 1
+            : Number(rawExitCode);
+
+          // IMPORTANT:
+          // Count metrics ONLY from this exact result-record shape:
+          // [DIAG-DEBUG] testId="..." title="..." warnings=N errors=N skipped=N status=...
+          //
+          // Explicitly ignored:
+          //   [DIAG-DEBUG] File contains: warnings=... errors=...
+          //   console.error(...)
+          //   server/HTTP/browser errors
+          //   Node warnings/errors
+          //   generic Playwright log output
+          const diagRecordPattern = /^\s*\[DIAG-DEBUG\]\s+testId="([^"]+)"\s+title="(.*?)"\s+warnings=(\d+)\s+errors=(\d+)\s+skipped=(\d+)\s+status=([A-Za-z0-9_-]+)\s*$/;
+
+          // Keep the LAST record for each testId so duplicate diagnostic output
+          // does not inflate totals. If a retry produces a later final record,
+          // that final record becomes the test's final reported state.
+          const recordsByTestId = new Map();
+
+          for (const line of log.split(/\r?\n/)) {
+            const match = line.match(diagRecordPattern);
+            if (!match) continue;
+
+            const [, testId, title, warnings, errors, skipped, status] = match;
+            recordsByTestId.set(testId, {
               line,
-              warnings: getNumber('warnings'),
-              errors: getNumber('errors'),
-              skipped: getNumber('skipped'),
-              status: statusMatch ? statusMatch[1].toLowerCase() : 'unknown'
-            };
-          });
+              testId,
+              title,
+              warnings: Number(warnings),
+              errors: Number(errors),
+              skipped: Number(skipped),
+              status: status.toLowerCase()
+            });
+          }
 
-          const sum = (key) => diagRecords.reduce((total, record) => total + record[key], 0);
-          const passed = diagRecords.filter(r => r.status === 'passed').length;
-          const failed = diagRecords.filter(r => ['failed', 'error'].includes(r.status)).length;
-          const flaky = diagRecords.filter(r => r.status === 'flaky').length;
-          const skippedByStatus = diagRecords.filter(r => r.status === 'skipped').length;
-          const skippedByField = sum('skipped');
+          const records = [...recordsByTestId.values()];
+          const total = (field) => records.reduce((sum, record) => sum + record[field], 0);
 
-          // Prefer the explicit skipped= field when present. If it is always 0
-          // but the diagnostic status itself is skipped, count the status instead.
+          const passed = records.filter(r => r.status === 'passed').length;
+          const failed = records.filter(r => ['failed', 'error'].includes(r.status)).length;
+          const flaky = records.filter(r => ['flaky', 'flaky-failed'].includes(r.status)).length;
+          const skippedByField = total('skipped');
+          const skippedByStatus = records.filter(r => ['skipped', 'skip'].includes(r.status)).length;
           const skipped = skippedByField > 0 ? skippedByField : skippedByStatus;
 
-          const signalRecords = diagRecords
+          const NOT_RUN_STATUSES = new Set([
+            'didnotrun',
+            'did-not-run',
+            'notrun',
+            'not-run',
+            'not_run'
+          ]);
+
+          const didNotRun = records.filter(r => NOT_RUN_STATUSES.has(r.status)).length;
+          const warnings = total('warnings');
+          const errors = total('errors');
+
+          // These are DIAG records only; unrelated log errors/warnings are not counted.
+          const signalRecords = records
             .filter(r => r.warnings > 0 || r.errors > 0)
-            .slice(0, 12);
+            .slice(0, 20);
+
+          let dashboardStatus;
+          if (exitCode !== 0) {
+            dashboardStatus = 'failed';
+          } else if (errors > 0 || failed > 0) {
+            dashboardStatus = 'passed_with_diag_failures';
+          } else if (warnings > 0) {
+            dashboardStatus = 'passed_with_diag_warnings';
+          } else {
+            dashboardStatus = 'passed';
+          }
 
           const metrics = {
-            shard: Number(shard),
+            shard,
+            totalShards: 8,
             browser,
-            workers: Number(workers),
+            workers,
             exitCode,
-            status: exitCode === 0 ? 'passed' : 'failed',
+            status: dashboardStatus,
             passed,
             failed,
             skipped,
             flaky,
-            didNotRun: 0,
-            warningLines: sum('warnings'),
-            errorLines: sum('errors'),
-            diagTestRecords: diagRecords.length,
+            didNotRun,
+            warnings,
+            errors,
+            diagTestRecords: records.length,
             signals: signalRecords.map(r => r.line)
           };
 
           fs.writeFileSync('shard-metrics.json', JSON.stringify(metrics, null, 2));
           NODE
 
-      # ── Show shard status directly on the shard's GitHub job page ──────
+      # ── Publish a clean summary without creating GitHub annotations ─────
       - name: "📝 Publish shard summary"
         if: always()
-        env:
-          SHARD: ${{ matrix.shard }}
         run: |
           node <<'NODE'
           const fs = require('fs');
-          const m = JSON.parse(fs.readFileSync('shard-metrics.json', 'utf8'));
-          const icon = m.status === 'passed' ? '✅' : '❌';
 
-          let out = `## ${icon} Shard ${String(m.shard).padStart(2, '0')} / 08\n\n`;
-          out += `| Metric | Count |\n|---|---:|\n`;
+          const file = 'shard-metrics.json';
+          if (!fs.existsSync(file)) {
+            fs.appendFileSync(
+              process.env.GITHUB_STEP_SUMMARY,
+              '## ⏺️ Shard metrics not available\n\nThe shard did not produce a metrics file.\n'
+            );
+            process.exit(0);
+          }
+
+          const m = JSON.parse(fs.readFileSync(file, 'utf8'));
+          const icon = m.status === 'failed'
+            ? '❌'
+            : (m.status === 'passed_with_diag_failures'
+              ? '⚠️'
+              : (m.status === 'passed_with_diag_warnings' ? '🟡' : '✅'));
+
+          let out = `# ${icon} Shard ${String(m.shard).padStart(2, '0')} / ${m.totalShards}\n\n`;
+          out += '| Metric | Count |\n|---|---:|\n';
           out += `| ✅ Passed | **${m.passed}** |\n`;
           out += `| ❌ Failed | **${m.failed}** |\n`;
           out += `| ⏭️ Skipped | **${m.skipped}** |\n`;
           out += `| 🔁 Flaky | **${m.flaky}** |\n`;
           out += `| ⏹️ Did not run | **${m.didNotRun}** |\n`;
-          out += `| ⚠️ DIAG-DEBUG warnings | **${m.warningLines}** |\n`;
-          out += `| 🚨 DIAG-DEBUG errors | **${m.errorLines}** |\n\n`;
-          out += `**Browser:** \`${m.browser}\` &nbsp; **Workers:** \`${m.workers}\` &nbsp; **Exit code:** \`${m.exitCode}\`\n\n`;
+          out += `| ⚠️ DIAG-DEBUG warnings | **${m.warnings}** |\n`;
+          out += `| 🚨 DIAG-DEBUG errors | **${m.errors}** |\n\n`;
+          out += `**Browser:** \`${m.browser}\` &nbsp; **Workers:** \`${m.workers}\` &nbsp; **Playwright exit code:** \`${m.exitCode}\` &nbsp; **Unique DIAG tests:** \`${m.diagTestRecords}\`\n\n`;
 
-          if (m.signals.length) {
-            out += `<details><summary>⚠️ First [DIAG-DEBUG] warning/error records</summary>\n\n`;
-            out += '```text\n' + m.signals.join('\n') + '\n```\n\n</details>\n';
+          if (m.signals?.length) {
+            out += `<details><summary>🔎 DIAG-DEBUG warning/error records (deduplicated by testId)</summary>\n\n`;
+            out += '```text\n' + m.signals.join('\n') + '\n```\n\n';
+            out += '</details>\n';
           } else {
-            out += '✅ No warning/error signal lines detected in the captured Playwright output.\n';
+            out += '✅ No warning/error signal records found in valid `[DIAG-DEBUG]` test-result lines.\n';
           }
 
+          // No ::warning / ::error commands here. This keeps the Actions
+          // Annotations section focused on real workflow issues rather than
+          // turning expected diagnostic metrics into GitHub annotations.
           fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, out);
           NODE
 
-          # Do NOT emit ::warning / ::error workflow commands here.
-          # Those commands create GitHub Annotations and make the run look like
-          # it contains platform errors even when the test job itself passed.
-          # Diagnostics remain visible in the tables/details below and in the
-          # uploaded shard-metrics artifacts.
-          exit 0
-
+      # ── Upload lightweight shard metrics + captured shard output ─────────
       - name: "📊 Upload shard metrics"
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: shard-metrics-${{ matrix.shard }}
           path: |
@@ -341,17 +411,19 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+      # ── Existing Playwright artifacts ───────────────────────────────────
       - name: "📊 Upload blob report"
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: blob-report-${{ matrix.shard }}
           path: blob-report/
+          if-no-files-found: ignore
           retention-days: 7
 
       - name: "📋 Upload Playwright report"
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-report-${{ matrix.shard }}
           path: playwright-report/
@@ -360,7 +432,7 @@ jobs:
 
       - name: "🧩 Upload test results"
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: test-results-${{ matrix.shard }}
           path: test-results/
@@ -369,14 +441,17 @@ jobs:
 
       - name: "🔬 Upload diagnostics"
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: diagnostics-${{ matrix.shard }}
           path: diagnostics/
           if-no-files-found: ignore
           retention-days: 7
 
-  # ── Consolidated GitHub dashboard ───────────────────────────────────────
+  # ════════════════════════════════════════════════════════════════════════
+  # 📈 CONSOLIDATED DASHBOARD
+  # Always shows all 8 matrix slots, including NOT REPORTED shards.
+  # ════════════════════════════════════════════════════════════════════════
   dashboard:
     name: "📈 Shard Matrix Dashboard"
     if: always()
@@ -385,7 +460,7 @@ jobs:
 
     steps:
       - name: "⬇️ Download shard metrics"
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: shard-metrics-*
           merge-multiple: true
@@ -402,73 +477,171 @@ jobs:
           node <<'NODE'
           const fs = require('fs');
 
+          const TOTAL_SHARDS = 8;
           const dir = 'shard-metrics';
-          const files = fs.existsSync(dir)
-            ? fs.readdirSync(dir).filter(f => f.endsWith('.json')).sort()
-            : [];
+          const metricsByShard = new Map();
 
-          const rows = files
-            .map(f => JSON.parse(fs.readFileSync(`${dir}/${f}`, 'utf8')))
-            .sort((a, b) => a.shard - b.shard);
-
-          const sum = key => rows.reduce((n, r) => n + Number(r[key] || 0), 0);
-          const passedShards = rows.filter(r => r.status === 'passed').length;
-          const failedShards = rows.filter(r => r.status !== 'passed').length;
-          const overallIcon = process.env.TEST_RESULT === 'success' ? '✅' : '❌';
-
-          let out = `# ${overallIcon} Playwright Shard Dashboard\n\n`;
-          out += `**Browser:** \`${process.env.BROWSER}\` &nbsp; **Workers/shard:** \`${process.env.WORKERS}\` &nbsp; **Filter:** \`${process.env.GREP}\`\n\n`;
-          out += `### Run overview\n\n`;
-          out += `| Shards | Passed tests | Failed tests | Skipped | Flaky | Warnings* | Errors* |\n`;
-          out += `|---:|---:|---:|---:|---:|---:|---:|\n`;
-          out += `| **${passedShards}/${rows.length}** | **${sum('passed')}** | **${sum('failed')}** | **${sum('skipped')}** | **${sum('flaky')}** | **${sum('warningLines')}** | **${sum('errorLines')}** |\n\n`;
-          out += `*Warnings/errors are summed only from the \`warnings=\` and \`errors=\` fields on \`[DIAG-DEBUG]\` records. Unrelated console/server/browser log messages are ignored.*\n\n`;
-
-          out += `### Shard matrix\n\n`;
-          out += `| Shard | Status | Passed | Failed | Skipped | Flaky | Warn | Error | Browser | Workers |\n`;
-          out += `|---|---|---:|---:|---:|---:|---:|---:|---|---:|\n`;
-
-          for (const r of rows) {
-            const icon = r.status === 'passed' ? '✅ PASS' : '❌ FAIL';
-            out += `| **${String(r.shard).padStart(2, '0')} / 08** | ${icon} | ${r.passed} | ${r.failed} | ${r.skipped} | ${r.flaky} | ${r.warningLines} | ${r.errorLines} | ${r.browser} | ${r.workers} |\n`;
-          }
-
-          out += `\n### 🔎 Shard details\n\n`;
-          for (const r of rows) {
-            const icon = r.status === 'passed' ? '✅' : '❌';
-            out += `<details><summary>${icon} Shard ${String(r.shard).padStart(2, '0')} — ${r.passed} passed · ${r.failed} failed · ${r.warningLines} warn · ${r.errorLines} error</summary>\n\n`;
-            out += `**Exit code:** ${r.exitCode}\n\n`;
-            if (r.signals?.length) {
-              out += '```text\n' + r.signals.join('\n') + '\n```\n\n';
-            } else {
-              out += 'No `[DIAG-DEBUG]` warning/error records detected. Other console/server log errors are ignored.\n\n';
+          if (fs.existsSync(dir)) {
+            for (const file of fs.readdirSync(dir).filter(f => f.endsWith('.json'))) {
+              try {
+                const metric = JSON.parse(fs.readFileSync(`${dir}/${file}`, 'utf8'));
+                if (Number.isInteger(metric.shard)) {
+                  metricsByShard.set(metric.shard, metric);
+                }
+              } catch (error) {
+                // Ignore malformed metric files; the corresponding shard will
+                // be represented as NOT REPORTED below.
+              }
             }
-            out += `</details>\n\n`;
           }
+
+          const rows = Array.from({ length: TOTAL_SHARDS }, (_, index) => {
+            const shard = index + 1;
+            return metricsByShard.get(shard) || {
+              shard,
+              totalShards: TOTAL_SHARDS,
+              browser: process.env.BROWSER,
+              workers: Number(process.env.WORKERS),
+              exitCode: null,
+              status: 'not_reported',
+              passed: 0,
+              failed: 0,
+              skipped: 0,
+              flaky: 0,
+              didNotRun: 0,
+              warnings: 0,
+              errors: 0,
+              diagTestRecords: 0,
+              signals: []
+            };
+          });
+
+          const sum = key => rows.reduce((total, row) => total + Number(row[key] || 0), 0);
+          const reportedRows = rows.filter(r => r.status !== 'not_reported');
+          const passedShards = rows.filter(r => r.status === 'passed').length;
+          const diagFailureShards = rows.filter(r => r.status === 'passed_with_diag_failures').length;
+          const diagWarningShards = rows.filter(r => r.status === 'passed_with_diag_warnings').length;
+          const failedShards = rows.filter(r => r.status === 'failed').length;
+          const missingShards = rows.filter(r => r.status === 'not_reported').length;
+
+          let overallIcon = '✅';
+          let overallText = 'ALL REPORTED';
+          if (missingShards > 0) {
+            overallIcon = '⏺️';
+            overallText = 'INCOMPLETE';
+          } else if (failedShards > 0) {
+            overallIcon = '❌';
+            overallText = 'PLAYWRIGHT FAILURES';
+          } else if (diagFailureShards > 0) {
+            overallIcon = '⚠️';
+            overallText = 'DIAG FAILURES';
+          } else if (diagWarningShards > 0) {
+            overallIcon = '🟡';
+            overallText = 'DIAG WARNINGS';
+          }
+
+          let out = `# ${overallIcon} Playwright Shard Matrix — ${overallText}\n\n`;
+          out += `> **DataStore GeoWGS84** · 8-way parallel execution · metrics are based only on valid \`[DIAG-DEBUG]\` test-result records.\n\n`;
+          out += `**Browser:** \`${process.env.BROWSER}\` &nbsp; **Workers/shard:** \`${process.env.WORKERS}\` &nbsp; **Filter:** \`${process.env.GREP}\` &nbsp; **Playwright job result:** \`${process.env.TEST_RESULT}\`\n\n`;
+
+          out += '## 📊 Run overview\n\n';
+          out += '| Matrix health | Shards | Tests passed | Tests failed | Skipped | Flaky | DIAG warnings | DIAG errors |\n';
+          out += '|---|---:|---:|---:|---:|---:|---:|---:|\n';
+          out += `| **${passedShards}/${TOTAL_SHARDS} clean** | **${reportedRows.length}/${TOTAL_SHARDS} reported** | **${sum('passed')}** | **${sum('failed')}** | **${sum('skipped')}** | **${sum('flaky')}** | **${sum('warnings')}** | **${sum('errors')}** |\n\n`;
 
           if (failedShards > 0) {
-            out += `> ⚠️ **Action:** Open the failed shard job above to inspect its complete log and Playwright artifacts.\n`;
-          } else {
-            out += `> 🎉 **All ${rows.length} shards completed successfully.**\n`;
+            out += `> ❌ **${failedShards} shard(s)** have a non-zero Playwright exit code.\n\n`;
           }
+          if (diagFailureShards > 0) {
+            out += `> ⚠️ **${diagFailureShards} shard(s)** contain [DIAG-DEBUG] failures even though the Playwright process itself exited successfully.\n\n`;
+          }
+          if (diagWarningShards > 0) {
+            out += `> 🟡 **${diagWarningShards} shard(s)** contain [DIAG-DEBUG] warnings.\n\n`;
+          }
+          if (missingShards > 0) {
+            out += `> ⏺️ **${missingShards} shard(s)** did not produce a metrics artifact and are shown as **NOT REPORTED**.\n\n`;
+          }
+
+          out += '## 🧪 Shard matrix\n\n';
+          out += '| Shard | Status | Passed | Failed | Skipped | Flaky | Warn | Error | Exit |\n';
+          out += '|---|---|---:|---:|---:|---:|---:|---:|---:|\n';
+
+          for (const r of rows) {
+            let status;
+            switch (r.status) {
+              case 'failed':
+                status = '❌ FAIL';
+                break;
+              case 'passed_with_diag_failures':
+                status = '⚠️ DIAG FAIL';
+                break;
+              case 'passed_with_diag_warnings':
+                status = '🟡 WARN';
+                break;
+              case 'passed':
+                status = '✅ PASS';
+                break;
+              default:
+                status = '⏺️ NOT REPORTED';
+            }
+
+            const exit = r.exitCode === null || r.exitCode === undefined ? '—' : r.exitCode;
+            out += `| **${String(r.shard).padStart(2, '0')} / 08** | ${status} | ${r.passed} | ${r.failed} | ${r.skipped} | ${r.flaky} | ${r.warnings} | ${r.errors} | ${exit} |\n`;
+          }
+
+          out += '\n## 🔎 Shard details\n\n';
+          for (const r of rows) {
+            const icon = r.status === 'failed'
+              ? '❌'
+              : (r.status === 'passed_with_diag_failures'
+                ? '⚠️'
+                : (r.status === 'passed_with_diag_warnings'
+                  ? '🟡'
+                  : (r.status === 'not_reported' ? '⏺️' : '✅')));
+
+            out += `<details><summary>${icon} Shard ${String(r.shard).padStart(2, '0')} · ${r.status.replaceAll('_', ' ')} · ${r.passed} passed · ${r.failed} failed · ${r.warnings} warn · ${r.errors} error</summary>\n\n`;
+
+            if (r.status === 'not_reported') {
+              out += 'No `shard-metrics.json` artifact was produced for this shard. Open the shard job to inspect where execution stopped.\n\n';
+            } else {
+              out += `**Playwright exit code:** \`${r.exitCode}\` &nbsp; **Unique DIAG tests:** \`${r.diagTestRecords}\`\n\n`;
+              if (r.signals?.length) {
+                out += '```text\n' + r.signals.join('\n') + '\n```\n\n';
+              } else {
+                out += 'No valid `[DIAG-DEBUG]` warning/error records detected. `File contains:` lines and unrelated console/server/browser messages are ignored.\n\n';
+              }
+            }
+
+            out += '</details>\n\n';
+          }
+
+          out += '## 🧭 Interpretation\n\n';
+          out += '- **✅ PASS:** Playwright exit code 0 and no DIAG warnings/errors.\n';
+          out += '- **🟡 WARN:** Playwright exit code 0 with DIAG warnings only.\n';
+          out += '- **⚠️ DIAG FAIL:** Playwright exit code 0, but DIAG reports test failures/errors.\n';
+          out += '- **❌ FAIL:** Playwright itself returned a non-zero exit code.\n';
+          out += '- **⏺️ NOT REPORTED:** no metrics artifact was available for that shard.\n\n';
+          out += '> **Important:** The dashboard does not count generic browser, console, HTTP, server, Node, or Playwright log messages as DIAG warnings/errors. Only exact `[DIAG-DEBUG]` test-result records are used.\n';
 
           fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, out);
           NODE
 
-  # ── Consolidated email report (original behavior preserved) ─────────────
+  # ════════════════════════════════════════════════════════════════════════
+  # 📨 ORIGINAL CONSOLIDATED EMAIL REPORT
+  # Existing report flow retained.
+  # ════════════════════════════════════════════════════════════════════════
   email-report:
     name: "📨 Email Report"
-    # Skip on manual runs where the user opted out of the report
     if: always() && (github.event_name != 'workflow_dispatch' || inputs.send_report == 'true')
     needs: test
     runs-on: ubuntu-24.04
 
     steps:
       - name: "📥 Checkout repository"
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: "⬢ Setup Node.js 22"
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -476,30 +649,29 @@ jobs:
       - name: "📦 Install dependencies"
         run: npm ci
 
-      # ── Existing report inputs/artifacts ────────────────────────────────
       - name: "⬇️ Download diagnostics"
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: diagnostics-*
           merge-multiple: true
           path: diagnostics
 
       - name: "⬇️ Download test results"
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: test-results-*
           merge-multiple: true
           path: test-results
 
       - name: "⬇️ Download Playwright reports"
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: playwright-report-*
           merge-multiple: true
           path: playwright-report
 
       - name: "⬇️ Download blob reports"
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: blob-report-*
           merge-multiple: true
