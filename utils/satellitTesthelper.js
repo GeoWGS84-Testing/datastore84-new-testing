@@ -1929,7 +1929,185 @@ logInfo(
      label: 'STEP 12.4.1: METADATA IMAGE LOADED',
      pause: 1200,
    }
- );
+ );  
+ 
+/*
+ const metadataImageLocator = () =>
+  page
+    .locator('.modal:visible')
+    .last()
+    .locator('#img_scene')
+    .first();
+
+let metadataImageLoaded = false;
+
+for (let attempt = 1; attempt <= 3; attempt++) {
+  try {
+    const currentMetadataModal =
+      page.locator('.modal:visible').last();
+
+    const currentMetadataImage =
+      currentMetadataModal
+        .locator('#img_scene')
+        .first();
+
+    await expect(
+      currentMetadataImage,
+      'Metadata image element should appear'
+    ).toBeAttached({
+      timeout: 15000,
+    });
+
+    await expect
+      .poll(
+        async () => {
+          return await currentMetadataImage.evaluate((img) => {
+            return (
+              img.complete &&
+              img.naturalWidth > 0 &&
+              img.naturalHeight > 0 &&
+              !!img.getAttribute('src')
+            );
+          });
+        },
+        {
+          timeout: 45000,
+          intervals: [1000, 2000, 3000],
+        }
+      )
+      .toBe(true);
+
+    metadataImageLoaded = true;
+
+    logInfo(
+      `Metadata image loaded successfully on attempt ${attempt}`
+    );
+
+    break;
+  } catch (error) {
+    if (attempt === 3) {
+      throw error;
+    }
+
+    logInfo(
+      `Metadata image was not ready; reopening popup ` +
+      `(attempt ${attempt + 1}/3)`
+    );
+
+    const currentMetadataModal =
+      page.locator('.modal:visible').last();
+
+    const closeButton =
+      currentMetadataModal
+        .locator('span')
+        .filter({ hasText: '×' })
+        .first();
+
+    if (
+      await closeButton
+        .isVisible()
+        .catch(() => false)
+    ) {
+      await robustClick(
+        page,
+        closeButton,
+        {
+          timeout: 10000,
+          retry: 1,
+        }
+      );
+    } else {
+      await page.keyboard.press('Escape');
+    }
+
+    await expect(
+      page.locator('.modal:visible').last(),
+      'Metadata popup should close before retry'
+    ).toBeHidden({
+      timeout: 10000,
+    });
+
+    await fastWait(page, 1000);
+
+    await robustClick(
+      page,
+      metadataAction,
+      {
+        timeout: 10000,
+        retry: 1,
+      }
+    );
+
+    await expect(
+      page.locator('.modal:visible').last(),
+      'Metadata popup should reopen'
+    ).toBeVisible({
+      timeout: 15000,
+    });
+  }
+}
+
+expect(
+  metadataImageLoaded,
+  'Metadata image should load after bounded retries'
+).toBe(true);
+
+// Fresh locator after final successful popup
+const metadataModalFinal =
+  page.locator('.modal:visible').last();
+
+const metadataImage =
+  metadataModalFinal
+    .locator('#img_scene')
+    .first();
+
+await expect(
+  metadataImage,
+  'Metadata image should be visible after loading'
+).toBeVisible({
+  timeout: 10000,
+});
+
+const metadataImageState =
+  await metadataImage.evaluate((img) => ({
+    src: img.getAttribute('src') || '',
+    complete: img.complete,
+    naturalWidth: img.naturalWidth,
+    naturalHeight: img.naturalHeight,
+  }));
+
+expect(
+  metadataImageState.src,
+  'Metadata image should have a valid src'
+).toMatch(/.+/);
+
+expect(
+  metadataImageState.complete,
+  'Metadata image should be completely loaded'
+).toBe(true);
+
+expect(
+  metadataImageState.naturalWidth,
+  'Metadata image should have valid width'
+).toBeGreaterThan(0);
+
+expect(
+  metadataImageState.naturalHeight,
+  'Metadata image should have valid height'
+).toBeGreaterThan(0);
+
+logInfo(
+  `Metadata image loaded successfully: ` +
+  `${metadataImageState.naturalWidth}x${metadataImageState.naturalHeight}`
+);
+
+await mapPage.highlight(
+  metadataImage,
+  {
+    label: 'STEP 12.4.1: METADATA IMAGE LOADED',
+    pause: 1200,
+  }
+); */
      // ============================================================
      // 12.4.2 DETAILS
      // ============================================================

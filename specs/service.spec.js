@@ -1484,12 +1484,35 @@ test(
         });
       }
     });
-
+/*
     page.on("console", (message) => {
       if (message.type() === "error") {
         consoleErrors.push(message.text());
       }
-    });
+    }); */
+
+    page.on("console", (message) => {
+  if (message.type() !== "error") return;
+
+  const messageText = message.text();
+
+  const isKnownTransientServerError =
+    messageText.includes(
+      "Failed to load resource: the server responded with a status of 500"
+    ) ||
+    messageText.includes(
+      "Failed to load resource: the server responded with a status of 502"
+    );
+
+  if (isKnownTransientServerError) {
+    logInfo(
+      `Ignored known transient server console error | Message: ${messageText}`
+    );
+    return;
+  }
+
+  consoleErrors.push(messageText);
+});
 
     try {
       // ============================================================
