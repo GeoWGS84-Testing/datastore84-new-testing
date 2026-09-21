@@ -1,9 +1,9 @@
 # ══════════════════════════════════════════════════════════════════════════
-#  🎮  PLAYWRIGHT ARENA — sharded end-to-end test run
-#  Triggers: push/PR to main  ·  daily raid @ 1 PM IST  ·  manual quest
+# 🎭 Playwright Test Suite
+# Triggers: push/PR to main  ·  daily @ 1 PM IST  ·  manual dispatch
 # ══════════════════════════════════════════════════════════════════════════
 
-name: 🎮 Playwright Arena
+name: 🎭 Playwright Tests
 
 on:
   push:
@@ -12,15 +12,15 @@ on:
   pull_request:
     branches: [main]
 
-  # ── Daily raid — 1:00 PM IST (07:30 UTC) ─────────────────────────────
+  # ── Daily at 1:00 PM IST (07:30 UTC) ─────────────────────────────────
   schedule:
     - cron: "30 7 * * *"
 
-  # ── Manual quest — pick your loadout ─────────────────────────────────
+  # ── Manual trigger — customize your run ──────────────────────────────
   workflow_dispatch:
     inputs:
       browser:
-        description: "🌐 Choose your browser class"
+        description: "🌐 Browser"
         required: false
         default: chromium
         type: choice
@@ -30,32 +30,32 @@ on:
           - webkit
 
       workers:
-        description: "⚡ Party size (workers per shard)"
+        description: "⚡ Workers per shard"
         required: false
         default: "4"
         type: choice
         options: ["1", "2", "4", "8"]
 
       test_grep:
-        description: "🔍 Target specific quests (name/regex, blank = all)"
+        description: "🔍 Filter tests by name / regex (leave blank to run all)"
         required: false
         default: ""
         type: string
 
       headless:
-        description: "👻 Stealth mode (headless)"
+        description: "👻 Run headless"
         required: false
         default: true
         type: boolean
 
       send_report:
-        description: "📜 Send victory scroll (email report) after the run"
+        description: "📧 Send email report after run"
         required: false
         default: true
         type: boolean
 
       debug_mode:
-        description: "🐛 Enable verbose debug logging"
+        description: "🐛 Enable verbose Playwright debug logging"
         required: false
         default: false
         type: boolean
@@ -70,9 +70,9 @@ concurrency:
 
 jobs:
 
-  # ── The arena floor: 8 parties fighting in parallel ─────────────────────
+  # ── Sharded parallel test matrix ────────────────────────────────────────
   test:
-    name: "⚔️ Battle — party ${{ matrix.shard }} / 8"
+    name: "🧪 Shard ${{ matrix.shard }}/8 · ${{ inputs.browser || 'chromium' }} · ${{ inputs.workers || '4' }}W"
     timeout-minutes: 60
     runs-on: ubuntu-24.04
     strategy:
@@ -82,61 +82,149 @@ jobs:
         shard: [1, 2, 3, 4, 5, 6, 7, 8]
 
     steps:
-      - name: "🗺️ Scout the repository"
+      - name: "📥 Checkout repository"
         uses: actions/checkout@v5
 
-      - name: "🧙 Summon Node.js 22"
+      - name: "⬢ Setup Node.js 22"
         uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
 
-      - name: "🎒 Gear up (install dependencies)"
+      - name: "📦 Install dependencies"
         run: npm ci
 
-      - name: "🛡️ Equip browser engine"
+      - name: "🎭 Install Playwright browsers"
         env:
           PW_BROWSER: ${{ inputs.browser || 'chromium' }}
         run: npx playwright install --with-deps "$PW_BROWSER"
 
-      - name: "⏱️ Start the clock"
-        run: echo "battle_start=$(date +%s)" >> "$GITHUB_ENV"
-
-      - name: "⚡ Enter the arena — party ${{ matrix.shard }} / 8"
-        id: battle
+      # ── ORIGINAL TEST EXECUTION ────────────────────────────────────────
+      # The Playwright command/options are unchanged. We only capture the
+      # output so that shard statistics can be displayed in GitHub.
+      - name: "🚀 Run Playwright — shard ${{ matrix.shard }} / 8"
         env:
-          HEADLESS:   ${{ inputs.headless  != 'false' && 'true' || 'false' }}
-          PW_WORKERS: ${{ inputs.workers   || '4' }}
-          PW_BROWSER: ${{ inputs.browser   || 'chromium' }}
+          HEADLESS:   ${{ inputs.headless != 'false' && 'true' || 'false' }}
+          PW_WORKERS: ${{ inputs.workers || '4' }}
+          PW_BROWSER: ${{ inputs.browser || 'chromium' }}
           PW_GREP:    ${{ inputs.test_grep || '' }}
           DEBUG:      ${{ inputs.debug_mode == 'true' && 'pw:api,pw:browser' || '' }}
         run: |
           GREP_ARGS=()
           [[ -n "$PW_GREP" ]] && GREP_ARGS+=(--grep "$PW_GREP")
 
+          # pipefail + PIPESTATUS preserves the real Playwright exit code.
+          set -o pipefail
           npx playwright test \
             --project="$PW_BROWSER" \
             --shard=${{ matrix.shard }}/8 \
-            "${GREP_ARGS[@]}"
+            "${GREP_ARGS[@]}" 2>&1 | tee "shard-${{ matrix.shard }}.log"
 
-      - name: "🏅 Log battle outcome"
+          TEST_EXIT=${PIPESTATUS[0]}
+          echo "$TEST_EXIT" > "shard-${{ matrix.shard }}-exit-code.txt"
+          exit "$TEST_EXIT"
+
+      # ── Parse Playwright output for this shard ──────────────────────────
+      - name: "📊 Generate shard metrics"
         if: always()
+        env:
+          SHARD: ${{ matrix.shard }}
+          BROWSER: ${{ inputs.browser || 'chromium' }}
+          WORKERS: ${{ inputs.workers || '4' }}
         run: |
-          duration=$(( $(date +%s) - battle_start ))
-          mkdir -p diagnostics
-          cat > "diagnostics/status-${{ matrix.shard }}.json" <<EOF
-          {"shard": ${{ matrix.shard }}, "outcome": "${{ steps.battle.outcome }}", "duration": $duration}
-          EOF
-          {
-            echo "### ⚔️ Party ${{ matrix.shard }} battle report"
-            echo ""
-            echo "| Stat | Value |"
-            echo "|---|---|"
-            echo "| Outcome | ${{ steps.battle.outcome }} |"
-            echo "| Duration | ${duration}s |"
-          } >> "$GITHUB_STEP_SUMMARY"
+          node <<'NODE'
+          const fs = require('fs');
 
-      - name: "💎 Collect blob loot"
+          const shard = process.env.SHARD;
+          const browser = process.env.BROWSER;
+          const workers = process.env.WORKERS;
+          const logFile = `shard-${shard}.log`;
+          const exitFile = `shard-${shard}-exit-code.txt`;
+          const log = fs.existsSync(logFile) ? fs.readFileSync(logFile, 'utf8') : '';
+          const exitCode = fs.existsSync(exitFile)
+            ? Number(fs.readFileSync(exitFile, 'utf8').trim())
+            : 1;
+
+          const firstNumber = (regex) => {
+            const match = log.match(regex);
+            return match ? Number(match[1]) : 0;
+          };
+
+          const lines = log.split(/\r?\n/).filter(Boolean);
+          const warningLines = lines.filter(line => /\bwarn(?:ing)?\b/i.test(line));
+          const errorLines = lines.filter(line => /\b(?:error|exception|fatal)\b/i.test(line));
+
+          const metrics = {
+            shard: Number(shard),
+            browser,
+            workers: Number(workers),
+            exitCode,
+            status: exitCode === 0 ? 'passed' : 'failed',
+            passed: firstNumber(/(\d+)\s+passed\b/i),
+            failed: firstNumber(/(\d+)\s+failed\b/i),
+            skipped: firstNumber(/(\d+)\s+skipped\b/i),
+            flaky: firstNumber(/(\d+)\s+flaky\b/i),
+            didNotRun: firstNumber(/(\d+)\s+did not run\b/i),
+            warningLines: warningLines.length,
+            errorLines: errorLines.length,
+            signals: [...warningLines, ...errorLines].slice(0, 12)
+          };
+
+          fs.writeFileSync('shard-metrics.json', JSON.stringify(metrics, null, 2));
+          NODE
+
+      # ── Show shard status directly on the shard's GitHub job page ──────
+      - name: "📝 Publish shard summary"
+        if: always()
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const m = JSON.parse(fs.readFileSync('shard-metrics.json', 'utf8'));
+          const icon = m.status === 'passed' ? '✅' : '❌';
+
+          let out = `## ${icon} Shard ${String(m.shard).padStart(2, '0')} / 08\n\n`;
+          out += `| Metric | Count |\n|---|---:|\n`;
+          out += `| ✅ Passed | **${m.passed}** |\n`;
+          out += `| ❌ Failed | **${m.failed}** |\n`;
+          out += `| ⏭️ Skipped | **${m.skipped}** |\n`;
+          out += `| 🔁 Flaky | **${m.flaky}** |\n`;
+          out += `| ⏹️ Did not run | **${m.didNotRun}** |\n`;
+          out += `| ⚠️ Log warnings | **${m.warningLines}** |\n`;
+          out += `| 🚨 Log error/exception lines | **${m.errorLines}** |\n\n`;
+          out += `**Browser:** \`${m.browser}\` &nbsp; **Workers:** \`${m.workers}\` &nbsp; **Exit code:** \`${m.exitCode}\`\n\n`;
+
+          if (m.signals.length) {
+            out += `<details><summary>⚠️ First warning/error signals</summary>\n\n`;
+            out += '```text\n' + m.signals.join('\n') + '\n```\n\n</details>\n';
+          } else {
+            out += '✅ No warning/error signal lines detected in the captured Playwright output.\n';
+          }
+
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, out);
+          NODE
+
+          # Add one visible GitHub annotation without changing pass/fail logic.
+          if [[ -f "shard-metrics.json" ]]; then
+            WARNINGS=$(node -p "require('./shard-metrics.json').warningLines")
+            ERRORS=$(node -p "require('./shard-metrics.json').errorLines")
+            [[ "$WARNINGS" -gt 0 ]] && echo "::warning::Shard $SHARD has $WARNINGS warning line(s) in Playwright output."
+            [[ "$ERRORS" -gt 0 ]] && echo "::error::Shard $SHARD has $ERRORS error/exception line(s) in Playwright output."
+          fi
+
+      - name: "📊 Upload shard metrics"
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: shard-metrics-${{ matrix.shard }}
+          path: |
+            shard-metrics.json
+            shard-${{ matrix.shard }}.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: "📊 Upload blob report"
         if: always()
         uses: actions/upload-artifact@v6
         with:
@@ -144,7 +232,7 @@ jobs:
           path: blob-report/
           retention-days: 7
 
-      - name: "📦 Collect battle report"
+      - name: "📋 Upload Playwright report"
         if: always()
         uses: actions/upload-artifact@v6
         with:
@@ -153,7 +241,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-      - name: "🧩 Collect test results"
+      - name: "🧩 Upload test results"
         if: always()
         uses: actions/upload-artifact@v6
         with:
@@ -162,7 +250,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-      - name: "🔬 Collect diagnostics"
+      - name: "🔬 Upload diagnostics"
         if: always()
         uses: actions/upload-artifact@v6
         with:
@@ -171,56 +259,136 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-  # ── The herald: gathers all loot and sends the victory scroll ──────────
+  # ── Consolidated GitHub dashboard ───────────────────────────────────────
+  dashboard:
+    name: "📈 Shard Matrix Dashboard"
+    if: always()
+    needs: test
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: "⬇️ Download shard metrics"
+        uses: actions/download-artifact@v7
+        with:
+          pattern: shard-metrics-*
+          merge-multiple: true
+          path: shard-metrics
+
+      - name: "📈 Build consolidated shard dashboard"
+        if: always()
+        env:
+          TEST_RESULT: ${{ needs.test.result }}
+          BROWSER: ${{ inputs.browser || 'chromium' }}
+          WORKERS: ${{ inputs.workers || '4' }}
+          GREP: ${{ inputs.test_grep || 'all tests' }}
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+
+          const dir = 'shard-metrics';
+          const files = fs.existsSync(dir)
+            ? fs.readdirSync(dir).filter(f => f.endsWith('.json')).sort()
+            : [];
+
+          const rows = files
+            .map(f => JSON.parse(fs.readFileSync(`${dir}/${f}`, 'utf8')))
+            .sort((a, b) => a.shard - b.shard);
+
+          const sum = key => rows.reduce((n, r) => n + Number(r[key] || 0), 0);
+          const passedShards = rows.filter(r => r.status === 'passed').length;
+          const failedShards = rows.filter(r => r.status !== 'passed').length;
+          const overallIcon = process.env.TEST_RESULT === 'success' ? '✅' : '❌';
+
+          let out = `# ${overallIcon} Playwright Shard Dashboard\n\n`;
+          out += `**Browser:** \`${process.env.BROWSER}\` &nbsp; **Workers/shard:** \`${process.env.WORKERS}\` &nbsp; **Filter:** \`${process.env.GREP}\`\n\n`;
+          out += `### Run overview\n\n`;
+          out += `| Shards | Passed tests | Failed tests | Skipped | Flaky | Warnings* | Errors* |\n`;
+          out += `|---:|---:|---:|---:|---:|---:|---:|\n`;
+          out += `| **${passedShards}/${rows.length}** | **${sum('passed')}** | **${sum('failed')}** | **${sum('skipped')}** | **${sum('flaky')}** | **${sum('warningLines')}** | **${sum('errorLines')}** |\n\n`;
+          out += `*Warnings/errors are counts of matching lines in the captured Playwright output, not independent Playwright result categories.*\n\n`;
+
+          out += `### Shard matrix\n\n`;
+          out += `| Shard | Status | Passed | Failed | Skipped | Flaky | Warn | Error | Browser | Workers |\n`;
+          out += `|---|---|---:|---:|---:|---:|---:|---:|---|---:|\n`;
+
+          for (const r of rows) {
+            const icon = r.status === 'passed' ? '✅ PASS' : '❌ FAIL';
+            out += `| **${String(r.shard).padStart(2, '0')} / 08** | ${icon} | ${r.passed} | ${r.failed} | ${r.skipped} | ${r.flaky} | ${r.warningLines} | ${r.errorLines} | ${r.browser} | ${r.workers} |\n`;
+          }
+
+          out += `\n### 🔎 Shard details\n\n`;
+          for (const r of rows) {
+            const icon = r.status === 'passed' ? '✅' : '❌';
+            out += `<details><summary>${icon} Shard ${String(r.shard).padStart(2, '0')} — ${r.passed} passed · ${r.failed} failed · ${r.warningLines} warn · ${r.errorLines} error</summary>\n\n`;
+            out += `**Exit code:** ${r.exitCode}\n\n`;
+            if (r.signals?.length) {
+              out += '```text\n' + r.signals.join('\n') + '\n```\n\n';
+            } else {
+              out += 'No warning/error signal lines detected.\n\n';
+            }
+            out += `</details>\n\n`;
+          }
+
+          if (failedShards > 0) {
+            out += `> ⚠️ **Action:** Open the failed shard job above to inspect its complete log and Playwright artifacts.\n`;
+          } else {
+            out += `> 🎉 **All ${rows.length} shards completed successfully.**\n`;
+          }
+
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, out);
+          NODE
+
+  # ── Consolidated email report (original behavior preserved) ─────────────
   email-report:
-    name: "📜 Herald — send the scroll"
-    # Skip on manual runs where the sender opted out
+    name: "📨 Email Report"
+    # Skip on manual runs where the user opted out of the report
     if: always() && (github.event_name != 'workflow_dispatch' || inputs.send_report == 'true')
     needs: test
     runs-on: ubuntu-24.04
 
     steps:
-      - name: "🗺️ Scout the repository"
+      - name: "📥 Checkout repository"
         uses: actions/checkout@v5
 
-      - name: "🧙 Summon Node.js 22"
+      - name: "⬢ Setup Node.js 22"
         uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
 
-      - name: "🎒 Gear up (install dependencies)"
+      - name: "📦 Install dependencies"
         run: npm ci
 
-      - name: "💰 Gather diagnostics loot"
+      # ── Existing report inputs/artifacts ────────────────────────────────
+      - name: "⬇️ Download diagnostics"
         uses: actions/download-artifact@v7
         with:
           pattern: diagnostics-*
           merge-multiple: true
           path: diagnostics
 
-      - name: "💰 Gather test result loot"
+      - name: "⬇️ Download test results"
         uses: actions/download-artifact@v7
         with:
           pattern: test-results-*
           merge-multiple: true
           path: test-results
 
-      - name: "💰 Gather battle report loot"
+      - name: "⬇️ Download Playwright reports"
         uses: actions/download-artifact@v7
         with:
           pattern: playwright-report-*
           merge-multiple: true
           path: playwright-report
 
-      - name: "💰 Gather blob loot"
+      - name: "⬇️ Download blob reports"
         uses: actions/download-artifact@v7
         with:
           pattern: blob-report-*
           merge-multiple: true
           path: blob-reports
 
-      - name: "📜 Send the victory scroll (consolidated report)"
+      - name: "📨 Send consolidated report"
         if: always()
         env:
           CI: "true"
@@ -233,47 +401,3 @@ jobs:
           SMTP_PASS:            ${{ secrets.SMTP_PASS }}
           SMTP_FROM:            ${{ secrets.SMTP_FROM }}
         run: npm run report:email
-
-      - name: "🗺️ Draw the battle map"
-        if: always()
-        run: |
-          {
-            echo "# 🏆 Playwright Arena — run summary"
-            echo ""
-            echo '```mermaid'
-            echo "flowchart LR"
-            echo "  T[\"🎮 Trigger\"] --> M{\"Arena\"}"
-            for f in diagnostics/status-*.json; do
-              [ -e "$f" ] || continue
-              shard=$(jq -r .shard "$f")
-              outcome=$(jq -r .outcome "$f")
-              dur=$(jq -r .duration "$f")
-              icon="💀"
-              [ "$outcome" = "success" ] && icon="✅"
-              echo "  M --> P${shard}[\"$icon Party $shard · ${dur}s\"]"
-              echo "  P${shard} --> H[\"📜 Herald\"]"
-            done
-            echo "  classDef win fill:#1D9E75,stroke:#0F6E56,color:#ffffff;"
-            echo "  classDef loss fill:#E24B4A,stroke:#A32D2D,color:#ffffff;"
-            for f in diagnostics/status-*.json; do
-              [ -e "$f" ] || continue
-              shard=$(jq -r .shard "$f")
-              outcome=$(jq -r .outcome "$f")
-              cls="loss"
-              [ "$outcome" = "success" ] && cls="win"
-              echo "  class P${shard} $cls"
-            done
-            echo '```'
-            echo ""
-            echo "| Party | Outcome | Duration |"
-            echo "|---|---|---|"
-            for f in diagnostics/status-*.json; do
-              [ -e "$f" ] || continue
-              shard=$(jq -r .shard "$f")
-              outcome=$(jq -r .outcome "$f")
-              dur=$(jq -r .duration "$f")
-              badge="💀 Defeat"
-              [ "$outcome" = "success" ] && badge="🏅 Victory"
-              echo "| Party $shard | $badge | ${dur}s |"
-            done
-          } >> "$GITHUB_STEP_SUMMARY"
