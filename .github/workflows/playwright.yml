@@ -1,22 +1,79 @@
-name: Playwright Tests
+# ══════════════════════════════════════════════════════════════════════════
+#  🎭  Playwright Test Suite
+#  Triggers: push/PR to main  ·  daily @ 1 PM IST  ·  manual dispatch
+# ══════════════════════════════════════════════════════════════════════════
+
+name: 🎭 Playwright Tests
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+
   pull_request:
-    branches:
-      - main
+    branches: [main]
+
+  # ── Daily at 1:00 PM IST (07:30 UTC) ─────────────────────────────────
   schedule:
-    - cron: "30 6 * * *"
+    - cron: "30 7 * * *"
+
+  # ── Manual trigger — customize your run ──────────────────────────────
   workflow_dispatch:
+    inputs:
+
+      browser:
+        description: "🌐 Browser"
+        required: false
+        default: chromium
+        type: choice
+        options:
+          - chromium
+          - firefox
+          - webkit
+
+      workers:
+        description: "⚡ Workers per shard"
+        required: false
+        default: "4"
+        type: choice
+        options: ["1", "2", "4", "8"]
+
+      test_grep:
+        description: "🔍 Filter tests by name / regex (leave blank to run all)"
+        required: false
+        default: ""
+        type: string
+
+      headless:
+        description: "👻 Run headless"
+        required: false
+        default: true
+        type: boolean
+
+      send_report:
+        description: "📧 Send email report after run"
+        required: false
+        default: true
+        type: boolean
+
+      debug_mode:
+        description: "🐛 Enable verbose Playwright debug logging"
+        required: false
+        default: false
+        type: boolean
+
+# ══════════════════════════════════════════════════════════════════════════
 
 concurrency:
   group: playwright-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
+# ══════════════════════════════════════════════════════════════════════════
+
 jobs:
+
+  # ── Sharded parallel test matrix ────────────────────────────────────────
   test:
+    name: "🧪 Shard ${{ matrix.shard }} / 8"
     timeout-minutes: 60
     runs-on: ubuntu-24.04
     strategy:
@@ -26,28 +83,40 @@ jobs:
         shard: [1, 2, 3, 4, 5, 6, 7, 8]
 
     steps:
-      - name: Checkout repository
+      - name: "📥 Checkout repository"
         uses: actions/checkout@v5
 
-      - name: Setup Node.js
+      - name: "⬢ Setup Node.js 22"
         uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
 
-      - name: Install dependencies
+      - name: "📦 Install dependencies"
         run: npm ci
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
-
-      - name: Run Playwright shard
+      - name: "🎭 Install Playwright browsers"
         env:
-          HEADLESS: "true"
-          PW_WORKERS: "4"
-        run: npx playwright test --project=chromium --shard=${{ matrix.shard }}/8
+          PW_BROWSER: ${{ inputs.browser || 'chromium' }}
+        run: npx playwright install --with-deps "$PW_BROWSER"
 
-      - name: Upload blob report
+      - name: "🚀 Run Playwright — shard ${{ matrix.shard }} / 8"
+        env:
+          HEADLESS:   ${{ inputs.headless  != 'false' && 'true' || 'false' }}
+          PW_WORKERS: ${{ inputs.workers   || '4' }}
+          PW_BROWSER: ${{ inputs.browser   || 'chromium' }}
+          PW_GREP:    ${{ inputs.test_grep || '' }}
+          DEBUG:      ${{ inputs.debug_mode == 'true' && 'pw:api,pw:browser' || '' }}
+        run: |
+          GREP_ARGS=()
+          [[ -n "$PW_GREP" ]] && GREP_ARGS+=(--grep "$PW_GREP")
+
+          npx playwright test \
+            --project="$PW_BROWSER" \
+            --shard=${{ matrix.shard }}/8 \
+            "${GREP_ARGS[@]}"
+
+      - name: "📊 Upload blob report"
         if: always()
         uses: actions/upload-artifact@v6
         with:
@@ -55,7 +124,7 @@ jobs:
           path: blob-report/
           retention-days: 7
 
-      - name: Upload Playwright report
+      - name: "📋 Upload Playwright report"
         if: always()
         uses: actions/upload-artifact@v6
         with:
@@ -64,16 +133,16 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-      - name: Upload test results
+      - name: "🧩 Upload test results"
         if: always()
         uses: actions/upload-artifact@v6
         with:
           name: test-results-${{ matrix.shard }}
           path: test-results/
           if-no-files-found: ignore
-          retention-days: 7 
+          retention-days: 7
 
-      - name: Upload diagnostics
+      - name: "🔬 Upload diagnostics"
         if: always()
         uses: actions/upload-artifact@v6
         with:
@@ -82,61 +151,65 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+  # ── Consolidated email report ─────────────────────────────────────────
   email-report:
-    if: always()
+    name: "📨 Email Report"
+    # Skip on manual runs where the user opted out of the report
+    if: always() && (github.event_name != 'workflow_dispatch' || inputs.send_report == 'true')
     needs: test
     runs-on: ubuntu-24.04
+
     steps:
-      - name: Checkout repository
+      - name: "📥 Checkout repository"
         uses: actions/checkout@v5
 
-      - name: Setup Node.js
+      - name: "⬢ Setup Node.js 22"
         uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
 
-      - name: Install dependencies
+      - name: "📦 Install dependencies"
         run: npm ci
 
-      - name: Download diagnostics
+      - name: "⬇️ Download diagnostics"
         uses: actions/download-artifact@v7
         with:
           pattern: diagnostics-*
           merge-multiple: true
           path: diagnostics
 
-      - name: Download test results
+      - name: "⬇️ Download test results"
         uses: actions/download-artifact@v7
         with:
           pattern: test-results-*
           merge-multiple: true
           path: test-results
 
-      - name: Download Playwright reports
+      - name: "⬇️ Download Playwright reports"
         uses: actions/download-artifact@v7
         with:
           pattern: playwright-report-*
           merge-multiple: true
           path: playwright-report
 
-      - name: Download blob reports
+      - name: "⬇️ Download blob reports"
         uses: actions/download-artifact@v7
         with:
           pattern: blob-report-*
           merge-multiple: true
           path: blob-reports
 
-      - name: Send consolidated daily and failure reports
+      - name: "📨 Send consolidated report"
         if: always()
         env:
           CI: "true"
-          DAILY_REPORT_EMAILS: ${{ secrets.DAILY_REPORT_EMAILS }}
+          DAILY_REPORT_EMAILS:  ${{ secrets.DAILY_REPORT_EMAILS }}
           FAILURE_ALERT_EMAILS: ${{ secrets.FAILURE_ALERT_EMAILS }}
-          SMTP_HOST: ${{ secrets.SMTP_HOST }}
-          SMTP_PORT: ${{ secrets.SMTP_PORT }}
-          SMTP_SECURE: ${{ secrets.SMTP_SECURE }}
-          SMTP_USER: ${{ secrets.SMTP_USER }}
-          SMTP_PASS: ${{ secrets.SMTP_PASS }}
-          SMTP_FROM: ${{ secrets.SMTP_FROM }}
+          SMTP_HOST:            ${{ secrets.SMTP_HOST }}
+          SMTP_PORT:            ${{ secrets.SMTP_PORT }}
+          SMTP_SECURE:          ${{ secrets.SMTP_SECURE }}
+          SMTP_USER:            ${{ secrets.SMTP_USER }}
+          SMTP_PASS:            ${{ secrets.SMTP_PASS }}
+          SMTP_FROM:            ${{ secrets.SMTP_FROM }}
         run: npm run report:email
