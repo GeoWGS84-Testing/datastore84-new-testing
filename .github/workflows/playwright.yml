@@ -1,9 +1,9 @@
 # ══════════════════════════════════════════════════════════════════════════
-#  🎭  Playwright Test Suite
-#  Triggers: push/PR to main  ·  daily @ 1 PM IST  ·  manual dispatch
+#  🎮  PLAYWRIGHT ARENA — sharded end-to-end test run
+#  Triggers: push/PR to main  ·  daily raid @ 1 PM IST  ·  manual quest
 # ══════════════════════════════════════════════════════════════════════════
 
-name: 🎭 Playwright Tests
+name: 🎮 Playwright Arena
 
 on:
   push:
@@ -12,16 +12,15 @@ on:
   pull_request:
     branches: [main]
 
-  # ── Daily at 1:00 PM IST (07:30 UTC) ─────────────────────────────────
+  # ── Daily raid — 1:00 PM IST (07:30 UTC) ─────────────────────────────
   schedule:
     - cron: "30 7 * * *"
 
-  # ── Manual trigger — customize your run ──────────────────────────────
+  # ── Manual quest — pick your loadout ─────────────────────────────────
   workflow_dispatch:
     inputs:
-
       browser:
-        description: "🌐 Browser"
+        description: "🌐 Choose your browser class"
         required: false
         default: chromium
         type: choice
@@ -31,32 +30,32 @@ on:
           - webkit
 
       workers:
-        description: "⚡ Workers per shard"
+        description: "⚡ Party size (workers per shard)"
         required: false
         default: "4"
         type: choice
         options: ["1", "2", "4", "8"]
 
       test_grep:
-        description: "🔍 Filter tests by name / regex (leave blank to run all)"
+        description: "🔍 Target specific quests (name/regex, blank = all)"
         required: false
         default: ""
         type: string
 
       headless:
-        description: "👻 Run headless"
+        description: "👻 Stealth mode (headless)"
         required: false
         default: true
         type: boolean
 
       send_report:
-        description: "📧 Send email report after run"
+        description: "📜 Send victory scroll (email report) after the run"
         required: false
         default: true
         type: boolean
 
       debug_mode:
-        description: "🐛 Enable verbose Playwright debug logging"
+        description: "🐛 Enable verbose debug logging"
         required: false
         default: false
         type: boolean
@@ -71,9 +70,9 @@ concurrency:
 
 jobs:
 
-  # ── Sharded parallel test matrix ────────────────────────────────────────
+  # ── The arena floor: 8 parties fighting in parallel ─────────────────────
   test:
-    name: "🧪 Shard ${{ matrix.shard }} / 8"
+    name: "⚔️ Battle — party ${{ matrix.shard }} / 8"
     timeout-minutes: 60
     runs-on: ubuntu-24.04
     strategy:
@@ -83,24 +82,24 @@ jobs:
         shard: [1, 2, 3, 4, 5, 6, 7, 8]
 
     steps:
-      - name: "📥 Checkout repository"
+      - name: "🗺️ Scout the repository"
         uses: actions/checkout@v5
 
-      - name: "⬢ Setup Node.js 22"
+      - name: "🧙 Summon Node.js 22"
         uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
 
-      - name: "📦 Install dependencies"
+      - name: "🎒 Gear up (install dependencies)"
         run: npm ci
 
-      - name: "🎭 Install Playwright browsers"
+      - name: "🛡️ Equip browser engine"
         env:
           PW_BROWSER: ${{ inputs.browser || 'chromium' }}
         run: npx playwright install --with-deps "$PW_BROWSER"
 
-      - name: "🚀 Run Playwright — shard ${{ matrix.shard }} / 8"
+      - name: "⚡ Enter the arena — party ${{ matrix.shard }} / 8"
         env:
           HEADLESS:   ${{ inputs.headless  != 'false' && 'true' || 'false' }}
           PW_WORKERS: ${{ inputs.workers   || '4' }}
@@ -116,7 +115,7 @@ jobs:
             --shard=${{ matrix.shard }}/8 \
             "${GREP_ARGS[@]}"
 
-      - name: "📊 Upload blob report"
+      - name: "💎 Collect blob loot"
         if: always()
         uses: actions/upload-artifact@v6
         with:
@@ -124,7 +123,7 @@ jobs:
           path: blob-report/
           retention-days: 7
 
-      - name: "📋 Upload Playwright report"
+      - name: "📦 Collect battle report"
         if: always()
         uses: actions/upload-artifact@v6
         with:
@@ -133,7 +132,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-      - name: "🧩 Upload test results"
+      - name: "🧩 Collect test results"
         if: always()
         uses: actions/upload-artifact@v6
         with:
@@ -142,7 +141,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-      - name: "🔬 Upload diagnostics"
+      - name: "🔬 Collect diagnostics"
         if: always()
         uses: actions/upload-artifact@v6
         with:
@@ -151,56 +150,56 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-  # ── Consolidated email report ─────────────────────────────────────────
+  # ── The herald: gathers all loot and sends the victory scroll ──────────
   email-report:
-    name: "📨 Email Report"
-    # Skip on manual runs where the user opted out of the report
+    name: "📜 Herald — send the scroll"
+    # Skip on manual runs where the sender opted out
     if: always() && (github.event_name != 'workflow_dispatch' || inputs.send_report == 'true')
     needs: test
     runs-on: ubuntu-24.04
 
     steps:
-      - name: "📥 Checkout repository"
+      - name: "🗺️ Scout the repository"
         uses: actions/checkout@v5
 
-      - name: "⬢ Setup Node.js 22"
+      - name: "🧙 Summon Node.js 22"
         uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
 
-      - name: "📦 Install dependencies"
+      - name: "🎒 Gear up (install dependencies)"
         run: npm ci
 
-      - name: "⬇️ Download diagnostics"
+      - name: "💰 Gather diagnostics loot"
         uses: actions/download-artifact@v7
         with:
           pattern: diagnostics-*
           merge-multiple: true
           path: diagnostics
 
-      - name: "⬇️ Download test results"
+      - name: "💰 Gather test result loot"
         uses: actions/download-artifact@v7
         with:
           pattern: test-results-*
           merge-multiple: true
           path: test-results
 
-      - name: "⬇️ Download Playwright reports"
+      - name: "💰 Gather battle report loot"
         uses: actions/download-artifact@v7
         with:
           pattern: playwright-report-*
           merge-multiple: true
           path: playwright-report
 
-      - name: "⬇️ Download blob reports"
+      - name: "💰 Gather blob loot"
         uses: actions/download-artifact@v7
         with:
           pattern: blob-report-*
           merge-multiple: true
           path: blob-reports
 
-      - name: "📨 Send consolidated report"
+      - name: "📜 Send the victory scroll (consolidated report)"
         if: always()
         env:
           CI: "true"
