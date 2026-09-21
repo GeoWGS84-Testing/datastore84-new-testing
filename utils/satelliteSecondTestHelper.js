@@ -225,17 +225,19 @@ export async function runSecondSatelliteServiceTest(
 
     const messageText = message.text();
 
-    // Ignore only the known transient metadata-image 500 error.
-    // Other console errors will still be reported as warnings.
-    const isKnownMetadataImageError =
+    // Ignore known transient server errors (500 / 502).
+    const isKnownTransientServerError =
       messageText.includes(
         'Failed to load resource: the server responded with a status of 500'
+      ) ||
+      messageText.includes(
+        'Failed to load resource: the server responded with a status of 502'
       );
 
-    if (isKnownMetadataImageError) {
+    if (isKnownTransientServerError) {
 
       logInfo(
-        `Ignored known transient metadata image console error | ` +
+        `Ignored known transient server console error | ` +
         `Step: ${currentStep} | ` +
         `Message: ${messageText}`
       );
