@@ -1402,8 +1402,9 @@ class EmailReporter {
       else this.stats.skipped++;
 
       const rawAttachments = result.attachments || [];
-      // Screenshots + videos ONLY for real failures (not warnings / skips)
-      const shouldAttach = isFailure;
+      // Attach SS/video for any non-clean outcome: fail, warning, skip, skipped-logic
+      const shouldAttach =
+        isFailure || hasWarning || hasSkippedLogic || isTestSkipped;
       let videos = [],
         images = [];
       if (shouldAttach) {
@@ -1541,13 +1542,10 @@ class EmailReporter {
     }
 
     // ============================================================
-    // EMAIL 2: Detailed Report — ONLY when at least one test FAILED
-    // Full table + logs for all tests; SS/video only on failed rows
+    // EMAIL 2: Detailed Report — ALWAYS when FAILURE_ALERT_EMAILS is set
+    // Full table + logs for every test; SS/video on fail/warn/skip rows
     // ============================================================
-    if (
-      process.env.FAILURE_ALERT_EMAILS?.trim() &&
-      this.stats.failed > 0
-    ) {
+    if (process.env.FAILURE_ALERT_EMAILS?.trim()) {
       const statusMeta = overallStatusMeta(this.stats);
       const finalAttachments = [];
       let totalSize = 0;
@@ -1573,7 +1571,7 @@ class EmailReporter {
       };
 
       console.log(
-        `[REPORTER] Building detailed failure report (failed=${this.stats.failed}, warnings=${this.stats.warning_tests}, total=${totalTests})…`,
+        `[REPORTER] Building detailed report (failed=${this.stats.failed}, warnings=${this.stats.warning_tests}, skipped=${this.stats.skipped + this.stats.skipped_logic_tests}, total=${totalTests})…`,
       );
 
       const sortedTests = sortTestsByDefinitionOrder(allTests);
@@ -1641,7 +1639,7 @@ class EmailReporter {
           finalAttachments,
         );
         console.log(
-          `📧 Detailed failure report sent to: ${process.env.FAILURE_ALERT_EMAILS}`,
+          `📧 Detailed report sent to: ${process.env.FAILURE_ALERT_EMAILS}`,
         );
         console.log(
           `📊 Attachments: ${finalAttachments.length} files, ${totalSizeMB} MB`,
@@ -1650,9 +1648,9 @@ class EmailReporter {
         console.error("❌ Failed detailed report:", err);
         throw err;
       }
-    } else if (process.env.FAILURE_ALERT_EMAILS?.trim()) {
+    } else {
       console.log(
-        `[REPORTER] Skipping detailed failure email (failed=0, warnings=${this.stats.warning_tests})`,
+        `[REPORTER] FAILURE_ALERT_EMAILS not set — skipping detailed report`,
       );
     }
   }
