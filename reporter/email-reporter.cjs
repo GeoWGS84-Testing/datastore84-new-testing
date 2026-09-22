@@ -583,9 +583,15 @@ function getAnimatedStyles() {
             animation: shimmer 3s linear infinite;
         }
         .gradient-bg {
-            background: linear-gradient(-45deg, #020617, #0f172a, #1e1b4b, #172554);
+            background: linear-gradient(-45deg, #020617, #0c1929, #0e3a5c, #0f172a, #134e4a);
             background-size: 400% 400%;
-            animation: gradientShift 14s ease infinite;
+            animation: gradientShift 16s ease infinite;
+        }
+        .geo-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            box-shadow: 0 8px 28px rgba(15, 23, 42, 0.07);
         }
         .progress-fill {
             animation: progressFill 1.2s ease-out both;
@@ -658,41 +664,48 @@ function getAnimatedStyles() {
 function buildHeader(logoCid, statusMeta) {
   const { emoji, label, color, bg } = statusMeta;
   return `
-    <table width="100%" cellpadding="0" cellspacing="0" class="gradient-bg" style="background:linear-gradient(-45deg,#020617,#0f172a,#1e1b4b,#172554); background-size:400% 400%; animation:gradientShift 14s ease infinite;">
+    <table width="100%" cellpadding="0" cellspacing="0" class="gradient-bg" style="background:linear-gradient(-45deg,#020617,#0c1929,#0e3a5c,#0f172a,#134e4a); background-size:400% 400%; animation:gradientShift 16s ease infinite;">
         <tr>
-            <td align="center" style="padding:38px 20px 0 20px;" class="r-header-pad">
+            <td align="center" style="padding:40px 20px 0 20px;" class="r-header-pad">
                 <div class="anim-bounce" style="display:inline-block;">
-                    <img src="cid:${logoCid}" alt="${escapeHtml(APP_NAME)} Logo" width="76" style="width:76px; height:auto; border:0; border-radius:16px; box-shadow:0 8px 28px rgba(0,0,0,0.45);" />
+                    <img src="cid:${logoCid}" alt="${escapeHtml(APP_NAME)} Logo" width="88" style="width:88px; height:auto; border:0; border-radius:20px; box-shadow:0 12px 36px rgba(0,0,0,0.5); border:2px solid rgba(148,163,184,0.25);" />
                 </div>
             </td>
         </tr>
         <tr>
             <td align="center" style="padding:18px 20px 0 20px;">
-                <h1 class="shimmer-text anim-fade-up delay-1 r-title" style="margin:0; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:23px; font-weight:800; letter-spacing:3.5px; text-transform:uppercase;">
-                    🌍 ${escapeHtml(APP_NAME)}
+                <h1 class="shimmer-text anim-fade-up delay-1 r-title" style="margin:0; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:24px; font-weight:800; letter-spacing:3.5px; text-transform:uppercase;">
+                    ${escapeHtml(APP_NAME)}
                 </h1>
             </td>
         </tr>
         <tr>
             <td align="center" style="padding:8px 20px 0 20px;">
-                <p class="anim-fade delay-2 r-sub" style="margin:0; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:11px; color:#94a3b8; letter-spacing:2px; font-weight:600;">
-                    AUTOMATED QUALITY ENGINEERING REPORT
+                <p class="anim-fade delay-2 r-sub" style="margin:0; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:11px; color:#94a3b8; letter-spacing:2.5px; font-weight:600;">
+                    SATELLITE · AERIAL · DRONE · QA AUTOMATION
                 </p>
             </td>
         </tr>
         <tr>
-            <td align="center" style="padding:18px 20px 0 20px;">
+            <td align="center" style="padding:6px 20px 0 20px;">
+                <p class="anim-fade delay-2" style="margin:0; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:10px; color:#64748b; letter-spacing:1px;">
+                    datastore.geowgs84.com · Playwright E2E Quality Gate
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td align="center" style="padding:16px 20px 0 20px;">
                 <table cellpadding="0" cellspacing="0" class="anim-scale delay-3"><tr>
-                    <td style="background:${bg}; border:1px solid ${color}55; padding:7px 18px; border-radius:30px;">
+                    <td style="background:${bg}; border:1px solid ${color}55; padding:8px 20px; border-radius:30px; box-shadow:0 4px 14px ${color}22;">
                         <span style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:11px; font-weight:800; letter-spacing:1.5px; color:${color};">${emoji} ${label}</span>
                     </td>
                 </tr></table>
             </td>
         </tr>
         <tr>
-            <td align="center" style="padding:18px 20px 26px 20px;">
+            <td align="center" style="padding:18px 20px 28px 20px;">
                 <table cellpadding="0" cellspacing="0"><tr>
-                    <td style="width:80px; height:3px; background:linear-gradient(90deg,transparent,#818cf8,#c084fc,#f472b6,transparent); border-radius:4px;"></td>
+                    <td style="width:100px; height:3px; background:linear-gradient(90deg,transparent,#38bdf8,#34d399,#818cf8,transparent); border-radius:4px;"></td>
                 </tr></table>
             </td>
         </tr>
@@ -1035,23 +1048,24 @@ function buildSectionTitle(icon, title) {
 
 function buildFooter() {
   return `
-    <table width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(180deg,#f8fafc 0%,#f1f5f9 100%); border-top:1px solid #e2e8f0;">
-        <tr><td align="center" style="padding:8px 20px 0 20px;"><table cellpadding="0" cellspacing="0"><tr><td style="width:50px; height:2px; background:linear-gradient(90deg,transparent,#c7d2fe,#a5b4fc,transparent); border-radius:2px;"></td></tr></table></td></tr>
-        <tr><td align="center" style="padding:12px 20px 4px 20px; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:12px; color:#1e293b; font-weight:800;">🌍 ${escapeHtml(APP_NAME)}</td></tr>
-        <tr><td align="center" style="padding:0 20px 2px 20px; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:9px; color:#64748b; font-weight:600;">Automated Quality Engineering Platform</td></tr>
-        <tr><td align="center" style="padding:0 20px 4px 20px; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:9px; color:#94a3b8; letter-spacing:1px;" class="r-footer">PLAYWRIGHT · NODE.JS · CI/CD</td></tr>
-        <tr><td align="center" style="padding:4px 20px 16px 20px; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:8px; color:#cbd5e1;" class="r-footer">🤖 Generated automatically — do not reply to this email</td></tr>
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(180deg,#0f172a 0%,#020617 100%); border-top:1px solid #1e293b;">
+        <tr><td align="center" style="padding:14px 20px 0 20px;"><table cellpadding="0" cellspacing="0"><tr><td style="width:64px; height:2px; background:linear-gradient(90deg,transparent,#38bdf8,#34d399,transparent); border-radius:2px;"></td></tr></table></td></tr>
+        <tr><td align="center" style="padding:14px 20px 4px 20px; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:13px; color:#f1f5f9; font-weight:800;">${escapeHtml(APP_NAME)}</td></tr>
+        <tr><td align="center" style="padding:0 20px 2px 20px; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:9px; color:#94a3b8; font-weight:600;">Automated Quality Engineering · Geospatial Platform</td></tr>
+        <tr><td align="center" style="padding:4px 20px 2px 20px; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:9px; color:#64748b; letter-spacing:1px;" class="r-footer">PLAYWRIGHT · NODE.JS · CI/CD</td></tr>
+        <tr><td align="center" style="padding:2px 20px 4px 20px; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:8px; color:#475569;" class="r-footer">https://datastore.geowgs84.com</td></tr>
+        <tr><td align="center" style="padding:4px 20px 18px 20px; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:8px; color:#334155;" class="r-footer">Generated automatically — do not reply to this email</td></tr>
     </table>`;
 }
 
 function wrapBody(inner) {
   return `
     <!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>${escapeHtml(APP_NAME)} — QA Report</title>${getAnimatedStyles()}</head>
-    <body style="margin:0; padding:0; background-color:#e2e8f0; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%;">
-        <div style="background:#e2e8f0; padding:14px 6px; font-family:'Inter','Segoe UI',Arial,sans-serif;">
+    <body style="margin:0; padding:0; background-color:#0f172a; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%;">
+        <div style="background:linear-gradient(180deg,#0f172a 0%,#1e293b 45%,#0f172a 100%); padding:18px 8px; font-family:'Inter','Segoe UI',Arial,sans-serif;">
             <table width="100%" cellpadding="0" cellspacing="0" align="center">
                 <tr><td align="center">
-                    <table width="100%" cellpadding="0" cellspacing="0" style="max-width:820px; background:#ffffff; border-radius:16px; overflow:hidden; border:1px solid #cbd5e1; box-shadow:0 8px 32px rgba(15,23,42,0.10);">
+                    <table width="100%" cellpadding="0" cellspacing="0" style="max-width:840px; background:#ffffff; border-radius:20px; overflow:hidden; border:1px solid #334155; box-shadow:0 20px 50px rgba(0,0,0,0.35);">
                         ${inner}
                     </table>
                 </td></tr>
@@ -1211,18 +1225,24 @@ function buildTestRow(item, addAttachment, index) {
         </table>`;
   }
 
-  // LOGS
+  // LOGS — only for fail / warn / skip (keeps email small & fast)
   let logsHtml = "";
-  if (logs && logLineCount > 0) {
+  if (
+    logs &&
+    logLineCount > 0 &&
+    (isFailure || hasWarning || hasSkippedLogic)
+  ) {
     logsHtml = `
         <div class="log-container" style="margin-top:6px;">
             <details style="border:1px solid #334155; border-radius:6px; overflow:hidden;">
                 <summary style="cursor:pointer; font-size:8px; color:#818cf8; font-family:'Inter','Segoe UI',Arial,sans-serif; letter-spacing:1px; padding:5px 8px; background:linear-gradient(90deg,#1e293b,#0f172a); text-transform:uppercase; font-weight:600;">
                     📋 Logs (${logLineCount}) ▾
                 </summary>
-                <pre class="log-pre" style="background:#0f172a; color:#94a3b8; padding:10px; max-height:220px; font-size:7px; font-family:'Courier New',monospace; margin:0; line-height:1.5; border-top:1px solid #334155;">${escapeHtml(logs)}</pre>
+                <pre class="log-pre" style="background:#0f172a; color:#94a3b8; padding:10px; max-height:180px; font-size:7px; font-family:'Courier New',monospace; margin:0; line-height:1.5; border-top:1px solid #334155;">${escapeHtml(logs)}</pre>
             </details>
         </div>`;
+  } else if (isPassed) {
+    logsHtml = "";
   } else {
     logsHtml = `<div style="margin-top:4px;"><span style="font-size:8px; color:#d4d4d8; font-style:italic;">📭 No logs</span></div>`;
   }
@@ -1322,11 +1342,6 @@ class EmailReporter {
         }
       }
 
-      const logs = truncateText(stripAnsi(rawLogs), 300);
-      const logLineCount = logs
-        ? logs.split("\n").filter((l) => l.trim()).length
-        : 0;
-
       let errorDetails = null;
       if (result.error) {
         errorDetails = "Error: " + result.error.message;
@@ -1342,7 +1357,7 @@ class EmailReporter {
       if (errorDetails) errorDetails = stripAnsi(errorDetails);
 
       let allWarnings = diag
-        ? [...new Set(diag.warnings.map((w) => w.message))]
+        ? [...new Set((diag.warnings || []).map((w) => w.message))]
         : [];
       if (allWarnings.length === 0) {
         const terminalOut = extractTerminalOutput(result);
@@ -1389,6 +1404,18 @@ class EmailReporter {
       const isTestSkipped = result.status === "skipped";
       const hasWarning = allWarnings.length > 0;
       const hasSkippedLogic = allSkippedSteps.length > 0;
+
+      // Keep HTML small: full logs only for non-clean tests; passed = short/none
+      const needsDetail =
+        isFailure || hasWarning || hasSkippedLogic || isTestSkipped;
+      const logMaxLines = needsDetail ? 120 : 0;
+      const logs =
+        logMaxLines > 0
+          ? truncateText(stripAnsi(rawLogs), logMaxLines)
+          : "";
+      const logLineCount = logs
+        ? logs.split("\n").filter((l) => l.trim()).length
+        : 0;
 
       console.log(
         `[REPORTER] ${test.title}: failure=${isFailure} hasWarning=${hasWarning}(${allWarnings.length}) hasSkippedLogic=${hasSkippedLogic}(${allSkippedSteps.length}) diag=${diag ? "found" : "NULL"}`,
@@ -1549,19 +1576,36 @@ class EmailReporter {
       const statusMeta = overallStatusMeta(this.stats);
       const finalAttachments = [];
       let totalSize = 0;
-      // Cap total attachment payload (most SMTP providers struggle above ~10–20 MB)
-      const MAX_SIZE = 12 * 1024 * 1024;
+      let videoCountAttached = 0;
+      // Keep payload small so SMTP finishes in seconds, not minutes
+      const MAX_SIZE = 18 * 1024 * 1024;
+      const MAX_SINGLE_FILE = 6 * 1024 * 1024; // skip individual files > 6 MB
+      const MAX_VIDEOS = 4;
 
       const addAttachment = (att) => {
         if (!att.path || !fs.existsSync(att.path)) return false;
+        const isVideo = /\.(webm|mp4|mkv)$/i.test(att.path);
+        if (isVideo && videoCountAttached >= MAX_VIDEOS) {
+          console.warn(
+            `[REPORTER] Skipping video (max ${MAX_VIDEOS}): ${path.basename(att.path)}`,
+          );
+          return false;
+        }
         const fstats = fs.statSync(att.path);
+        if (fstats.size > MAX_SINGLE_FILE) {
+          console.warn(
+            `[REPORTER] Skipping large file (>${(MAX_SINGLE_FILE / 1024 / 1024).toFixed(0)}MB): ${path.basename(att.path)} (${(fstats.size / 1024 / 1024).toFixed(1)} MB)`,
+          );
+          return false;
+        }
         if (totalSize + fstats.size > MAX_SIZE) {
           console.warn(
-            `[REPORTER] Skipping attachment (size limit): ${att.path} (${(fstats.size / 1024 / 1024).toFixed(1)} MB)`,
+            `[REPORTER] Skipping attachment (total size limit): ${path.basename(att.path)} (${(fstats.size / 1024 / 1024).toFixed(1)} MB)`,
           );
           return false;
         }
         totalSize += fstats.size;
+        if (isVideo) videoCountAttached++;
         finalAttachments.push({
           filename: att.name || path.basename(att.path),
           path: att.path,
@@ -1575,6 +1619,19 @@ class EmailReporter {
       );
 
       const sortedTests = sortTestsByDefinitionOrder(allTests);
+      // Non-clean first (fail/warn/skip), then clean passes — faster to scan, same content
+      const orderedForMail = [
+        ...sortedTests.filter(
+          (t) => t.isFailure || t.hasWarning || t.hasSkippedLogic || t.isTestSkipped,
+        ),
+        ...sortedTests.filter(
+          (t) =>
+            !t.isFailure &&
+            !t.hasWarning &&
+            !t.hasSkippedLogic &&
+            !t.isTestSkipped,
+        ),
+      ];
 
       const tableHeader = `
             <tr style="background:linear-gradient(180deg,#f8fafc 0%,#f1f5f9 100%);">
@@ -1584,7 +1641,7 @@ class EmailReporter {
                 <th class="resp-hide r-th" style="padding:10px 10px; text-align:left; font-size:8px; color:#64748b; text-transform:uppercase; letter-spacing:1.5px; font-weight:700; border-bottom:2px solid #e2e8f0; width:115px;">📎 Artifacts</th>
             </tr>`;
 
-      const tableRows = sortedTests
+      const tableRows = orderedForMail
         .map((item, idx) => buildTestRow(item, addAttachment, idx))
         .join("");
 
