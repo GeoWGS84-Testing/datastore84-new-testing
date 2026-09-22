@@ -1,6 +1,5 @@
 require("dotenv/config");
 const fs = require("fs");
-const os = require("os");
 const path = require("path");
 const nodemailer = require("nodemailer");
 
@@ -8,10 +7,6 @@ const LOGO_PATH = path.join(__dirname, "..", "test-data", "Datastore_Logo.png");
 const LOGO_CID = "datastore_logo_cid";
 
 const REPORT_TIMEZONE = process.env.REPORT_TIMEZONE || "Asia/Kolkata";
-const APP_NAME = process.env.REPORT_APP_NAME || "GeoWGS84 Datastore";
-const TEST_ENV_NAME =
-  process.env.TEST_ENV || process.env.NODE_ENV || "Production";
-const BROWSER_NAME = process.env.REPORT_BROWSER || "Chromium";
 
 const DIAG_DIR = path.join(process.cwd(), "diagnostics");
 const VIDEO_DIR = path.join(process.cwd(), "test-results");
@@ -159,11 +154,13 @@ function extractAllWarnings(logs, testTitle = null) {
   const lines = text.split("\n");
   const warnings = new Set();
   for (const line of lines) {
+    // Skip if this line belongs to a different test
     if (testTitle && line.includes("(") && line.includes(")")) {
       if (!line.includes(`(${testTitle})`)) {
         continue;
       }
     }
+    // Skip DIAG-DEBUG from other tests
     if (
       line.includes("[DIAG-DEBUG]") &&
       testTitle &&
@@ -194,6 +191,7 @@ function filterTerminalLogsForTest(terminalOutput, testTitle) {
   const lines = terminalOutput.split("\n");
   const filtered = [];
 
+  // Strategy: Find test start/end markers
   let testStartIdx = -1;
   let testEndIdx = -1;
 
@@ -215,28 +213,35 @@ function filterTerminalLogsForTest(terminalOutput, testTitle) {
     }
   }
 
+  // If we found markers, use that section exclusively
   if (testStartIdx !== -1 && testEndIdx !== -1) {
     return lines.slice(testStartIdx, testEndIdx + 1).join("\n");
   }
 
+  // Otherwise, filter by test name presence in parentheses
   const escapedTitle = testTitle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const testPattern = new RegExp(`\\(${escapedTitle}\\)`);
 
   for (const line of lines) {
     const trimmed = line.trim();
 
+    // Skip DIAG-DEBUG lines from other tests
     if (trimmed.includes("[DIAG-DEBUG]") && !trimmed.includes(testTitle)) {
       continue;
     }
 
+    // Skip empty lines
     if (!trimmed) continue;
 
+    // Keep lines that reference this test
     if (testPattern.test(line)) {
       filtered.push(line);
       continue;
     }
 
+    // Keep lines that don't have any test reference (generic infrastructure logs)
     if (!trimmed.match(/\[P\d+\].*—/) && !trimmed.match(/\([^\)]*—[^\)]*\)/)) {
+      // But skip if it looks like it belongs to another test
       const otherTestMatch = trimmed.match(/\((\[P\d+\][^)]+)\)/);
       if (!otherTestMatch) {
         filtered.push(line);
@@ -304,10 +309,11 @@ function sortTestsByDefinitionOrder(allTests) {
 }
 
 // ============================================================
-// DIAGNOSTICS — with fallback lookup
+// DIAGNOSTICS — UPDATED with fallback lookup
 // ============================================================
 
 function readDiagnostics(testId, testTitle) {
+  // Try by testId first
   if (testId) {
     const safeId = String(testId)
       .replace(/[:/\\<>?"|*]/g, "_")
@@ -331,6 +337,7 @@ function readDiagnostics(testId, testTitle) {
     }
   }
 
+  // FALLBACK: Try by test title
   if (testTitle) {
     const safeTitle = String(testTitle)
       .replace(/[:/\\<>?"|*]/g, "_")
@@ -349,6 +356,7 @@ function readDiagnostics(testId, testTitle) {
     }
   }
 
+  // FALLBACK: Search all diagnostic files for matching testcase name
   if (testTitle && fs.existsSync(DIAG_DIR)) {
     try {
       const files = fs.readdirSync(DIAG_DIR).filter((f) => f.endsWith(".json"));
@@ -378,6 +386,7 @@ function formatInfosAsLogs(infos, testTitle = null) {
   if (!infos || infos.length === 0) return "";
   return infos
     .filter((info) => {
+      // ★ FIX: Only include logs for the specified test title
       if (!testTitle || !info.test) return true;
       return info.test === testTitle;
     })
@@ -429,97 +438,12 @@ function clearDiagnosticsFolder() {
 }
 
 // ============================================================
-// ENVIRONMENT INFO
-// ============================================================
-
-function getPlaywrightVersion() {
-  try {
-    return require("@playwright/test/package.json").version;
-  } catch (e) {
-    try {
-      return require("playwright/package.json").version;
-    } catch (e2) {
-      return "—";
-    }
-  }
-}
-
-function getCommitSha() {
-  const sha =
-    process.env.GITHUB_SHA ||
-    process.env.GIT_COMMIT ||
-    process.env.CI_COMMIT_SHA ||
-    process.env.COMMIT_SHA ||
-    "";
-  return sha ? sha.substring(0, 7) : "—";
-}
-
-function getEnvironmentInfo() {
-  const osName =
-    os.platform() === "win32"
-      ? "Windows"
-      : os.platform() === "darwin"
-        ? "macOS"
-        : "Linux";
-  return {
-    os: `${osName} (${os.release()})`,
-    browser: BROWSER_NAME,
-    node: process.version,
-    playwright: getPlaywrightVersion(),
-    commit: getCommitSha(),
-    ci: process.env.CI ? "CI Pipeline" : "Local Run",
-  };
-}
-
-// ============================================================
-// HEALTH SCORE
-// ============================================================
-
-function computeHealthScore(stats, totalTests) {
-  if (!totalTests) return { score: 100, color: "#16a34a", label: "PERFECT" };
-  const weighted =
-    stats.passed * 1 +
-    stats.warning_tests * 0.75 +
-    stats.skipped_logic_tests * 0.6 +
-    stats.skipped * 0.5 +
-    stats.failed * 0;
-  const score = Math.round((weighted / totalTests) * 100);
-  let color, label;
-  if (stats.failed > 0) {
-    color = "#dc2626";
-    label = score >= 70 ? "AT RISK" : "CRITICAL";
-  } else if (score >= 95) {
-    color = "#16a34a";
-    label = "EXCELLENT";
-  } else if (score >= 85) {
-    color = "#65a30d";
-    label = "GOOD";
-  } else if (score >= 70) {
-    color = "#d97706";
-    label = "FAIR";
-  } else {
-    color = "#dc2626";
-    label = "NEEDS ATTENTION";
-  }
-  return { score, color, label };
-}
-
-// ============================================================
-// CSS: TYPOGRAPHY + ANIMATIONS + RESPONSIVE
+// CSS: ANIMATIONS + RESPONSIVE
 // ============================================================
 
 function getAnimatedStyles() {
   return `
     <style type="text/css">
-        @media screen {
-            @font-face {
-                font-family: 'Inter';
-                src: local('Inter'), local('Segoe UI');
-            }
-        }
-        * { box-sizing: border-box; }
-        body, table, td, div, p, span { font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(18px); }
             to   { opacity: 1; transform: translateY(0); }
@@ -559,9 +483,6 @@ function getAnimatedStyles() {
             70%  { transform: scale(0.95); }
             100% { transform: scale(1); }
         }
-        @keyframes ringDraw {
-            from { stroke-dashoffset: 314; }
-        }
         .anim-fade-up   { animation: fadeInUp 0.6s ease-out both; }
         .anim-fade      { animation: fadeIn 0.8s ease-out both; }
         .anim-slide     { animation: slideInLeft 0.5s ease-out both; }
@@ -583,22 +504,23 @@ function getAnimatedStyles() {
             animation: shimmer 3s linear infinite;
         }
         .gradient-bg {
-            background: linear-gradient(-45deg, #020617, #0f172a, #1e1b4b, #172554);
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #172554, #0c4a6e);
             background-size: 400% 400%;
-            animation: gradientShift 14s ease infinite;
+            animation: gradientShift 12s ease infinite;
         }
         .progress-fill {
             animation: progressFill 1.2s ease-out both;
             animation-delay: 0.5s;
         }
-        .health-ring circle.ring-fg {
-            animation: ringDraw 1.4s ease-out both;
-            animation-delay: 0.3s;
-        }
         details summary::-webkit-details-marker { display: none; }
         details summary { list-style: none; }
 
-        .log-container { width: 100% !important; max-width: 100% !important; overflow: visible; }
+        /* ★ FIX: Log box responsive overrides */
+        .log-container {
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow: visible;
+        }
         .log-container pre.log-pre {
             white-space: pre !important;
             overflow-x: auto !important;
@@ -642,225 +564,60 @@ function getAnimatedStyles() {
             .r-detail-pad { padding: 8px !important; }
             .r-legend { font-size: 7px !important; }
             .r-footer { font-size: 7px !important; letter-spacing: 0.5px !important; }
-            .r-health-score { font-size: 30px !important; }
-            .r-env-grid td { display: block !important; width: 100% !important; border-right: none !important; border-bottom: 1px solid #e2e8f0 !important; }
-            .log-container details { margin-left: 0 !important; margin-right: 0 !important; padding-left: 0 !important; padding-right: 0 !important; }
-            .log-container details summary { padding-left: 6px !important; padding-right: 6px !important; font-size: 7px !important; }
-            .log-container details[open] pre { max-height: 300px !important; font-size: 6.5px !important; padding: 6px !important; }
+            /* ★ FIX: Mobile log box overrides */
+            .log-container details {
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+            .log-container details summary {
+                padding-left: 6px !important;
+                padding-right: 6px !important;
+                font-size: 7px !important;
+            }
+            .log-container details[open] pre {
+                max-height: 300px !important;
+                font-size: 6.5px !important;
+                padding: 6px !important;
+            }
         }
     </style>`;
 }
 
 // ============================================================
-// HTML BUILDERS — HEADER / SUMMARY / HEALTH / ENVIRONMENT
+// HTML BUILDERS
 // ============================================================
 
-function buildHeader(logoCid, statusMeta) {
-  const { emoji, label, color, bg } = statusMeta;
+function buildHeader(logoCid) {
   return `
-    <table width="100%" cellpadding="0" cellspacing="0" class="gradient-bg" style="background:linear-gradient(-45deg,#020617,#0f172a,#1e1b4b,#172554); background-size:400% 400%; animation:gradientShift 14s ease infinite;">
+    <table width="100%" cellpadding="0" cellspacing="0" class="gradient-bg" style="background:linear-gradient(-45deg,#0f172a,#1e1b4b,#172554,#0c4a6e); background-size:400% 400%; animation:gradientShift 12s ease infinite;">
         <tr>
-            <td align="center" style="padding:38px 20px 0 20px;" class="r-header-pad">
+            <td align="center" style="padding:36px 20px 0 20px;" class="r-header-pad">
                 <div class="anim-bounce" style="display:inline-block;">
-                    <img src="cid:${logoCid}" alt="${escapeHtml(APP_NAME)} Logo" width="76" style="width:76px; height:auto; border:0; border-radius:16px; box-shadow:0 8px 28px rgba(0,0,0,0.45);" />
+                    <img src="cid:${logoCid}" alt="Datastore Logo" width="80" style="width:80px; height:auto; border:0; border-radius:14px; box-shadow:0 6px 24px rgba(0,0,0,0.3);" />
                 </div>
             </td>
         </tr>
         <tr>
-            <td align="center" style="padding:18px 20px 0 20px;">
-                <h1 class="shimmer-text anim-fade-up delay-1 r-title" style="margin:0; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:23px; font-weight:800; letter-spacing:3.5px; text-transform:uppercase;">
-                    🌍 ${escapeHtml(APP_NAME)}
+            <td align="center" style="padding:16px 20px 0 20px;">
+                <h1 class="shimmer-text anim-fade-up delay-1 r-title" style="margin:0; font-family:'Segoe UI',Arial,sans-serif; font-size:22px; font-weight:700; letter-spacing:4px; text-transform:uppercase;">
+                    🧪 Datastore Test Report
                 </h1>
             </td>
         </tr>
         <tr>
-            <td align="center" style="padding:8px 20px 0 20px;">
-                <p class="anim-fade delay-2 r-sub" style="margin:0; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:11px; color:#94a3b8; letter-spacing:2px; font-weight:600;">
-                    AUTOMATED QUALITY ENGINEERING REPORT
+            <td align="center" style="padding:10px 20px 0 20px;">
+                <p class="anim-fade delay-2 r-sub" style="margin:0; font-family:'Segoe UI',Arial,sans-serif; font-size:11px; color:#94a3b8; letter-spacing:2px;">
+                    E2E VALIDATION · PLAYWRIGHT
                 </p>
             </td>
         </tr>
         <tr>
-            <td align="center" style="padding:18px 20px 0 20px;">
-                <table cellpadding="0" cellspacing="0" class="anim-scale delay-3"><tr>
-                    <td style="background:${bg}; border:1px solid ${color}55; padding:7px 18px; border-radius:30px;">
-                        <span style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:11px; font-weight:800; letter-spacing:1.5px; color:${color};">${emoji} ${label}</span>
-                    </td>
-                </tr></table>
-            </td>
-        </tr>
-        <tr>
-            <td align="center" style="padding:18px 20px 26px 20px;">
+            <td align="center" style="padding:16px 20px 28px 20px;">
                 <table cellpadding="0" cellspacing="0"><tr>
                     <td style="width:80px; height:3px; background:linear-gradient(90deg,transparent,#818cf8,#c084fc,#f472b6,transparent); border-radius:4px;"></td>
                 </tr></table>
-            </td>
-        </tr>
-    </table>`;
-}
-
-function buildExecutiveSummary(env, totalTests, workers, statusMeta) {
-  const rows = [
-    ["Application", APP_NAME],
-    ["Framework", "Playwright"],
-    ["Browser Engine", env.browser],
-    ["Execution Mode", env.ci],
-    ["Environment", TEST_ENV_NAME],
-    ["Total Tests", `${totalTests} · ${workers} workers`],
-  ];
-
-  const cells = rows
-    .map(
-      ([label, value], i) => `
-        <td width="50%" valign="top" style="padding:9px 14px; border-bottom:1px solid #f1f5f9; ${i % 2 === 0 ? "border-right:1px solid #f1f5f9;" : ""}" class="resp-stack">
-            <div style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:9px; color:#94a3b8; text-transform:uppercase; letter-spacing:1.5px; font-weight:700; margin-bottom:2px;">${label}</div>
-            <div style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:12.5px; color:#1e293b; font-weight:700;">${escapeHtml(String(value))}</div>
-        </td>`,
-    )
-    .join("");
-
-  // pair rows two-by-two
-  let pairedRows = "";
-  for (let i = 0; i < rows.length; i += 2) {
-    pairedRows += `<tr>${cells.split('<td width="50%"').slice(1).map((c) => '<td width="50%"' + c)[i]}${cells.split('<td width="50%"').slice(1).map((c) => '<td width="50%"' + c)[i + 1] || ""}</tr>`;
-  }
-
-  return `
-    ${buildSectionTitle("📊", "Executive Summary")}
-    <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 12px 6px 12px; width:calc(100% - 24px); border:1px solid #e2e8f0; border-radius:12px; overflow:hidden; background:#ffffff;" class="anim-fade-up">
-        ${pairedRows}
-    </table>`;
-}
-
-function buildHealthScoreSection(stats, totalTests) {
-  const { score, color, label } = computeHealthScore(stats, totalTests);
-  const circumference = 314; // 2*PI*50
-  const offset = Math.round(circumference - (circumference * score) / 100);
-
-  const segments = [
-    { key: "passed", label: "Passed", color: "#16a34a" },
-    { key: "failed", label: "Failed", color: "#dc2626" },
-    { key: "warning_tests", label: "Warnings", color: "#d97706" },
-    { key: "skipped_logic_tests", label: "Skipped Logic", color: "#7c3aed" },
-    { key: "skipped", label: "Skipped", color: "#a1a1aa" },
-  ];
-
-  const barSegments = segments
-    .filter((s) => stats[s.key] > 0)
-    .map((s) => {
-      const pct = totalTests > 0 ? Math.round((stats[s.key] / totalTests) * 100) : 0;
-      return `<div class="progress-fill" style="height:100%; width:${pct}%; background:${s.color}; float:left;"></div>`;
-    })
-    .join("");
-
-  const legendItems = segments
-    .map(
-      (s) =>
-        `<td align="center" style="padding:4px 6px;"><div style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:9px; color:#64748b;"><span style="color:${s.color}; font-size:11px;">●</span> ${s.label} <b style="color:#1e293b;">${stats[s.key]}</b></div></td>`,
-    )
-    .join("");
-
-  return `
-    ${buildSectionTitle("🩺", "Test Health Score")}
-    <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 12px 6px 12px; width:calc(100% - 24px); border:1px solid #e2e8f0; border-radius:12px; overflow:hidden; background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);">
-        <tr>
-            <td align="center" style="padding:22px 16px 6px 16px;">
-                <table cellpadding="0" cellspacing="0"><tr><td>
-                    <div style="position:relative; width:112px; height:112px;">
-                        <svg class="health-ring" width="112" height="112" viewBox="0 0 112 112">
-                            <circle cx="56" cy="56" r="50" fill="none" stroke="#e2e8f0" stroke-width="10"/>
-                            <circle class="ring-fg" cx="56" cy="56" r="50" fill="none" stroke="${color}" stroke-width="10"
-                                stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="${offset}"
-                                transform="rotate(-90 56 56)"/>
-                        </svg>
-                    </div>
-                </td></tr></table>
-                <div class="r-health-score" style="margin-top:-78px; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:32px; font-weight:800; color:${color};">${score}%</div>
-                <div style="margin-top:44px; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:10px; font-weight:800; letter-spacing:2px; color:${color}; text-transform:uppercase;">${label}</div>
-                <div style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:9px; color:#94a3b8; margin-top:2px;">Quality Score</div>
-            </td>
-        </tr>
-        <tr>
-            <td style="padding:14px 20px 6px 20px;">
-                <table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9; border-radius:6px; overflow:hidden; height:9px;">
-                    <tr><td style="padding:0; border:none;"><div style="height:9px; width:100%; position:relative; overflow:hidden; border-radius:6px;">${barSegments}</div></td></tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td style="padding:2px 10px 16px 10px;">
-                <table width="100%" cellpadding="0" cellspacing="0"><tr>${legendItems}</tr></table>
-            </td>
-        </tr>
-    </table>`;
-}
-
-function buildEnvironmentMatrix(env) {
-  const items = [
-    ["🖥️ OS", env.os],
-    ["🌐 Browser", env.browser],
-    ["⬢ Node.js", env.node],
-    ["🎭 Playwright", env.playwright],
-    ["🔀 Commit", env.commit],
-    ["⚙️ Mode", env.ci],
-  ];
-
-  const cells = items
-    .map(
-      ([label, value]) => `
-        <td width="33.33%" valign="top" style="padding:12px 10px; border-right:1px solid #f1f5f9; border-bottom:1px solid #f1f5f9;">
-            <div style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:8.5px; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; font-weight:700; margin-bottom:2px;">${label}</div>
-            <div style="font-family:'Courier New',monospace; font-size:11px; color:#1e293b; font-weight:700; word-break:break-all;">${escapeHtml(String(value))}</div>
-        </td>`,
-    )
-    .join("");
-
-  let rowsHtml = "";
-  for (let i = 0; i < cells.length; ) {}
-  const cellArr = items.map(
-    ([label, value]) => `
-        <td width="33.33%" valign="top" style="padding:12px 10px; border-right:1px solid #f1f5f9; border-bottom:1px solid #f1f5f9;" class="resp-stack">
-            <div style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:8.5px; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; font-weight:700; margin-bottom:2px;">${label}</div>
-            <div style="font-family:'Courier New',monospace; font-size:11px; color:#1e293b; font-weight:700; word-break:break-all;">${escapeHtml(String(value))}</div>
-        </td>`,
-  );
-  const row1 = cellArr.slice(0, 3).join("");
-  const row2 = cellArr.slice(3, 6).join("");
-
-  return `
-    ${buildSectionTitle("🧬", "Environment Matrix")}
-    <table width="100%" cellpadding="0" cellspacing="0" class="r-env-grid" style="margin:0 12px 6px 12px; width:calc(100% - 24px); border:1px solid #e2e8f0; border-radius:12px; overflow:hidden; background:#ffffff;">
-        <tr>${row1}</tr>
-        <tr>${row2}</tr>
-    </table>`;
-}
-
-function buildArtifactDashboard(imageCount, videoCount, logCount, totalSizeMB) {
-  function tile(emoji, num, label, color) {
-    return `
-        <td width="25%" align="center" style="padding:14px 4px;">
-            <div style="font-size:18px; margin-bottom:4px;">${emoji}</div>
-            <div style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:20px; font-weight:800; color:${color};">${num}</div>
-            <div style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:8px; color:#94a3b8; text-transform:uppercase; letter-spacing:1px; font-weight:700; margin-top:2px;">${label}</div>
-        </td>`;
-  }
-
-  const clean = imageCount === 0 && videoCount === 0;
-
-  return `
-    ${buildSectionTitle("📎", "Artifact Dashboard")}
-    <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 12px 6px 12px; width:calc(100% - 24px); border:1px solid #e2e8f0; border-radius:12px; overflow:hidden; background:#ffffff;">
-        <tr>
-            ${tile("📷", imageCount, "Screenshots", "#2563eb")}
-            ${tile("🎥", videoCount, "Videos", "#7c3aed")}
-            ${tile("📄", logCount, "Log Sets", "#0f172a")}
-            ${tile("💾", `${totalSizeMB} MB`, "Total Size", "#0f172a")}
-        </tr>
-        <tr>
-            <td colspan="4" align="center" style="padding:8px 10px 14px 10px; border-top:1px solid #f1f5f9;">
-                <span style="display:inline-block; padding:3px 12px; border-radius:20px; background:${clean ? "#f0fdf4" : "#fffbeb"}; border:1px solid ${clean ? "#bbf7d0" : "#fde68a"}; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:9px; font-weight:800; color:${clean ? "#16a34a" : "#d97706"}; letter-spacing:1px;">
-                    ${clean ? "✅ CLEAN — NO ARTIFACTS" : "⚠️ EVIDENCE ATTACHED BELOW"}
-                </span>
             </td>
         </tr>
     </table>`;
@@ -890,16 +647,16 @@ function buildTimeBar(time, wallClock, totalDuration, totalTests, workers) {
                     <tr>
                         <td width="50%" valign="top" class="anim-slide delay-1 resp-stack">
                             <table cellpadding="0" cellspacing="0" width="100%">
-                                <tr><td style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:10px; color:#94a3b8; text-transform:uppercase; letter-spacing:2px; padding-bottom:6px;" class="r-time-lbl">🕐 Completion Time</td></tr>
-                                <tr><td style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:16px; color:#0f172a; font-weight:700;" class="r-time-val">${time.local}</td></tr>
-                                <tr><td style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:10px; color:#a1a1aa; padding-top:3px;" class="r-meta">🌐 ${time.utc}</td></tr>
+                                <tr><td style="font-family:'Segoe UI',Arial,sans-serif; font-size:10px; color:#94a3b8; text-transform:uppercase; letter-spacing:2px; padding-bottom:6px;" class="r-time-lbl">🕐 Completion Time</td></tr>
+                                <tr><td style="font-family:'Segoe UI',Arial,sans-serif; font-size:16px; color:#0f172a; font-weight:700;" class="r-time-val">${time.local}</td></tr>
+                                <tr><td style="font-family:'Segoe UI',Arial,sans-serif; font-size:10px; color:#a1a1aa; padding-top:3px;" class="r-meta">🌐 ${time.utc}</td></tr>
                             </table>
                         </td>
                         <td width="50%" valign="top" align="right" class="anim-slide delay-2 resp-stack resp-center">
                             <table cellpadding="0" cellspacing="0" width="100%">
-                                <tr><td style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:10px; color:#94a3b8; text-transform:uppercase; letter-spacing:2px; padding-bottom:6px;" class="r-time-lbl">⏱️ Duration</td></tr>
-                                <tr><td style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:16px; color:#0f172a; font-weight:700;" class="r-time-val">${wallClock}</td></tr>
-                                <tr><td style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:10px; color:#a1a1aa; padding-top:3px;" class="r-meta">
+                                <tr><td style="font-family:'Segoe UI',Arial,sans-serif; font-size:10px; color:#94a3b8; text-transform:uppercase; letter-spacing:2px; padding-bottom:6px;" class="r-time-lbl">⏱️ Duration</td></tr>
+                                <tr><td style="font-family:'Segoe UI',Arial,sans-serif; font-size:16px; color:#0f172a; font-weight:700;" class="r-time-val">${wallClock}</td></tr>
+                                <tr><td style="font-family:'Segoe UI',Arial,sans-serif; font-size:10px; color:#a1a1aa; padding-top:3px;" class="r-meta">
                                     🧩 ${totalTests} test${totalTests !== 1 ? "s" : ""} · ⚡ ${workers}w
                                     ${savings ? ` · <span style="color:#16a34a; font-weight:600;">🚀 -${savings}</span>` : ""}
                                 </td></tr>
@@ -917,19 +674,19 @@ function buildTimeBar(time, wallClock, totalDuration, totalTests, workers) {
                 <table width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,#f8fafc 0%,#f1f5f9 100%); border-radius:12px; border:1px solid #e2e8f0; overflow:hidden;">
                     <tr>
                         <td width="33%" valign="middle" style="padding:12px 14px;" class="r-card-pad">
-                            <div style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:9px; color:#94a3b8; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:3px;" class="r-metric-lbl">⏱️ Wall-Clock</div>
-                            <div style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:16px; color:#0f172a; font-weight:800;" class="r-metric-val">${wallClock}</div>
-                            <div style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:8px; color:#a1a1aa; margin-top:2px;" class="r-metric-sub">Actual elapsed</div>
+                            <div style="font-family:'Segoe UI',Arial,sans-serif; font-size:9px; color:#94a3b8; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:3px;" class="r-metric-lbl">⏱️ Wall-Clock</div>
+                            <div style="font-family:'Segoe UI',Arial,sans-serif; font-size:16px; color:#0f172a; font-weight:800;" class="r-metric-val">${wallClock}</div>
+                            <div style="font-family:'Segoe UI',Arial,sans-serif; font-size:8px; color:#a1a1aa; margin-top:2px;" class="r-metric-sub">Actual elapsed</div>
                         </td>
                         <td width="34%" valign="middle" style="padding:12px 14px; border-left:1px solid #e2e8f0; border-right:1px solid #e2e8f0;" align="center" class="r-card-pad">
-                            <div style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:9px; color:#94a3b8; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:3px;" class="r-metric-lbl">Σ Cumulative</div>
-                            <div style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:16px; color:#6366f1; font-weight:800;" class="r-metric-val">${totalDuration}</div>
-                            <div style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:8px; color:#a1a1aa; margin-top:2px;" class="r-metric-sub">Sum of all tests</div>
+                            <div style="font-family:'Segoe UI',Arial,sans-serif; font-size:9px; color:#94a3b8; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:3px;" class="r-metric-lbl">Σ Cumulative</div>
+                            <div style="font-family:'Segoe UI',Arial,sans-serif; font-size:16px; color:#6366f1; font-weight:800;" class="r-metric-val">${totalDuration}</div>
+                            <div style="font-family:'Segoe UI',Arial,sans-serif; font-size:8px; color:#a1a1aa; margin-top:2px;" class="r-metric-sub">Sum of all tests</div>
                         </td>
                         <td width="33%" valign="middle" style="padding:12px 14px;" align="right" class="r-card-pad">
-                            <div style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:9px; color:#94a3b8; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:3px;" class="r-metric-lbl">⚡ Parallelism</div>
-                            <div style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:16px; color:#0f172a; font-weight:800;" class="r-metric-val">${workers}x</div>
-                            <div style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:8px; color:#a1a1aa; margin-top:2px;" class="r-metric-sub">Concurrent workers</div>
+                            <div style="font-family:'Segoe UI',Arial,sans-serif; font-size:9px; color:#94a3b8; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:3px;" class="r-metric-lbl">⚡ Parallelism</div>
+                            <div style="font-family:'Segoe UI',Arial,sans-serif; font-size:16px; color:#0f172a; font-weight:800;" class="r-metric-val">${workers}x</div>
+                            <div style="font-family:'Segoe UI',Arial,sans-serif; font-size:8px; color:#a1a1aa; margin-top:2px;" class="r-metric-sub">Concurrent workers</div>
                         </td>
                     </tr>
                 </table>
@@ -973,9 +730,9 @@ function buildStatsBar(stats, totalTests) {
         <td width="25%" align="center" valign="top" style="padding:0 3px;" class="anim-fade-up ${delay}">
             <table width="100%" cellpadding="0" cellspacing="0" style="background:${bg}; border:1px solid ${bc}; border-radius:12px; overflow:hidden;">
                 <tr><td align="center" style="padding-top:14px; padding-bottom:2px;"><div style="font-size:18px; line-height:1;" class="r-stat-emoji">${emoji}</div></td></tr>
-                <tr><td align="center" style="padding-bottom:1px;"><div class="${pulseClass} r-stat-num" style="display:inline-block; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:26px; font-weight:800; color:${c}; line-height:1.2;">${num}</div></td></tr>
-                <tr><td align="center" style="padding-bottom:1px;"><span style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:9px; color:${c}; text-transform:uppercase; letter-spacing:1.5px; font-weight:700;" class="r-stat-lbl">${label}</span></td></tr>
-                <tr><td align="center" style="padding-bottom:12px;" class="r-stat-pad"><span style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:11px; color:${c}; font-weight:600;" class="r-stat-pct">${pct}%</span></td></tr>
+                <tr><td align="center" style="padding-bottom:1px;"><div class="${pulseClass} r-stat-num" style="display:inline-block; font-family:'Segoe UI',Arial,sans-serif; font-size:26px; font-weight:800; color:${c}; line-height:1.2;">${num}</div></td></tr>
+                <tr><td align="center" style="padding-bottom:1px;"><span style="font-family:'Segoe UI',Arial,sans-serif; font-size:9px; color:${c}; text-transform:uppercase; letter-spacing:1.5px; font-weight:700;" class="r-stat-lbl">${label}</span></td></tr>
+                <tr><td align="center" style="padding-bottom:12px;" class="r-stat-pad"><span style="font-family:'Segoe UI',Arial,sans-serif; font-size:11px; color:${c}; font-weight:600;" class="r-stat-pct">${pct}%</span></td></tr>
             </table>
         </td>`;
   }
@@ -1014,8 +771,8 @@ function buildStatsBar(stats, totalTests) {
             </table>
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:5px;">
                 <tr>
-                    <td style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:8px; color:#a1a1aa;" class="r-legend"><span style="color:#16a34a;">●</span> Pass <span style="color:#dc2626;">●</span> Fail <span style="color:#d97706;">●</span> Warn <span style="color:#a1a1aa;">●</span> Skip</td>
-                    <td align="right" style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:8px; color:#a1a1aa;" class="r-legend">${totalTests} total</td>
+                    <td style="font-family:'Segoe UI',Arial,sans-serif; font-size:8px; color:#a1a1aa;" class="r-legend"><span style="color:#16a34a;">●</span> Pass <span style="color:#dc2626;">●</span> Fail <span style="color:#d97706;">●</span> Warn <span style="color:#a1a1aa;">●</span> Skip</td>
+                    <td align="right" style="font-family:'Segoe UI',Arial,sans-serif; font-size:8px; color:#a1a1aa;" class="r-legend">${totalTests} total</td>
                 </tr>
             </table>
         </td></tr>
@@ -1025,7 +782,7 @@ function buildStatsBar(stats, totalTests) {
 function buildSectionTitle(icon, title) {
   return `
     <table width="100%" cellpadding="0" cellspacing="0">
-        <tr><td style="padding:20px 24px 10px 24px; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:12px; font-weight:800; color:#1e293b; text-transform:uppercase; letter-spacing:2px;" class="anim-fade-up r-section">${icon} ${title}</td></tr>
+        <tr><td style="padding:20px 24px 10px 24px; font-family:'Segoe UI',Arial,sans-serif; font-size:12px; font-weight:800; color:#1e293b; text-transform:uppercase; letter-spacing:2px;" class="anim-fade-up r-section">${icon} ${title}</td></tr>
     </table>`;
 }
 
@@ -1033,21 +790,20 @@ function buildFooter() {
   return `
     <table width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(180deg,#f8fafc 0%,#f1f5f9 100%); border-top:1px solid #e2e8f0;">
         <tr><td align="center" style="padding:8px 20px 0 20px;"><table cellpadding="0" cellspacing="0"><tr><td style="width:50px; height:2px; background:linear-gradient(90deg,transparent,#c7d2fe,#a5b4fc,transparent); border-radius:2px;"></td></tr></table></td></tr>
-        <tr><td align="center" style="padding:12px 20px 4px 20px; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:12px; color:#1e293b; font-weight:800;">🌍 ${escapeHtml(APP_NAME)}</td></tr>
-        <tr><td align="center" style="padding:0 20px 2px 20px; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:9px; color:#64748b; font-weight:600;">Automated Quality Engineering Platform</td></tr>
-        <tr><td align="center" style="padding:0 20px 4px 20px; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:9px; color:#94a3b8; letter-spacing:1px;" class="r-footer">PLAYWRIGHT · NODE.JS · CI/CD</td></tr>
-        <tr><td align="center" style="padding:4px 20px 16px 20px; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:8px; color:#cbd5e1;" class="r-footer">🤖 Generated automatically — do not reply to this email</td></tr>
+        <tr><td align="center" style="padding:10px 20px 6px 20px; font-family:'Segoe UI',Arial,sans-serif; font-size:11px; color:#64748b; font-weight:600;">🌍 GeoWGS84 Datastore</td></tr>
+        <tr><td align="center" style="padding:0 20px 4px 20px; font-family:'Segoe UI',Arial,sans-serif; font-size:9px; color:#94a3b8; letter-spacing:1px;" class="r-footer">AUTOMATED E2E · PLAYWRIGHT · NODE.JS</td></tr>
+        <tr><td align="center" style="padding:4px 20px 16px 20px; font-family:'Segoe UI',Arial,sans-serif; font-size:8px; color:#cbd5e1;" class="r-footer">🤖 Auto-generated — do not reply</td></tr>
     </table>`;
 }
 
 function wrapBody(inner) {
   return `
-    <!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>${escapeHtml(APP_NAME)} — QA Report</title>${getAnimatedStyles()}</head>
+    <!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">${getAnimatedStyles()}</head>
     <body style="margin:0; padding:0; background-color:#e2e8f0; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%;">
-        <div style="background:#e2e8f0; padding:14px 6px; font-family:'Inter','Segoe UI',Arial,sans-serif;">
+        <div style="background:#e2e8f0; padding:12px 6px; font-family:'Segoe UI',Arial,sans-serif;">
             <table width="100%" cellpadding="0" cellspacing="0" align="center">
                 <tr><td align="center">
-                    <table width="100%" cellpadding="0" cellspacing="0" style="max-width:820px; background:#ffffff; border-radius:16px; overflow:hidden; border:1px solid #cbd5e1; box-shadow:0 8px 32px rgba(15,23,42,0.10);">
+                    <table width="100%" cellpadding="0" cellspacing="0" style="max-width:820px; background:#ffffff; border-radius:14px; overflow:hidden; border:1px solid #cbd5e1; box-shadow:0 4px 24px rgba(15,23,42,0.08);">
                         ${inner}
                     </table>
                 </td></tr>
@@ -1057,7 +813,7 @@ function wrapBody(inner) {
 }
 
 // ============================================================
-// TEST ROW — with Failure / Warning Intelligence
+// TEST ROW
 // ============================================================
 
 function buildTestRow(item, addAttachment, index) {
@@ -1146,33 +902,18 @@ function buildTestRow(item, addAttachment, index) {
 
   let detailHtml = "";
 
-  // FAILURE INTELLIGENCE
+  // ERROR section
   if (isFailure && errorDetails) {
-    const firstLine = errorDetails.split("\n").find((l) => l.trim()) || errorDetails;
-    const rootCause =
-      firstLine.replace(/^\[ERROR\]\s*[\d:.\-T\sZ]*\s*-?\s*/i, "").substring(0, 220) ||
-      "See stack trace below";
-    const evidenceBits = [];
-    if (images.length > 0) evidenceBits.push("📸 Screenshot");
-    if (videos.length > 0) evidenceBits.push("🎥 Video");
-    if (logLineCount > 0) evidenceBits.push("📄 Logs");
-    const evidence = evidenceBits.length > 0 ? evidenceBits.join(" · ") : "No artifacts captured";
-
     detailHtml += `
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:6px; border-collapse:collapse;">
-            <tr><td style="background:#fef2f2; border-left:3px solid #dc2626; padding:9px 11px; border-radius:0 8px 8px 0; font-family:'Inter','Segoe UI',Arial,sans-serif;" class="r-detail-pad">
-                <div style="font-size:8px; font-weight:800; color:#dc2626; margin-bottom:5px; letter-spacing:1px; text-transform:uppercase;">💥 FAILURE ANALYSIS</div>
-                <div style="font-size:8.5px; color:#7f1d1d; margin-bottom:3px;"><b>Root Cause:</b> ${escapeHtml(rootCause)}</div>
-                <div style="font-size:8.5px; color:#7f1d1d; margin-bottom:5px;"><b>Evidence:</b> ${evidence}</div>
-                <details style="margin-top:2px;">
-                    <summary style="cursor:pointer; font-size:7.5px; color:#dc2626; font-weight:700; letter-spacing:0.5px;">▾ Show full stack trace</summary>
-                    <pre class="log-pre" style="margin:4px 0 0 0; font-size:8px; white-space:pre; overflow:auto; word-break:break-all; color:#475569; max-height:130px; font-family:'Courier New',monospace; background:#fff; padding:6px 8px; border-radius:4px; border:1px solid #fecaca; line-height:1.4;">${escapeHtml(errorDetails)}</pre>
-                </details>
+            <tr><td style="background:#fef2f2; border-left:3px solid #dc2626; padding:8px 10px; border-radius:0 8px 8px 0; font-family:'Segoe UI',Arial,sans-serif;" class="r-detail-pad">
+                <div style="font-size:8px; font-weight:800; color:#dc2626; margin-bottom:3px; letter-spacing:1px; text-transform:uppercase;">💥 ERROR</div>
+                <pre class="log-pre" style="margin:0; font-size:8px; white-space:pre; overflow:auto; word-break:break-all; color:#475569; max-height:130px; font-family:'Courier New',monospace; background:#fff; padding:6px 8px; border-radius:4px; border:1px solid #fecaca; line-height:1.4;">${escapeHtml(errorDetails)}</pre>
             </td></tr>
         </table>`;
   }
 
-  // WARNING INTELLIGENCE
+  // WARNINGS section
   if (hasWarning && allWarnings.length > 0) {
     const items = allWarnings
       .map(
@@ -1180,17 +921,16 @@ function buildTestRow(item, addAttachment, index) {
           `<div style="font-size:8px; color:#92400e; padding:2px 0 2px 10px; border-left:2px solid #fbbf24; margin-top:3px; line-height:1.4; overflow-x:auto; word-break:break-all;">🔶 ${escapeHtml(w)}</div>`,
       )
       .join("");
-    const risk = allWarnings.length >= 3 ? "Medium" : "Low";
     detailHtml += `
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:6px; border-collapse:collapse;">
-            <tr><td style="background:#fffbeb; border-left:3px solid #d97706; padding:9px 11px; border-radius:0 8px 8px 0; font-family:'Inter','Segoe UI',Arial,sans-serif;" class="r-detail-pad">
-                <div style="font-size:8px; font-weight:800; color:#d97706; margin-bottom:3px; letter-spacing:1px; text-transform:uppercase;">⚠️ WARNING ANALYSIS (${allWarnings.length}) · Risk: ${risk}</div>
+            <tr><td style="background:#fffbeb; border-left:3px solid #d97706; padding:8px 10px; border-radius:0 8px 8px 0; font-family:'Segoe UI',Arial,sans-serif;" class="r-detail-pad">
+                <div style="font-size:8px; font-weight:800; color:#d97706; margin-bottom:2px; letter-spacing:1px; text-transform:uppercase;">⚠️ WARNINGS (${allWarnings.length})</div>
                 ${items}
             </td></tr>
         </table>`;
   }
 
-  // SKIPPED STEPS
+  // SKIPPED STEPS section
   if (hasSkippedLogic && allSkippedSteps.length > 0) {
     const items = allSkippedSteps
       .map(
@@ -1200,20 +940,20 @@ function buildTestRow(item, addAttachment, index) {
       .join("");
     detailHtml += `
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:6px; border-collapse:collapse;">
-            <tr><td style="background:#f5f3ff; border-left:3px solid #7c3aed; padding:9px 11px; border-radius:0 8px 8px 0; font-family:'Inter','Segoe UI',Arial,sans-serif;" class="r-detail-pad">
+            <tr><td style="background:#f5f3ff; border-left:3px solid #7c3aed; padding:8px 10px; border-radius:0 8px 8px 0; font-family:'Segoe UI',Arial,sans-serif;" class="r-detail-pad">
                 <div style="font-size:8px; font-weight:800; color:#7c3aed; margin-bottom:2px; letter-spacing:1px; text-transform:uppercase;">⏭️ SKIPPED STEPS (${allSkippedSteps.length})</div>
                 ${items}
             </td></tr>
         </table>`;
   }
 
-  // LOGS
+  // LOGS section
   let logsHtml = "";
   if (logs && logLineCount > 0) {
     logsHtml = `
         <div class="log-container" style="margin-top:6px;">
             <details style="border:1px solid #334155; border-radius:6px; overflow:hidden;">
-                <summary style="cursor:pointer; font-size:8px; color:#818cf8; font-family:'Inter','Segoe UI',Arial,sans-serif; letter-spacing:1px; padding:5px 8px; background:linear-gradient(90deg,#1e293b,#0f172a); text-transform:uppercase; font-weight:600;">
+                <summary style="cursor:pointer; font-size:8px; color:#818cf8; font-family:'Segoe UI',Arial,sans-serif; letter-spacing:1px; padding:5px 8px; background:linear-gradient(90deg,#1e293b,#0f172a); text-transform:uppercase; font-weight:600;">
                     📋 Logs (${logLineCount}) ▾
                 </summary>
                 <pre class="log-pre" style="background:#0f172a; color:#94a3b8; padding:10px; max-height:220px; font-size:7px; font-family:'Courier New',monospace; margin:0; line-height:1.5; border-top:1px solid #334155;">${escapeHtml(logs)}</pre>
@@ -1242,18 +982,18 @@ function buildTestRow(item, addAttachment, index) {
   return `
     <tr class="anim-fade-up ${delayClass}"><td colspan="4" style="padding:3px 12px 1px 12px; background:transparent;"></td></tr>
     <tr class="anim-fade-up ${delayClass}" style="background:${rowBg};">
-        <td class="resp-hide" style="padding:10px 10px; vertical-align:top; border-bottom:1px solid #f1f5f9; width:95px; font-family:'Inter','Segoe UI',Arial,sans-serif;">
+        <td class="resp-hide" style="padding:10px 10px; vertical-align:top; border-bottom:1px solid #f1f5f9; width:95px; font-family:'Segoe UI',Arial,sans-serif;">
             <div style="font-size:8px; color:#64748b; font-family:'Courier New',monospace; background:#f8fafc; padding:3px 5px; border-radius:3px; border:1px solid #e2e8f0; word-break:break-all;">${escapeHtml(fileName)}</div>
             <div style="color:#a1a1aa; margin-top:5px; font-size:8px; font-weight:600;">⏱️ ${formatDuration(duration)}</div>
         </td>
-        <td style="padding:10px 12px; vertical-align:top; border-bottom:1px solid #f1f5f9; font-family:'Inter','Segoe UI',Arial,sans-serif;" class="resp-full r-td">
+        <td style="padding:10px 12px; vertical-align:top; border-bottom:1px solid #f1f5f9; font-family:'Segoe UI',Arial,sans-serif;" class="resp-full r-td">
             ${mobileMetaHtml}
             <div style="font-size:11px; font-weight:700; color:#1e293b; line-height:1.4;" class="r-test-name">${escapeHtml(cleanTitle)}${prioBadge}</div>
             ${detailHtml}
             ${logsHtml}
         </td>
         <td style="padding:10px 6px; vertical-align:middle; text-align:center; border-bottom:1px solid #f1f5f9; width:80px;" class="resp-center r-td">
-            <div style="display:inline-block; padding:4px 8px; border-radius:16px; background:${bgCard}; color:${color}; font-weight:800; font-size:8px; letter-spacing:0.3px; font-family:'Inter','Segoe UI',Arial,sans-serif; border:1px solid ${borderColor}; ${isFailure ? "animation:pulseGlow 2s ease-in-out infinite;" : ""}">
+            <div style="display:inline-block; padding:4px 8px; border-radius:16px; background:${bgCard}; color:${color}; font-weight:800; font-size:8px; letter-spacing:0.3px; font-family:'Segoe UI',Arial,sans-serif; border:1px solid ${borderColor}; ${isFailure ? "animation:pulseGlow 2s ease-in-out infinite;" : ""}">
                 ${emoji} ${label}
             </div>
         </td>
@@ -1282,6 +1022,7 @@ class EmailReporter {
 
   onBegin(config, suite) {
     this.workers = config.workers || 1;
+    // Consolidated CI reports consume diagnostics downloaded from each shard.
     if (!process.env.CI) clearDiagnosticsFolder();
   }
 
@@ -1294,16 +1035,22 @@ class EmailReporter {
     for (const { test, result } of this.testRuns.values()) {
       const diag = readDiagnostics(test.testId, test.title);
 
+      // --- LOG ASSEMBLY (FIXED: use diagnostics as primary, filter terminal as fallback) ---
       let rawLogs = "";
+
+      // PRIORITY 1: Use diagnostics infos (clean, test-specific)
       if (diag && diag.infos && diag.infos.length > 0) {
         rawLogs = stripAnsi(formatInfosAsLogs(diag.infos, test.title));
-      } else {
+      }
+      // PRIORITY 2: Fallback to filtered terminal output
+      else {
         const terminalOut = extractTerminalOutput(result);
         if (terminalOut) {
           rawLogs = filterTerminalLogsForTest(terminalOut, test.title);
         }
       }
 
+      // Append browser console only if there are errors/warnings
       if (
         diag &&
         diag.browserConsole &&
@@ -1323,6 +1070,7 @@ class EmailReporter {
         ? logs.split("\n").filter((l) => l.trim()).length
         : 0;
 
+      // --- ERROR DETAILS ---
       let errorDetails = null;
       if (result.error) {
         errorDetails = "Error: " + result.error.message;
@@ -1337,6 +1085,7 @@ class EmailReporter {
       }
       if (errorDetails) errorDetails = stripAnsi(errorDetails);
 
+      // --- WARNINGS ---
       let allWarnings = diag
         ? [...new Set(diag.warnings.map((w) => w.message))]
         : [];
@@ -1353,6 +1102,7 @@ class EmailReporter {
         }
       }
 
+      // --- SKIPPED STEPS ---
       let allSkippedSteps = diag && diag.skippedSteps ? diag.skippedSteps : [];
       if (allSkippedSteps.length === 0) {
         const terminalOut = extractTerminalOutput(result);
@@ -1360,6 +1110,7 @@ class EmailReporter {
           const lines = terminalOut.split("\n");
           const skippedFromTerminal = [];
           for (const line of lines) {
+            // Only capture skipped steps for THIS test
             if (
               test.title &&
               line.includes("(") &&
@@ -1380,6 +1131,7 @@ class EmailReporter {
         }
       }
 
+      // --- STATUS ---
       const isFailure =
         result.status === "failed" || result.status === "timedOut";
       const isTestSkipped = result.status === "skipped";
@@ -1390,6 +1142,7 @@ class EmailReporter {
         `[REPORTER] ${test.title}: failure=${isFailure} hasWarning=${hasWarning}(${allWarnings.length}) hasSkippedLogic=${hasSkippedLogic}(${allSkippedSteps.length}) diag=${diag ? "found" : "NULL"}`,
       );
 
+      // --- STATS ---
       if (isFailure) this.stats.failed++;
       else if (isTestSkipped) this.stats.skipped++;
       else if (hasWarning) this.stats.warning_tests++;
@@ -1397,6 +1150,7 @@ class EmailReporter {
       else if (result.status === "passed") this.stats.passed++;
       else this.stats.skipped++;
 
+      // --- ATTACHMENTS ---
       const rawAttachments = result.attachments || [];
       const shouldAttach =
         isFailure || hasWarning || hasSkippedLogic || isTestSkipped;
@@ -1486,23 +1240,33 @@ class EmailReporter {
     const wallClock = formatDuration(wallClockMs);
     const totalDuration = formatDuration(totalMs);
     const workers = this.workers;
-    const env = getEnvironmentInfo();
-
-    function overallStatusMeta(stats) {
-      if (stats.failed > 0)
-        return { emoji: "🔴", label: "QUALITY GATE: FAILED", color: "#dc2626", bg: "#fef2f2" };
-      if (stats.warning_tests > 0)
-        return { emoji: "🟡", label: "QUALITY GATE: WARNINGS", color: "#d97706", bg: "#fffbeb" };
-      if (stats.skipped_logic_tests > 0 || stats.skipped > 0)
-        return { emoji: "🟣", label: "QUALITY GATE: SKIPPED STEPS", color: "#7c3aed", bg: "#f5f3ff" };
-      return { emoji: "🟢", label: "QUALITY GATE: PASSED", color: "#16a34a", bg: "#f0fdf4" };
-    }
 
     // ============================================================
     // EMAIL 1: Daily Summary
     // ============================================================
     if (process.env.DAILY_REPORT_EMAILS?.trim()) {
-      const statusMeta = overallStatusMeta(this.stats);
+      let summaryEmoji, summaryLabel, summaryColor, summaryBg;
+      if (this.stats.failed > 0) {
+        summaryEmoji = "🔴";
+        summaryLabel = "FAILURES DETECTED";
+        summaryColor = "#dc2626";
+        summaryBg = "#fef2f2";
+      } else if (this.stats.warning_tests > 0) {
+        summaryEmoji = "🟡";
+        summaryLabel = "WARNINGS FOUND";
+        summaryColor = "#d97706";
+        summaryBg = "#fffbeb";
+      } else if (this.stats.skipped_logic_tests > 0 || this.stats.skipped > 0) {
+        summaryEmoji = "🟣";
+        summaryLabel = "SKIPPED STEPS FOUND";
+        summaryColor = "#7c3aed";
+        summaryBg = "#f5f3ff";
+      } else {
+        summaryEmoji = "🟢";
+        summaryLabel = "ALL TESTS PASSED";
+        summaryColor = "#16a34a";
+        summaryBg = "#f0fdf4";
+      }
 
       const subject =
         this.stats.failed > 0
@@ -1514,11 +1278,22 @@ class EmailReporter {
               : `✅ Datastore Report: All ${this.stats.passed} Tests Passed`;
 
       const html = wrapBody(`
-                ${buildHeader(LOGO_CID, statusMeta)}
+                ${buildHeader(LOGO_CID)}
                 ${buildTimeBar(time, wallClock, totalDuration, totalTests, workers)}
                 ${buildStatsBar(this.stats, totalTests)}
-                ${buildHealthScoreSection(this.stats, totalTests)}
-                ${buildExecutiveSummary(env, totalTests, workers, statusMeta)}
+                <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr><td style="padding:14px 20px 22px 20px;" class="resp-pad">
+                        <table width="100%" cellpadding="0" cellspacing="0" style="background:${summaryBg}; border:1px solid ${summaryColor}22; border-radius:12px; overflow:hidden;">
+                            <tr><td align="center" style="padding:16px 16px; font-family:'Segoe UI',Arial,sans-serif;">
+                                <div style="font-size:26px; margin-bottom:4px;">${summaryEmoji}</div>
+                                <div style="font-size:12px; font-weight:800; color:${summaryColor}; letter-spacing:2px; text-transform:uppercase;">${summaryLabel}</div>
+                                <div style="font-size:9px; color:#64748b; margin-top:4px;">
+                                    ${this.stats.passed} passed · ${this.stats.failed} failed · ${this.stats.warning_tests} warn · ${this.stats.skipped_logic_tests} skipped logic · ${this.stats.skipped} skipped
+                                </div>
+                            </td></tr>
+                        </table>
+                    </td></tr>
+                </table>
                 ${buildFooter()}
             `);
 
@@ -1543,7 +1318,6 @@ class EmailReporter {
       process.env.FAILURE_ALERT_EMAILS?.trim() &&
       this.stats.failed > 0
     ) {
-      const statusMeta = overallStatusMeta(this.stats);
       const finalAttachments = [];
       let totalSize = 0;
       const MAX_SIZE = 20 * 1024 * 1024;
@@ -1575,16 +1349,6 @@ class EmailReporter {
         .map((item, idx) => buildTestRow(item, addAttachment, idx))
         .join("");
 
-      // Artifact dashboard counts (post attachment resolution)
-      const imageCount = finalAttachments.filter((a) =>
-        /\.(png|jpg|jpeg|gif|webp)$/i.test(a.path),
-      ).length;
-      const videoCount = finalAttachments.filter((a) =>
-        /\.(webm|mp4|mkv)$/i.test(a.path),
-      ).length;
-      const logCount = allTests.filter((t) => t.logLineCount > 0).length;
-      const totalSizeMB = (totalSize / (1024 * 1024)).toFixed(1);
-
       let subjectIcon = "✅";
       if (this.stats.failed > 0) subjectIcon = "❌";
       else if (this.stats.warning_tests > 0) subjectIcon = "⚠️";
@@ -1593,21 +1357,17 @@ class EmailReporter {
       const subject = `${subjectIcon} Datastore Report: ${this.stats.passed} Passed, ${this.stats.failed} Failed, ${this.stats.warning_tests} Warnings, ${this.stats.skipped_logic_tests} Skipped`;
 
       const html = wrapBody(`
-                ${buildHeader(LOGO_CID, statusMeta)}
+                ${buildHeader(LOGO_CID)}
                 ${buildTimeBar(time, wallClock, totalDuration, totalTests, workers)}
                 ${buildStatsBar(this.stats, totalTests)}
-                ${buildHealthScoreSection(this.stats, totalTests)}
-                ${buildExecutiveSummary(env, totalTests, workers, statusMeta)}
-                ${buildEnvironmentMatrix(env)}
                 ${buildSectionTitle("📋", "Test Results")}
                 <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 12px 8px 12px; border:1px solid #e2e8f0; border-radius:10px; overflow:hidden;">
                     ${tableHeader}
                     ${tableRows}
                 </table>
-                ${buildArtifactDashboard(imageCount, videoCount, logCount, totalSizeMB)}
                 <table width="100%" cellpadding="0" cellspacing="0">
-                    <tr><td align="center" style="padding:2px 20px 6px 20px; font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:8px; color:#a1a1aa;" class="r-footer">
-                        ✅ Clean = no artifacts · ⚠️❌⏭️ = screenshots + video attached
+                    <tr><td align="center" style="padding:2px 20px 6px 20px; font-family:'Segoe UI',Arial,sans-serif; font-size:8px; color:#a1a1aa;" class="r-footer">
+                        📎 ${(totalSize / (1024 * 1024)).toFixed(2)} MB · ✅ Clean = no artifacts · ⚠️❌⏭️ = screenshots + video attached
                     </td></tr>
                 </table>
                 ${buildFooter()}
@@ -1625,7 +1385,7 @@ class EmailReporter {
           `📧 Detailed report sent to: ${process.env.FAILURE_ALERT_EMAILS}`,
         );
         console.log(
-          `📊 Attachments: ${finalAttachments.length} files, ${totalSizeMB} MB`,
+          `📊 Attachments: ${finalAttachments.length} files, ${(totalSize / (1024 * 1024)).toFixed(2)} MB`,
         );
       } catch (err) {
         console.error("❌ Failed detailed report:", err);
