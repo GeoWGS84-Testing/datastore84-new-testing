@@ -14,11 +14,11 @@
 name: 🎭 Playwright Tests
 
 on:
-  # push:
-  #   branches: [main]
+   push:
+     branches: [main]
 
-  # pull_request:
-  #   branches: [main]
+   pull_request:
+     branches: [main]
 
   # Daily at 1:00 PM IST (07:30 UTC)
   schedule:
