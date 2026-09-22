@@ -709,20 +709,24 @@ function buildExecutiveSummary(env, totalTests, workers, statusMeta) {
     ["Total Tests", `${totalTests} · ${workers} workers`],
   ];
 
-  const cells = rows
-    .map(
-      ([label, value], i) => `
-        <td width="50%" valign="top" style="padding:9px 14px; border-bottom:1px solid #f1f5f9; ${i % 2 === 0 ? "border-right:1px solid #f1f5f9;" : ""}" class="resp-stack">
-            <div style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:9px; color:#94a3b8; text-transform:uppercase; letter-spacing:1.5px; font-weight:700; margin-bottom:2px;">${label}</div>
-            <div style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:12.5px; color:#1e293b; font-weight:700;">${escapeHtml(String(value))}</div>
-        </td>`,
-    )
-    .join("");
-
-  // pair rows two-by-two
   let pairedRows = "";
   for (let i = 0; i < rows.length; i += 2) {
-    pairedRows += `<tr>${cells.split('<td width="50%"').slice(1).map((c) => '<td width="50%"' + c)[i]}${cells.split('<td width="50%"').slice(1).map((c) => '<td width="50%"' + c)[i + 1] || ""}</tr>`;
+    const left = rows[i];
+    const right = rows[i + 1];
+    pairedRows += `<tr>
+      <td width="50%" valign="top" style="padding:9px 14px; border-bottom:1px solid #f1f5f9; border-right:1px solid #f1f5f9;" class="resp-stack">
+        <div style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:9px; color:#94a3b8; text-transform:uppercase; letter-spacing:1.5px; font-weight:700; margin-bottom:2px;">${left[0]}</div>
+        <div style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:12.5px; color:#1e293b; font-weight:700;">${escapeHtml(String(left[1]))}</div>
+      </td>
+      ${
+        right
+          ? `<td width="50%" valign="top" style="padding:9px 14px; border-bottom:1px solid #f1f5f9;" class="resp-stack">
+        <div style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:9px; color:#94a3b8; text-transform:uppercase; letter-spacing:1.5px; font-weight:700; margin-bottom:2px;">${right[0]}</div>
+        <div style="font-family:'Inter','Segoe UI',Arial,sans-serif; font-size:12.5px; color:#1e293b; font-weight:700;">${escapeHtml(String(right[1]))}</div>
+      </td>`
+          : `<td width="50%" style="padding:9px 14px; border-bottom:1px solid #f1f5f9;"></td>`
+      }
+    </tr>`;
   }
 
   return `
@@ -1292,7 +1296,7 @@ class EmailReporter {
   async onEnd() {
     const allTests = [];
     for (const { test, result } of this.testRuns.values()) {
-      const diag = readDiagnostics(test.testId, test.title);
+      const diag = readDiagnostics(test.id, test.title);
 
       let rawLogs = "";
       if (diag && diag.infos && diag.infos.length > 0) {
@@ -1541,7 +1545,7 @@ class EmailReporter {
     // ============================================================
     if (
       process.env.FAILURE_ALERT_EMAILS?.trim() &&
-      this.stats.failed > 0
+      (this.stats.failed > 0 || this.stats.warning_tests > 0)
     ) {
       const statusMeta = overallStatusMeta(this.stats);
       const finalAttachments = [];
