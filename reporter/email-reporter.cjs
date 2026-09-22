@@ -1402,8 +1402,8 @@ class EmailReporter {
       else this.stats.skipped++;
 
       const rawAttachments = result.attachments || [];
-      const shouldAttach =
-        isFailure || hasWarning || hasSkippedLogic || isTestSkipped;
+      // Screenshots + videos ONLY for real failures (not warnings / skips)
+      const shouldAttach = isFailure;
       let videos = [],
         images = [];
       if (shouldAttach) {
@@ -1541,21 +1541,28 @@ class EmailReporter {
     }
 
     // ============================================================
-    // EMAIL 2: Detailed Report with attachments
+    // EMAIL 2: Detailed Report — ONLY when at least one test FAILED
+    // Full table + logs for all tests; SS/video only on failed rows
     // ============================================================
     if (
       process.env.FAILURE_ALERT_EMAILS?.trim() &&
-      (this.stats.failed > 0 || this.stats.warning_tests > 0)
+      this.stats.failed > 0
     ) {
       const statusMeta = overallStatusMeta(this.stats);
       const finalAttachments = [];
       let totalSize = 0;
-      const MAX_SIZE = 20 * 1024 * 1024;
+      // Cap total attachment payload (most SMTP providers struggle above ~10–20 MB)
+      const MAX_SIZE = 12 * 1024 * 1024;
 
       const addAttachment = (att) => {
         if (!att.path || !fs.existsSync(att.path)) return false;
         const fstats = fs.statSync(att.path);
-        if (totalSize + fstats.size > MAX_SIZE) return false;
+        if (totalSize + fstats.size > MAX_SIZE) {
+          console.warn(
+            `[REPORTER] Skipping attachment (size limit): ${att.path} (${(fstats.size / 1024 / 1024).toFixed(1)} MB)`,
+          );
+          return false;
+        }
         totalSize += fstats.size;
         finalAttachments.push({
           filename: att.name || path.basename(att.path),
@@ -1564,6 +1571,10 @@ class EmailReporter {
         });
         return true;
       };
+
+      console.log(
+        `[REPORTER] Building detailed failure report (failed=${this.stats.failed}, warnings=${this.stats.warning_tests}, total=${totalTests})…`,
+      );
 
       const sortedTests = sortTestsByDefinitionOrder(allTests);
 
@@ -1617,6 +1628,10 @@ class EmailReporter {
                 ${buildFooter()}
             `);
 
+      console.log(
+        `[REPORTER] Detailed HTML ready (${(html.length / 1024).toFixed(0)} KB), attachments=${finalAttachments.length}, size=${totalSizeMB} MB — sending…`,
+      );
+
       try {
         await this._sendMail(
           process.env.FAILURE_ALERT_EMAILS,
@@ -1626,14 +1641,19 @@ class EmailReporter {
           finalAttachments,
         );
         console.log(
-          `📧 Detailed report sent to: ${process.env.FAILURE_ALERT_EMAILS}`,
+          `📧 Detailed failure report sent to: ${process.env.FAILURE_ALERT_EMAILS}`,
         );
         console.log(
           `📊 Attachments: ${finalAttachments.length} files, ${totalSizeMB} MB`,
         );
       } catch (err) {
         console.error("❌ Failed detailed report:", err);
+        throw err;
       }
+    } else if (process.env.FAILURE_ALERT_EMAILS?.trim()) {
+      console.log(
+        `[REPORTER] Skipping detailed failure email (failed=0, warnings=${this.stats.warning_tests})`,
+      );
     }
   }
 
@@ -1648,6 +1668,10 @@ class EmailReporter {
       port: Number(process.env.SMTP_PORT || 587),
       secure: process.env.SMTP_SECURE === "true" || false,
       auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+      // Prevent multi-hour hangs on slow / stuck SMTP
+      connectionTimeout: 30_000,
+      greetingTimeout: 20_000,
+      socketTimeout: 90_000,
     });
 
     const finalAttachments = [...attachments];
@@ -1663,7 +1687,11 @@ class EmailReporter {
       console.warn(`⚠️ Logo not found at ${LOGO_PATH}`);
     }
 
-    return transporter.sendMail({
+    console.log(
+      `[REPORTER] SMTP send → to=${to} attachments=${finalAttachments.length} subject="${subject}"`,
+    );
+
+    const info = await transporter.sendMail({
       from: process.env.SMTP_FROM || process.env.SMTP_USER,
       to,
       subject,
@@ -1671,6 +1699,9 @@ class EmailReporter {
       html,
       attachments: finalAttachments,
     });
+
+    console.log(`[REPORTER] Mail accepted: ${info.messageId || "ok"}`);
+    return info;
   }
 }
 
