@@ -3,17 +3,17 @@ import { defineConfig } from "@playwright/test";
 import "dotenv/config";
 
 /** @type {import('@playwright/test').ReporterDescription[]} */
-const reporters = [
+const reporter = [
   ["html", { open: "never" }],
   ["list"],
 ];
 
 if (process.env.ENABLE_EMAIL_REPORTER === "true") {
-  reporters.push(["./reporters/email-reporter.cjs"]);
+  reporter.push(["./reporter/email-reporter.cjs"]);
 }
 
 if (process.env.CI) {
-  reporters.push(["blob", { outputDir: "blob-report" }]);
+  reporter.push(["blob", { outputDir: "blob-report" }]);
 }
 
 export default defineConfig({
@@ -27,7 +27,7 @@ export default defineConfig({
   timeout: 600000,
   expect: { timeout: 10000 },
 
-  reporter: reporters,
+  reporter: reporter,
 
   use: {
     baseURL: "https://datastore.geowgs84.com",
