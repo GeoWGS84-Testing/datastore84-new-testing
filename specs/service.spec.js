@@ -27,7 +27,7 @@ test.use({
 // ============================================================================
 
 test(
-  '[P0] 1 - ',
+  "[P0] 1 - Verify Service popup and AOI ",
   async ({ page }) => {
     const homePage = new HomePage(page);
     const mapPage = new MapPage(page);
