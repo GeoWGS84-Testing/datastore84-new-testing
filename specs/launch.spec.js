@@ -102,5 +102,8 @@ test("[P0] 1 - Web launch: load shell and close tutorial", async ({ page }) => {
   logInfo("P0 DataStore launch smoke test completed successfully");
 });
 
-// -----------npx playwright test --workers=1 --headed------
-//----------npx playwright test specs/launch.spec.js --workers=1 --headed-------
+
+
+// -----------npx playwright test --workers=1 --headed
+//----------npx playwright test specs/launch.spec.js --workers=1 --headed 
+//   npx playwright test --workers=6 --headed

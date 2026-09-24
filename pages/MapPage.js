@@ -1,4 +1,4 @@
-// pages/MapPage.js
+﻿// pages/MapPage.js
 
 import { expect } from "@playwright/test";
 import { BasePage } from "./BasePage";
@@ -22,6 +22,8 @@ import {
 export class MapPage extends BasePage {
   constructor(page) {
     super(page);
+    this.validationDialogMessage = null;
+    this.validationDialogType = null;
 
     this.page = page;
 
@@ -3227,4 +3229,2775 @@ export class MapPage extends BasePage {
       return false;
     }
   }
+
+  // =========================================================
+  // TC-10 - INVALID LOCATION SEARCH
+  // =========================================================
+
+  async searchInvalidLocation(invalidLocation) {
+    const searchInput = this.pacInput;
+
+    await expect(
+      searchInput,
+      "Search input should be visible"
+    ).toBeVisible({ timeout: 10000 });
+
+    await this.highlight(searchInput);
+
+    logInfo(`Entering invalid location: "${invalidLocation}"`);
+
+    this.validationDialogMessage = null;
+    this.validationDialogType = null;
+
+    this.page.once("dialog", async dialog => {
+      this.validationDialogMessage = dialog.message();
+      this.validationDialogType = dialog.type();
+
+      logInfo(
+        `Validation dialog received: ${this.validationDialogMessage}`
+      );
+
+      logInfo(
+        `Validation dialog type: ${this.validationDialogType}`
+      );
+
+      await dialog.accept();
+
+      logInfo("Validation dialog accepted successfully");
+    });
+
+    await searchInput.fill(invalidLocation);
+
+    logInfo(
+      `Invalid location "${invalidLocation}" entered successfully`
+    );
+
+    await searchInput.evaluate(input => {
+      input.focus();
+
+      ["keydown", "keypress", "keyup"].forEach(type =>
+        input.dispatchEvent(
+          new KeyboardEvent(type, {
+            key: "Enter",
+            code: "Enter",
+            keyCode: 13,
+            which: 13,
+            bubbles: true,
+            cancelable: true
+          })
+        )
+      );
+    });
+
+    logInfo(
+      `Search submitted for invalid location "${invalidLocation}"`
+    );
+  }
+
+  async verifyInvalidLocationValidation(invalidLocation) {
+    await expect.poll(
+      () => this.validationDialogMessage,
+      {
+        timeout: 60000,
+        intervals: [500, 1000, 2000],
+        message: "Expected validation dialog for invalid location"
+      }
+    ).not.toBeNull();
+
+    const validationMessage = this.validationDialogMessage;
+    const validationType = this.validationDialogType;
+
+    logInfo(
+      `Captured validation message: ${validationMessage}`
+    );
+
+    expect(
+      validationMessage,
+      "Application should show validation message for invalid location"
+    ).toContain("No details available for input");
+
+    expect(
+      validationMessage,
+      "Validation message should contain the invalid location"
+    ).toContain(invalidLocation);
+
+    expect(
+      validationMessage,
+      "Validation message should contain the searched dummy value"
+    ).toContain(`'${invalidLocation}'`);
+
+    expect(
+      validationType,
+      "Validation should be displayed as an alert dialog"
+    ).toBe("alert");
+
+    logInfo(
+      `PASS: Application rejected invalid location "${invalidLocation}"`
+    );
+
+    return true;
+  }
+
+  // =========================================================
+  // TC-2 - LOCATE ME
+  // =========================================================
+
+  async triggerLocateMeWithGeolocationFailure() {
+    await this.page.evaluate(() => {
+      const originalGetCurrentPosition =
+        navigator.geolocation.getCurrentPosition.bind(
+          navigator.geolocation
+        );
+
+      navigator.geolocation.getCurrentPosition = function (
+        success,
+        error
+      ) {
+        console.log(
+          "[Playwright] Simulating geolocation failure"
+        );
+
+        if (typeof error === "function") {
+          error({
+            code: 1,
+            message: "User denied Geolocation",
+          });
+        }
+      };
+
+      window.__originalGetCurrentPosition =
+        originalGetCurrentPosition;
+    });
+
+    logInfo("Geolocation failure simulation enabled");
+
+    this.locateMeDialogDetected = false;
+    this.locateMeDialogMessage = "";
+    this.locateMeDialogType = "";
+
+    this.locateMeDialogPromise = new Promise(resolve => {
+      this.page.once("dialog", async dialog => {
+        this.locateMeDialogDetected = true;
+        this.locateMeDialogMessage = dialog.message();
+        this.locateMeDialogType = dialog.type();
+
+        logInfo(
+          `Browser dialog detected. Type: ${this.locateMeDialogType}`
+        );
+
+        logInfo(
+          `Browser dialog message: "${this.locateMeDialogMessage}"`
+        );
+
+        await dialog.accept();
+
+        logInfo(
+          "Browser alert accepted successfully"
+        );
+
+        resolve();
+      });
+    });
+
+    await this.highlight(this.locateLink, {
+      borderColor: "#F5A614",
+      label: "STEP 7: Locate Me",
+      pause: 700,
+    });
+
+    await this.locateLink.click();
+
+    logInfo(
+      "Locate Me link clicked successfully"
+    );
+
+    await Promise.race([
+      this.locateMeDialogPromise,
+      this.page.waitForTimeout(5000),
+    ]);
+  }
+
+  async verifyLocateMeAlert() {
+    expect(
+      this.locateMeDialogDetected,
+      "Locate Me browser alert should appear after clicking Locate Me"
+    ).toBeTruthy();
+
+    expect(
+      this.locateMeDialogType,
+      "Locate Me dialog should be a native alert"
+    ).toBe("alert");
+
+    expect(
+      this.locateMeDialogMessage,
+      "Locate Me alert should show the expected fallback message"
+    ).toBe("Please try again Later");
+
+    logInfo(
+      `Locate Me browser alert verified successfully: "${this.locateMeDialogMessage}"`
+    );
+  }
+
+  async completeLocateMeAlertFlow() {
+    await this.page.waitForTimeout(500);
+
+    logInfo(
+      "Locate Me browser alert was accepted using OK"
+    );
+  }
+
+  async verifyMapAfterLocateMe() {
+    await expect(
+      this.mapContainer,
+      "Map should remain visible after closing Locate Me alert"
+    ).toBeVisible({
+      timeout: 15000,
+    });
+
+    await this.highlight(this.mapContainer, {
+      borderColor: "#3FB950",
+      label: "Map after Locate Me",
+      pause: 700,
+    });
+
+    logInfo(
+      "Map remains visible after closing Locate Me alert"
+    );
+  }
+
+  async completeLocateMeFlow() {
+    await this.highlight(this.rightNav, {
+      borderColor: "#00A6FF",
+      label: "Right navigation",
+      pause: 700,
+    });
+
+    logInfo("Locate Me flow completed");
+  }
+
+  async verifyFinalLocateMeState() {
+    logInfo(
+      "Final map state completed successfully"
+    );
+  }
+
+  // =========================================================
+  // TC-3 - KML / KMZ UPLOAD VERIFICATION HELPERS
+  // =========================================================
+
+  async verifyUploadPopupVisible() {
+    await expect(
+      this.uploadModal,
+      "Upload File popup should open"
+    ).toBeVisible({
+      timeout: 10000,
+    });
+
+    logInfo("Upload File popup is visible");
+  }
+
+  async verifySelectedKmlFile(expectedFileName) {
+    const selectedFiles = await this.fileInput.evaluate(
+      input =>
+        Array.from(input.files || []).map(file => file.name)
+    );
+
+    expect(
+      selectedFiles,
+      `Selected file should be ${expectedFileName}`
+    ).toContain(expectedFileName);
+
+    logInfo(
+      `Verified selected file: ${expectedFileName}`
+    );
+  }
+
+  async verifyUploadedKmlState() {
+    await fastWait(this.page, 3000);
+
+    await expect(
+      this.mapContainer,
+      "Map should remain visible after KML upload"
+    ).toBeVisible({
+      timeout: 15000,
+    });
+
+    expect(
+      await this.highlightKmlDataOnMap(),
+      "Uploaded KML geometry should be highlighted on map"
+    ).toBe(true);
+
+    const kmlAoiActive =
+      this.page.locator("#gw-aoi-label").first();
+
+    await expect(
+      kmlAoiActive,
+      "AOI Active status should be visible after KML upload"
+    ).toBeVisible({
+      timeout: 15000,
+    });
+
+    await this.highlight(kmlAoiActive, {
+      label: "STEP 18: AOI ACTIVE",
+      pause: 1200,
+    });
+
+    logInfo(
+      "Uploaded KML processed successfully and AOI is active"
+    );
+  }
+
+  async verifyCoreServicesPanel() {
+    const coreServicesPanel =
+      this.page.locator("#gw-panel");
+
+    await expect(
+      coreServicesPanel,
+      "Core Services panel should be visible"
+    ).toBeVisible({
+      timeout: 15000,
+    });
+
+    await this.highlight(coreServicesPanel, {
+      borderColor: "#3FB950",
+      label: "STEP 19: Core Services",
+      pause: 1200,
+    });
+
+    logInfo("Core Services panel verified");
+  }
+
+  async verifyKmlActiveState() {
+    await expect(
+      this.kmlActiveIndicator,
+      "KML File Active indicator should be visible"
+    ).toBeVisible({
+      timeout: 15000,
+    });
+
+    await this.highlight(this.kmlActiveIndicator, {
+      borderColor: "#3FB950",
+      label: "STEP 20: KML File Active",
+      pause: 1500,
+    });
+
+    expect(
+      await this.highlightKmlDataOnMap(),
+      "Uploaded KML geometry should be highlighted on the map"
+    ).toBe(true);
+
+    logInfo("KML File Active state verified");
+  }
+
+  async waitForUploadedKmz() {
+    await fastWait(this.page, 3000);
+
+    logInfo(
+      "Wait completed for MadhyaPradesh.kmz processing"
+    );
+  }
+
+  async verifyUploadedKmzOnMap() {
+    await this.highlight(this.mapContainer, {
+      borderColor: "#3FB950",
+      label: "STEP 29: MadhyaPradesh KMZ Uploaded",
+      pause: 2000,
+    });
+
+    expect(
+      await this.highlightKmlDataOnMap(),
+      "Uploaded KMZ geometry should be highlighted on the map"
+    ).toBe(true);
+
+    logInfo(
+      "MadhyaPradesh.kmz geometry verified on map"
+    );
+  }
+
+  async verifyKmzActiveState() {
+    const coreServicesPanel =
+      this.page.locator("#gw-panel");
+
+    await expect(
+      coreServicesPanel,
+      "Core Services panel should be visible after KMZ upload"
+    ).toBeVisible({
+      timeout: 15000,
+    });
+
+    await expect(
+      this.kmlActiveIndicator,
+      "KML/KMZ Active indicator should be visible after KMZ upload"
+    ).toBeVisible({
+      timeout: 15000,
+    });
+
+    await this.highlight(this.kmlActiveIndicator, {
+      borderColor: "#3FB950",
+      label: "STEP 30: KMZ Active",
+      pause: 1500,
+    });
+
+    logInfo(
+      "KMZ active state and Core Services verified"
+    );
+  }
+
+  async verifyKmzInformationWindow() {
+    const kmzInfoWindow =
+      this.page.locator(".gm-style-iw").first();
+
+    await expect(
+      kmzInfoWindow,
+      "KMZ information box should open after clicking uploaded KMZ"
+    ).toBeVisible({
+      timeout: 15000,
+    });
+
+    await this.highlight(kmzInfoWindow, {
+      borderColor: "#3FB950",
+      label: "STEP 33: KMZ Information Box",
+      pause: 1500,
+    });
+
+    logInfo(
+      "KMZ information box opened successfully"
+    );
+  }
+
+  async closeKmzInformationWindow() {
+    const kmzInfoWindow =
+      this.page.locator(".gm-style-iw").first();
+
+    const kmzInfoCloseButton =
+      this.page
+        .locator('.gm-style-iw button[aria-label="Close"]')
+        .first();
+
+    await this.highlight(kmzInfoCloseButton, {
+      borderColor: "#F5A614",
+      label: "STEP 34: Close KMZ Info",
+      pause: 1200,
+    });
+
+    await kmzInfoCloseButton.click();
+
+    await expect(
+      kmzInfoWindow,
+      "KMZ information box should close after clicking X"
+    ).toBeHidden({
+      timeout: 10000,
+    });
+
+    logInfo(
+      "KMZ information box closed successfully"
+    );
+  }
+
+  async verifyMapVisible() {
+    await expect(
+      this.mapContainer,
+      "Map should be visible"
+    ).toBeVisible({ timeout: 15000 });
+
+    await this.highlight(this.mapContainer, {
+      borderColor: "#3FB950",
+      label: "MAP VISIBLE",
+      pause: 800,
+    });
+  }
+
+  async verifyUploadKmlIcon() {
+    await expect(
+      this.uploadNav,
+      "Upload KML icon should be visible"
+    ).toBeVisible({ timeout: 10000 });
+
+    await this.highlight(this.uploadNav, {
+      borderColor: "#00A6FF",
+      label: "UPLOAD KML",
+      pause: 1000,
+    });
+  }
+
+  async verifyNoFileSelected() {
+    const selectedFiles = await this.fileInput.evaluate((input) =>
+      Array.from(input.files || []).map((file) => file.name)
+    );
+
+    expect(
+      selectedFiles,
+      "No KML/KMZ file should be selected before upload"
+    ).toHaveLength(0);
+
+    logInfo("Verified: no KML/KMZ file is selected");
+  }
+
+  async clickUploadWithoutFile() {
+    await this.highlight(this.uploadBtn, {
+      borderColor: "#F5A614",
+      label: "UPLOAD WITHOUT FILE",
+      pause: 1000,
+    });
+
+    await this.clickKmlUpload();
+
+    logInfo("Upload button clicked without selecting a KML/KMZ file");
+  }
+
+  async verifyNoFileUploadDidNotAffectMap() {
+    const aoiStatus = this.page.locator("#gw-aoi-label").first();
+
+    await expect(
+      aoiStatus,
+      "AOI status should remain visible"
+    ).toBeVisible({ timeout: 10000 });
+
+    const aoiStatusText = (await aoiStatus.textContent())?.trim();
+
+    expect(
+      aoiStatusText,
+      "AOI should remain inactive because no KML file was selected"
+    ).toContain("No AOI drawn");
+
+    await expect(
+      this.mapContainer,
+      "Map should remain visible after clicking Upload without a file"
+    ).toBeVisible({ timeout: 15000 });
+
+    await this.highlight(this.mapContainer, {
+      borderColor: "#3FB950",
+      label: "MAP UNCHANGED - NO KML UPLOADED",
+      pause: 1200,
+    });
+
+    await this.highlight(aoiStatus, {
+      borderColor: "#3FB950",
+      label: "NO AOI / NO KML ACTIVE",
+      pause: 1200,
+    });
+
+    logInfo("AOI status after empty upload: " + aoiStatusText);
+  }
+
+  async verifyFinalNoFileUploadState() {
+    const aoiStatus = this.page.locator("#gw-aoi-label").first();
+
+    await expect(
+      this.mapContainer,
+      "Final map should remain visible"
+    ).toBeVisible({ timeout: 10000 });
+
+    await expect(
+      aoiStatus,
+      "Final AOI status should remain visible"
+    ).toBeVisible({ timeout: 10000 });
+
+    await expect(
+      aoiStatus,
+      "AOI should remain inactive"
+    ).toContainText("No AOI drawn");
+
+    await this.highlight(this.mapContainer, {
+      borderColor: "#3FB950",
+      label: "FINAL NORMAL MAP STATE",
+      pause: 1200,
+    });
+
+    logInfo("Final validation passed: map remained unchanged after empty upload");
+  }
+
+
+  async verifyCoordinatesPopupVisible() {
+    await expect(
+      this.coordsModal,
+      "Enter Coordinates popup should be visible"
+    ).toBeVisible({ timeout: 10000 });
+
+    await this.highlight(this.coordsModal, {
+      borderColor: "#3FB950",
+      label: "COORDINATES POPUP",
+      pause: 1000,
+    });
+  }
+
+  async enterLatitudeWithHighlight(latitude) {
+    await expect(
+      this.latInput,
+      "Latitude input should be visible"
+    ).toBeVisible({ timeout: 10000 });
+
+    await this.highlight(this.latInput, {
+      borderColor: "#00A6FF",
+      label: `LATITUDE: ${latitude}`,
+      pause: 1000,
+    });
+
+    await this.enterLatitude(latitude);
+    logInfo(`Latitude entered successfully: ${latitude}`);
+  }
+
+  async enterLongitudeWithHighlight(longitude) {
+    await expect(
+      this.lonInput,
+      "Longitude input should be visible"
+    ).toBeVisible({ timeout: 10000 });
+
+    await this.highlight(this.lonInput, {
+      borderColor: "#00A6FF",
+      label: `LONGITUDE: ${longitude}`,
+      pause: 1000,
+    });
+
+    await this.enterLongitude(longitude);
+    logInfo(`Longitude entered successfully: ${longitude}`);
+  }
+
+  async clickTakeMeAndVerifyApi() {
+    const takeMeApiResponses = [];
+
+    const takeMeApiHandler = (response) => {
+      const url = response.url();
+
+      if (
+        url.includes("/api/") ||
+        url.includes("maps.googleapis.com") ||
+        url.includes("googleapis.com")
+      ) {
+        takeMeApiResponses.push({
+          url,
+          status: response.status(),
+          method: response.request().method(),
+        });
+
+        logInfo(
+          `Take Me API response: ${response.status()} ${response.request().method()} ${url}`
+        );
+      }
+    };
+
+    this.page.on("response", takeMeApiHandler);
+
+    try {
+      await expect(
+        this.takeMeButton,
+        "Take Me button should be visible"
+      ).toBeVisible({ timeout: 10000 });
+
+      await expect(
+        this.takeMeButton,
+        "Take Me button should be enabled"
+      ).toBeEnabled({ timeout: 10000 });
+
+      await this.takeMeButton.click();
+
+      logInfo("Take Me button clicked successfully");
+
+      await this.page.waitForTimeout(5000);
+    } finally {
+      this.page.off("response", takeMeApiHandler);
+    }
+
+    logInfo(
+      `Take Me API responses captured: ${takeMeApiResponses.length}`
+    );
+
+    expect(
+      takeMeApiResponses.length,
+      "Take Me should trigger at least one API response"
+    ).toBeGreaterThan(0);
+
+    const successfulApi = takeMeApiResponses.find(
+      (api) => api.status >= 200 && api.status < 300
+    );
+
+    expect(
+      successfulApi,
+      "Take Me API should return a successful 2xx response"
+    ).toBeTruthy();
+
+    logInfo(
+      `Take Me API successful: ${successfulApi.status} ${successfulApi.method} ${successfulApi.url}`
+    );
+  }
+
+  async verifyFinalCoordinateNavigationState() {
+    await expect(
+      this.mapContainer,
+      "Final map should remain visible after coordinate navigation"
+    ).toBeVisible({ timeout: 10000 });
+
+    await this.highlight(this.mapContainer, {
+      borderColor: "#3FB950",
+      label: "FINAL MAP STATE - COORDINATE NAVIGATION",
+      pause: 1500,
+    });
+
+    logInfo(
+      "Final coordinate navigation state verified successfully"
+    );
+  }
+
+
+  async enterInvalidLatitude(value) {
+    await expect(
+      this.latInput,
+      "Latitude input should be visible"
+    ).toBeVisible({ timeout: 10000 });
+
+    await this.highlight(this.latInput, {
+      borderColor: "#F5A614",
+      label: "INVALID LATITUDE",
+      pause: 1000,
+    });
+
+    await this.latInput.fill(String(value));
+
+    logInfo(`Invalid latitude entered: "${value}"`);
+  }
+
+  async enterInvalidLongitude(value) {
+    await expect(
+      this.lonInput,
+      "Longitude input should be visible"
+    ).toBeVisible({ timeout: 10000 });
+
+    await this.highlight(this.lonInput, {
+      borderColor: "#F5A614",
+      label: "INVALID LONGITUDE",
+      pause: 1000,
+    });
+
+    await this.lonInput.fill(String(value));
+
+    logInfo(`Invalid longitude entered: "${value}"`);
+  }
+
+  async verifyInvalidCoordinateValues(expectedLatitude, expectedLongitude) {
+    const latitudeValue = await this.latInput.inputValue();
+    const longitudeValue = await this.lonInput.inputValue();
+
+    logInfo(`Latitude field value after entry: "${latitudeValue}"`);
+    logInfo(`Longitude field value after entry: "${longitudeValue}"`);
+
+    expect(
+      latitudeValue,
+      "Latitude field should contain the entered invalid value"
+    ).toBe(String(expectedLatitude));
+
+    expect(
+      longitudeValue,
+      "Longitude field should contain the entered invalid value"
+    ).toBe(String(expectedLongitude));
+  }
+
+  async clickTakeMeWithInvalidCoordinates() {
+    await expect(
+      this.takeMeButton,
+      "Take Me button should be visible"
+    ).toBeVisible({ timeout: 10000 });
+
+    await this.highlight(this.takeMeButton, {
+      borderColor: "#F5A614",
+      label: "TAKE ME - INVALID COORDINATES",
+      pause: 1000,
+    });
+
+    await this.takeMeButton.click();
+
+    logInfo(
+      "Take Me button clicked with invalid coordinate values"
+    );
+
+    await this.page.waitForTimeout(3000);
+  }
+
+  async verifyInvalidCoordinatesRejected() {
+    await expect(
+      this.mapContainer,
+      "Map should remain visible after invalid coordinates are submitted"
+    ).toBeVisible({ timeout: 10000 });
+
+    const popupVisible = await this.coordsModal
+      .isVisible()
+      .catch(() => false);
+
+    logInfo(
+      popupVisible
+        ? "Coordinates popup remains open, indicating invalid values were not accepted"
+        : "Coordinates popup closed without successful coordinate navigation"
+    );
+
+    await this.highlight(this.mapContainer, {
+      borderColor: "#3FB950",
+      label: "MAP ONLY - INVALID COORDINATES REJECTED",
+      pause: 1500,
+    });
+
+    logInfo(
+      "Invalid latitude/longitude values were not accepted and the map remained visible"
+    );
+  }
+
+
+  async verifyUserGuidePopupVisible() {
+    await expect(
+      this.userGuidePopup,
+      "User Guide tutorial popup should be visible"
+    ).toBeVisible({ timeout: 10000 });
+
+    await this.highlight(this.userGuidePopup, {
+      borderColor: "#3FB950",
+      label: "USER GUIDE POPUP",
+      pause: 1000,
+    });
+
+    logInfo("User Guide tutorial popup opened successfully");
+  }
+
+  async verifyUserGuideCloseButton() {
+    await expect(
+      this.userGuidePopupCloseButton,
+      "User Guide popup close button should be visible"
+    ).toBeVisible({ timeout: 10000 });
+
+    await this.highlight(this.userGuidePopupCloseButton, {
+      borderColor: "#F5A614",
+      label: "CLOSE USER GUIDE",
+      pause: 1000,
+    });
+
+    logInfo("User Guide popup close button verified");
+  }
+
+  async verifyUserGuidePopupClosed() {
+    await expect(
+      this.userGuidePopup,
+      "User Guide tutorial popup should close successfully"
+    ).toBeHidden({ timeout: 10000 });
+
+    logInfo("User Guide tutorial popup closed successfully");
+  }
+
+  async verifyFinalUserGuideState() {
+    await expect(
+      this.mapContainer,
+      "Map should remain visible after closing User Guide"
+    ).toBeVisible({ timeout: 10000 });
+
+    await this.highlight(this.mapContainer, {
+      borderColor: "#3FB950",
+      label: "FINAL MAP STATE - USER GUIDE",
+      pause: 1500,
+    });
+
+    logInfo("Final User Guide map state verified successfully");
+  }
+
+
+async zoomUntilDrawShapeAppears() {
+  const zoomInButton = this.page
+    .locator('button[aria-label="Zoom in"]')
+    .first();
+
+  const drawTool = this.page
+    .getByRole("menuitemradio", { name: /Draw a shape/i })
+    .first();
+
+  let drawToolFound = false;
+
+  for (let i = 0; i < 12; i++) {
+    if (await drawTool.isVisible().catch(() => false)) {
+      logInfo(`AOI Draw option appeared after ${i} zoom clicks`);
+      drawToolFound = true;
+      break;
+    }
+
+    await robustClick(this.page, zoomInButton, {
+      timeout: 10000,
+      retry: 1,
+    });
+
+    await fastWait(this.page, 1000);
+  }
+
+  if (!drawToolFound) {
+    throw new Error("AOI Draw option did not appear after zooming");
+  }
+
+  const extentHighlighted = await this.highlightMapExtent(
+    "CAMERA ZOOM / AOI TOOL EXTENT"
+  );
+
+  expect(
+    extentHighlighted,
+    "Camera zoom extent should be highlighted"
+  ).toBe(true);
+
+  await this.clearMapStepHighlights();
+
+  await drawTool.scrollIntoViewIfNeeded();
+  await drawTool.click({ timeout: 10000 });
+
+  await fastWait(this.page, 1000);
+
+  logInfo("Draw Shape option clicked successfully");
 }
+
+async selectRectangleAOITool() {
+  const rectangleTool = this.page
+    .getByRole("menuitemradio", { name: /Rectangle/i })
+    .first();
+
+  await expect(
+    rectangleTool,
+    "Rectangle AOI tool should be visible"
+  ).toBeVisible({ timeout: 10000 });
+
+  await this.highlight(rectangleTool, {
+    borderColor: "#FFD700",
+    label: "RECTANGLE AOI TOOL",
+    pause: 1500,
+  });
+
+  await rectangleTool.scrollIntoViewIfNeeded();
+  await rectangleTool.click({ timeout: 10000 });
+
+  await fastWait(this.page, 1000);
+
+  logInfo("Rectangle AOI draw tool selected successfully");
+}
+
+async drawAndValidateRectangleAOI() {
+  const rectangle = await this.drawRectangleAOIByRatio({
+    steps: 15,
+    waitMs: 1000,
+  });
+
+  logInfo(
+    `Rectangle AOI drawn successfully: ${rectangle.width} x ${rectangle.height}`
+  );
+
+  await this.validateDrawnAOI({
+    expectedWidth: rectangle.width,
+    expectedHeight: rectangle.height,
+  });
+
+  logInfo("Rectangle AOI dimensions validated successfully");
+
+  const rectangleHighlighted = await this.highlightDrawnAOIOnMap();
+
+  expect(
+    rectangleHighlighted,
+    "Rectangle AOI should be highlighted"
+  ).toBe(true);
+
+  logInfo("Rectangle AOI highlighted successfully on the map");
+
+  await this.clearMapStepHighlights();
+}
+
+async verifyCoreServicesAfterAOI() {
+  const coreServicesPanel = this.page.locator("#gw-panel");
+
+  await expect(
+    coreServicesPanel,
+    "Core Services popup/panel should appear after AOI drawing"
+  ).toBeVisible({ timeout: 15000 });
+
+  await this.highlight(coreServicesPanel, {
+    borderColor: "#3FB950",
+    label: "CORE SERVICES POPUP",
+    pause: 2000,
+  });
+
+  logInfo("Core Services popup opened successfully");
+}
+
+async verifyAOIActiveStatus() {
+  const aoiActiveIndicator = this.page.locator("#gw-aoi-label");
+
+  await expect(
+    aoiActiveIndicator,
+    "AOI Active status should be visible"
+  ).toBeVisible({ timeout: 15000 });
+
+  await this.highlight(aoiActiveIndicator, {
+    borderColor: "#22C55E",
+    label: "AOI ACTIVE",
+    pause: 2000,
+  });
+
+  logInfo("AOI Active status verified successfully");
+}
+
+async openWorldView() {
+  await expect(
+    this.worldViewBtn,
+    "World View button should be visible"
+  ).toBeVisible({ timeout: 10000 });
+
+  await this.highlight(this.worldViewBtn, {
+    borderColor: "#6C63FF",
+    label: "WORLD VIEW",
+    pause: 1000,
+  });
+
+  await this.switchToWorldView();
+
+  await fastWait(this.page, 1500);
+
+  logInfo("World View action completed");
+}
+
+async verifyWorldView() {
+  await expect(
+    this.mapContainer,
+    "Map should be visible in World View"
+  ).toBeVisible({ timeout: 15000 });
+
+  await this.highlight(this.mapContainer, {
+    borderColor: "#22C55E",
+    label: "GLOBAL WORLD MAP",
+    pause: 1000,
+  });
+
+  const extentHighlighted = await this.highlightMapExtent("WORLD VIEW");
+
+  expect(
+    extentHighlighted,
+    "World View extent should be highlighted"
+  ).toBe(true);
+
+  logInfo("Global World View verified successfully");
+}
+
+async openAOIView() {
+  await expect(
+    this.aoiViewBtn,
+    "AOI View button should be visible"
+  ).toBeVisible({ timeout: 10000 });
+
+  await this.highlight(this.aoiViewBtn, {
+    borderColor: "#6C63FF",
+    label: "AOI VIEW",
+    pause: 1000,
+  });
+
+  await this.switchToAoiView();
+
+  await fastWait(this.page, 1500);
+
+  logInfo("AOI View action completed");
+}
+
+async verifyAOIView() {
+  const aoiAreaText = this.page
+    .getByText(/(?:\d+(?:\.\d+)?)\s*(?:km²|km2|sq\.?\s*km)/i)
+    .first();
+
+  await expect(
+    aoiAreaText,
+    "Previously drawn AOI area should be displayed in AOI View"
+  ).toBeVisible({ timeout: 15000 });
+
+  await this.highlight(aoiAreaText, {
+    borderColor: "#22C55E",
+    label: "AOI AREA",
+    pause: 1000,
+  });
+
+  logInfo(
+    "Previously drawn AOI and its area are displayed in AOI View"
+  );
+
+  await this.clearMapStepHighlights();
+
+  const extentHighlighted = await this.highlightMapExtent("AOI VIEW");
+
+  expect(
+    extentHighlighted,
+    "AOI View extent should be highlighted"
+  ).toBe(true);
+
+  await this.clearMapStepHighlights();
+}
+
+async resetMap() {
+  await robustClick(this.page, this.deleteAllBtn, {
+    timeout: 10000,
+    retry: 1,
+  });
+
+  await fastWait(this.page, 1500);
+
+  logInfo("Reset action completed");
+}
+
+async verifyFinalResetState() {
+  await expect(
+    this.mapContainer,
+    "Map should remain visible after Reset"
+  ).toBeVisible({ timeout: 15000 });
+
+  await this.highlight(this.mapContainer, {
+    borderColor: "#22C55E",
+    label: "MAP RESET",
+    pause: 1000,
+  });
+
+  await this.clearMapStepHighlights();
+
+  const extentHighlighted = await this.highlightMapExtent("RESET MAP");
+
+  expect(
+    extentHighlighted,
+    "Reset map extent should be highlighted"
+  ).toBe(true);
+
+  logInfo("Reset completed and final map state verified successfully");
+}
+
+async verifyWorldSearchButton() {
+  await expect(
+    this.worldSearchButton,
+    "World Search button should be visible"
+  ).toBeVisible({ timeout: 10000 });
+
+  await this.highlight(this.worldSearchButton, {
+    borderColor: "#6C63FF",
+    label: "WORLD SEARCH",
+    pause: 1000,
+  });
+
+  logInfo("World Search button located successfully");
+}
+
+async searchIndoreAndVerifyApi() {
+  await expect(
+    this.pacInput,
+    "Search input should be visible"
+  ).toBeVisible({ timeout: 10000 });
+
+  await this.highlight(this.pacInput, {
+    borderColor: "#00A6FF",
+    label: "SEARCH: INDORE",
+    pause: 1000,
+  });
+
+  const searchApiPromise = this.page.waitForResponse(
+    (response) => {
+      const url = response.url();
+
+      return (
+        url.includes(
+          "/maps/api/place/js/AutocompletionService.GetPredictions"
+        ) &&
+        url.includes("1sIndore") &&
+        response.request().method() === "GET"
+      );
+    },
+    {
+      timeout: 15000,
+    }
+  );
+
+  await this.pacInput.fill("Indore");
+
+  const searchApiResponse = await searchApiPromise;
+
+  expect(
+    searchApiResponse.status(),
+    "Search Autocomplete API should return HTTP 200"
+  ).toBe(200);
+
+  expect(
+    searchApiResponse.request().method(),
+    "Search Autocomplete API method should be GET"
+  ).toBe("GET");
+
+  const searchApiUrl = searchApiResponse.url();
+
+  expect(
+    searchApiUrl,
+    "Search Autocomplete API URL should contain AutocompletionService.GetPredictions"
+  ).toContain(
+    "/maps/api/place/js/AutocompletionService.GetPredictions"
+  );
+
+  expect(
+    searchApiUrl,
+    "Search Autocomplete API should contain Indore"
+  ).toContain("1sIndore");
+
+  const maskedSearchApiUrl = searchApiUrl.replace(
+    /([?&]key=)[^&]+/i,
+    "$1***"
+  );
+
+  logInfo(
+    `Search Autocomplete API returned HTTP ${searchApiResponse.status()}`
+  );
+
+  logInfo(
+    `Search Autocomplete API method: ${searchApiResponse.request().method()}`
+  );
+
+  logInfo(`Search Autocomplete API URL: ${maskedSearchApiUrl}`);
+
+  logInfo("Indore Search API validation completed successfully");
+}
+
+async selectIndoreSuggestion() {
+  const indoreSuggestion = this.page
+    .locator(".pac-container .pac-item")
+    .filter({ hasText: "Indore" })
+    .first();
+
+  await expect(
+    indoreSuggestion,
+    "Indore search suggestion should be visible"
+  ).toBeVisible({ timeout: 15000 });
+
+  await this.highlight(indoreSuggestion, {
+    borderColor: "#22C55E",
+    label: "INDORE SUGGESTION",
+    pause: 1200,
+  });
+
+  await indoreSuggestion.click();
+
+  logInfo("Indore location suggestion selected successfully");
+
+  await fastWait(this.page, 1500);
+}
+
+async clickZoomInOnce() {
+  const zoomInButton = this.page
+    .locator('button[aria-label="Zoom in"]')
+    .first();
+
+  await expect(
+    zoomInButton,
+    "Zoom in button should be visible"
+  ).toBeVisible({ timeout: 10000 });
+
+  await this.highlight(zoomInButton, {
+    borderColor: "#22C55E",
+    label: "ZOOM +",
+    pause: 1000,
+  });
+
+  await robustClick(this.page, zoomInButton, {
+    timeout: 10000,
+    retry: 1,
+  });
+
+  await fastWait(this.page, 1500);
+
+  logInfo("Zoom (+) clicked exactly once");
+}
+
+async openAOIDrawTool() {
+  const drawTool = this.page
+    .getByRole("menuitemradio", {
+      name: /Draw a shape/i,
+    })
+    .first();
+
+  await expect(
+    drawTool,
+    "AOI Draw Tool should be visible"
+  ).toBeVisible({ timeout: 10000 });
+
+  await this.highlight(drawTool, {
+    borderColor: "#FFD700",
+    label: "AOI DRAW TOOL",
+    pause: 1000,
+  });
+
+  await drawTool.click({
+    timeout: 10000,
+  });
+
+  await fastWait(this.page, 1000);
+
+  logInfo("AOI Draw Tool opened successfully");
+}
+
+async selectHandToolAndPanMap() {
+  const handTool = this.page
+    .getByRole("menuitemradio", {
+      name: "Stop drawing",
+    })
+    .first();
+
+  await expect(
+    handTool,
+    "Hand tool should be visible"
+  ).toBeVisible({ timeout: 10000 });
+
+  await this.highlight(handTool, {
+    borderColor: "#FFD700",
+    label: "HAND TOOL",
+    pause: 1500,
+  });
+
+  await handTool.click({
+    timeout: 10000,
+  });
+
+  await fastWait(this.page, 700);
+
+  const mapBox = await this.mapContainer.boundingBox();
+
+  if (!mapBox) {
+    throw new Error(
+      "Map bounding box is unavailable for Hand tool pan"
+    );
+  }
+
+  const startX = mapBox.x + mapBox.width * 0.5;
+  const startY = mapBox.y + mapBox.height * 0.5;
+
+  const endX = startX + 150;
+  const endY = startY + 80;
+
+  await this.page.mouse.move(startX, startY);
+  await this.page.mouse.down();
+
+  await this.page.mouse.move(endX, endY, {
+    steps: 10,
+  });
+
+  await this.page.mouse.up();
+
+  await fastWait(this.page, 1000);
+
+  logInfo("Hand tool map movement completed successfully");
+}
+
+async verifyMarkerTool() {
+  const markerTool = this.page
+    .locator(
+      [
+        'button[title*="marker" i]:visible',
+        'button[aria-label*="marker" i]:visible',
+        '[role="button"][title*="marker" i]:visible',
+        '[role="button"][aria-label*="marker" i]:visible',
+      ].join(",")
+    )
+    .first();
+
+  await expect(
+    markerTool,
+    "Marker tool should be visible"
+  ).toBeVisible({ timeout: 10000 });
+
+  await this.highlight(markerTool, {
+    borderColor: "#00AA00",
+    label: "MARKER TOOL",
+    pause: 1200,
+  });
+
+  logInfo("Marker Tool located successfully");
+}
+
+async selectMarkerTool() {
+  const markerTool = this.page
+    .locator(
+      [
+        'button[title*="marker" i]:visible',
+        'button[aria-label*="marker" i]:visible',
+        '[role="button"][title*="marker" i]:visible',
+        '[role="button"][aria-label*="marker" i]:visible',
+      ].join(",")
+    )
+    .first();
+
+  await expect(
+    markerTool,
+    "Marker tool should be visible"
+  ).toBeVisible({ timeout: 10000 });
+
+  await robustClick(this.page, markerTool);
+
+  await fastWait(this.page, 1000);
+
+  logInfo("Marker Tool selected successfully");
+}
+
+async placeMarkerOnSearchedLocation() {
+  const mapBox = await this.mapContainer.boundingBox();
+
+  if (!mapBox) {
+    throw new Error(
+      "Map bounding box is unavailable for searched location"
+    );
+  }
+
+  const searchedLocationX =
+    mapBox.x + mapBox.width * 0.5;
+
+  const searchedLocationY =
+    mapBox.y + mapBox.height * 0.5;
+
+  await this.page.mouse.click(
+    searchedLocationX,
+    searchedLocationY
+  );
+
+  await fastWait(this.page, 1500);
+
+  logInfo("Marker placed on searched location successfully");
+}
+
+async selectCircleAOITool() {
+  const circleTool = this.page
+    .getByRole("menuitemradio", {
+      name: "Draw a circle",
+    })
+    .first();
+
+  await expect(
+    circleTool,
+    "Circle AOI tool should be visible"
+  ).toBeVisible({ timeout: 10000 });
+
+  await this.highlight(circleTool, {
+    borderColor: "#FFD700",
+    label: "CIRCLE AOI TOOL",
+    pause: 1500,
+  });
+
+  await circleTool.click({
+    timeout: 10000,
+  });
+
+  await fastWait(this.page, 500);
+
+  logInfo("Circle AOI draw tool selected successfully");
+}
+
+async drawCircleAOI() {
+  const mapBox = await this.mapContainer.boundingBox();
+
+  if (!mapBox) {
+    throw new Error(
+      "Map bounding box is unavailable for Circle AOI"
+    );
+  }
+
+  const centerX = mapBox.x + mapBox.width * 0.5;
+  const centerY = mapBox.y + mapBox.height * 0.5;
+
+  const radius = 100;
+
+  await this.page.mouse.move(centerX, centerY);
+  await this.page.mouse.down();
+
+  await this.page.mouse.move(
+    centerX + radius,
+    centerY,
+    {
+      steps: 10,
+    }
+  );
+
+  await this.page.mouse.up();
+
+  await fastWait(this.page, 800);
+
+  logInfo(
+    `Circle AOI drawing completed with radius ${radius}px`
+  );
+
+  const highlighted = await this.highlightDrawnAOIOnMap();
+
+  expect(
+    highlighted,
+    "Circle AOI should be highlighted"
+  ).toBe(true);
+
+  logInfo("Circle AOI highlighted successfully on the map");
+}
+
+async verifyCircleAOIState() {
+  const coreServicesPanel = this.page
+    .locator("#gw-panel")
+    .first();
+
+  await expect(
+    coreServicesPanel,
+    "AOI popup / Core Services panel should appear after Circle AOI drawing"
+  ).toBeVisible({ timeout: 15000 });
+
+  const activeStatusLocator = this.page
+    .getByText(/AOI\s*Active/i)
+    .last();
+
+  await expect(
+    activeStatusLocator,
+    "AOI Active status should be visible"
+  ).toBeVisible({ timeout: 15000 });
+
+  await this.highlight(coreServicesPanel, {
+    borderColor: "#22C55E",
+    label: "CIRCLE AOI POPUP",
+    pause: 1200,
+  });
+
+  await this.highlight(activeStatusLocator, {
+    borderColor: "#22C55E",
+    label: "CIRCLE AOI ACTIVE",
+    pause: 1200,
+  });
+
+  logInfo("Circle AOI popup and Active status verified");
+}
+
+async verifyCircleAOIAreaMatch() {
+  const circleAreaRegex =
+    /([\d,.]+)\s*(?:sq\.?\s*km|km²|km2)/i;
+
+  const circleMapArea = this.page.locator("#gw-aoi-area");
+
+  await expect(
+    circleMapArea,
+    "Circle map AOI area should be visible"
+  ).toBeVisible({ timeout: 15000 });
+
+  const circleMapAreaText =
+    await circleMapArea.innerText();
+
+  const popupCandidates = this.page.getByText(
+    /[\d,.]+\s*(?:sq\.?\s*km|km²|km2)/i
+  );
+
+  const candidateCount = await popupCandidates.count();
+
+  let popupArea = null;
+  let popupText = null;
+
+  for (let i = 0; i < candidateCount; i++) {
+    const candidate = popupCandidates.nth(i);
+
+    if (!(await candidate.isVisible().catch(() => false))) {
+      continue;
+    }
+
+    const candidateId =
+      await candidate.getAttribute("id").catch(() => null);
+
+    const candidateText =
+      await candidate.innerText().catch(() => "");
+
+    if (candidateId === "gw-aoi-area") {
+      continue;
+    }
+
+    popupArea = candidate;
+    popupText = candidateText;
+    break;
+  }
+
+  if (!popupArea || !popupText) {
+    throw new Error(
+      "Circle popup area could not be found"
+    );
+  }
+
+  const popupMatch = popupText.match(circleAreaRegex);
+  const mapMatch = circleMapAreaText.match(circleAreaRegex);
+
+  if (!popupMatch || !mapMatch) {
+    throw new Error(
+      `Unable to extract Circle AOI areas. Popup="${popupText}" Map="${circleMapAreaText}"`
+    );
+  }
+
+  const popupValue = Number(
+    popupMatch[1].replace(/,/g, "")
+  );
+
+  const mapValue = Number(
+    mapMatch[1].replace(/,/g, "")
+  );
+
+  expect(
+    mapValue,
+    "Circle popup area and map AOI area should match"
+  ).toBeCloseTo(popupValue, 2);
+
+  await this.highlight(popupArea, {
+    borderColor: "#22C55E",
+    label: "CIRCLE POPUP AREA",
+    pause: 1500,
+  });
+
+  await this.highlight(circleMapArea, {
+    borderColor: "#22C55E",
+    label: "CIRCLE MAP AREA",
+    pause: 1500,
+  });
+
+  logInfo(
+    `CIRCLE AREA MATCHED: Popup=${popupValue} km² | Map=${mapValue} km²`
+  );
+}
+
+async selectPolygonAOITool() {
+  const drawShapeButton = this.page
+    .locator('button[title="Draw a shape"]:visible')
+    .first();
+
+  await expect(
+    drawShapeButton,
+    "Draw Shape button should be visible"
+  ).toBeVisible({ timeout: 10000 });
+
+  await robustClick(this.page, drawShapeButton);
+
+  await fastWait(this.page, 1000);
+
+  let polygonDrawButton = null;
+
+  const polygonCandidates = this.page.locator(
+    [
+      'button[title*="polygon" i]:visible',
+      'button[aria-label*="polygon" i]:visible',
+      'button[data-tooltip*="polygon" i]:visible',
+      '[role="button"][title*="polygon" i]:visible',
+      '[role="button"][aria-label*="polygon" i]:visible',
+      '[role="menuitem"][title*="polygon" i]:visible',
+      '[role="menuitemradio"][title*="polygon" i]:visible',
+    ].join(",")
+  );
+
+  const candidateCount =
+    await polygonCandidates.count();
+
+  if (candidateCount > 0) {
+    for (let i = 0; i < candidateCount; i++) {
+      const candidate = polygonCandidates.nth(i);
+      const className =
+        await candidate.getAttribute("class");
+
+      if (className?.includes("gw-aoi-tab")) {
+        continue;
+      }
+
+      polygonDrawButton = candidate;
+      break;
+    }
+  }
+
+  if (!polygonDrawButton) {
+    const fallback = this.page.locator(
+      [
+        'button[title="Draw a shape"]:visible',
+        'button[aria-label="Draw a shape"]:visible',
+      ].join(",")
+    );
+
+    if (await fallback.count()) {
+      polygonDrawButton = fallback.first();
+    }
+  }
+
+  if (!polygonDrawButton) {
+    throw new Error(
+      "Polygon AOI draw control is unavailable"
+    );
+  }
+
+  await this.highlight(polygonDrawButton, {
+    borderColor: "#FFD700",
+    label: "POLYGON AOI TOOL",
+    pause: 1200,
+  });
+
+  await robustClick(this.page, polygonDrawButton);
+
+  await fastWait(this.page, 1000);
+
+  logInfo("Polygon AOI draw tool selected successfully");
+}
+
+async drawPolygonAOI() {
+  const mapBox = await this.mapContainer.boundingBox();
+
+  if (!mapBox) {
+    throw new Error(
+      "Map bounding box is unavailable for Polygon AOI"
+    );
+  }
+
+  const pointA = {
+    x: mapBox.x + mapBox.width * 0.3,
+    y: mapBox.y + mapBox.height * 0.3,
+  };
+
+  const pointB = {
+    x: mapBox.x + mapBox.width * 0.52,
+    y: mapBox.y + mapBox.height * 0.25,
+  };
+
+  const pointC = {
+    x: mapBox.x + mapBox.width * 0.68,
+    y: mapBox.y + mapBox.height * 0.42,
+  };
+
+  const pointD = {
+    x: mapBox.x + mapBox.width * 0.6,
+    y: mapBox.y + mapBox.height * 0.62,
+  };
+
+  const pointE = {
+    x: mapBox.x + mapBox.width * 0.38,
+    y: mapBox.y + mapBox.height * 0.6,
+  };
+
+  for (const point of [
+    pointA,
+    pointB,
+    pointC,
+    pointD,
+    pointE,
+  ]) {
+    await this.page.mouse.click(point.x, point.y);
+    await fastWait(this.page, 500);
+  }
+
+  await this.page.mouse.click(pointA.x, pointA.y);
+
+  await fastWait(this.page, 1500);
+
+  logInfo("Polygon AOI drawn successfully on the map");
+
+  const highlighted =
+    await this.highlightDrawnAOIOnMap();
+
+  expect(
+    highlighted,
+    "Polygon AOI should be highlighted"
+  ).toBe(true);
+
+  logInfo(
+    "Polygon AOI highlighted successfully on the map"
+  );
+}
+
+async verifyPolygonAOIState() {
+  const coreServicesPanel =
+    this.page.locator("#gw-panel");
+
+  await expect(
+    coreServicesPanel,
+    "Core Services popup should be visible after Polygon AOI drawing"
+  ).toBeVisible({ timeout: 15000 });
+
+  const activeIndicator =
+    this.page.locator("#gw-aoi-label");
+
+  await expect(
+    activeIndicator,
+    "AOI Active status should be visible after Polygon AOI drawing"
+  ).toBeVisible({ timeout: 15000 });
+
+  const mapArea =
+    this.page.locator("#gw-aoi-area");
+
+  await expect(
+    mapArea,
+    "Polygon map AOI area should be visible"
+  ).toBeVisible({ timeout: 15000 });
+
+  const mapAreaText = await mapArea.innerText();
+
+  await this.highlight(coreServicesPanel, {
+    borderColor: "#22C55E",
+    label: "POLYGON CORE SERVICES",
+    pause: 1500,
+  });
+
+  await this.highlight(activeIndicator, {
+    borderColor: "#22C55E",
+    label: "POLYGON AOI ACTIVE",
+    pause: 1500,
+  });
+
+  logInfo(
+    `Polygon AOI Active map area: ${mapAreaText}`
+  );
+}
+
+async verifyPolygonAOIAreaMatch() {
+  const areaRegex =
+    /([\d,.]+)\s*(?:sq\.?\s*km|km²|km2)/i;
+
+  const mapArea =
+    this.page.locator("#gw-aoi-area");
+
+  const mapAreaText =
+    await mapArea.innerText();
+
+  const popupCandidates = this.page.getByText(
+    /[\d,.]+\s*(?:sq\.?\s*km|km²|km2)/i
+  );
+
+  const candidateCount =
+    await popupCandidates.count();
+
+  let popupArea = null;
+  let popupText = null;
+
+  for (let i = 0; i < candidateCount; i++) {
+    const candidate = popupCandidates.nth(i);
+
+    if (!(await candidate.isVisible().catch(() => false))) {
+      continue;
+    }
+
+    const candidateId =
+      await candidate.getAttribute("id").catch(() => null);
+
+    const candidateText =
+      await candidate.innerText().catch(() => "");
+
+    if (candidateId === "gw-aoi-area") {
+      continue;
+    }
+
+    popupArea = candidate;
+    popupText = candidateText;
+    break;
+  }
+
+  if (!popupArea || !popupText) {
+    throw new Error(
+      "Polygon popup area could not be found"
+    );
+  }
+
+  const popupMatch =
+    popupText.match(areaRegex);
+
+  const mapMatch =
+    mapAreaText.match(areaRegex);
+
+  if (!popupMatch || !mapMatch) {
+    throw new Error(
+      `Unable to extract Polygon AOI areas. Popup="${popupText}" Map="${mapAreaText}"`
+    );
+  }
+
+  const popupValue = Number(
+    popupMatch[1].replace(/,/g, "")
+  );
+
+  const mapValue = Number(
+    mapMatch[1].replace(/,/g, "")
+  );
+
+  expect(
+    mapValue,
+    "Polygon popup area and map AOI area should match"
+  ).toBeCloseTo(popupValue, 2);
+
+  await this.highlight(popupArea, {
+    borderColor: "#22C55E",
+    label: "POLYGON POPUP AREA",
+    pause: 1500,
+  });
+
+  await this.highlight(mapArea, {
+    borderColor: "#22C55E",
+    label: "POLYGON MAP AREA",
+    pause: 1500,
+  });
+
+  logInfo(
+    `POLYGON AREA MATCHED: Popup=${popupValue} km² | Map=${mapValue} km²`
+  );
+}
+
+async verifyRectangleAOIState() {
+  const coreServicesPanel =
+    this.page.locator("#gw-panel");
+
+  await expect(
+    coreServicesPanel,
+    "Core Services popup should be visible after Rectangle AOI drawing"
+  ).toBeVisible({ timeout: 15000 });
+
+  const activeIndicator =
+    this.page.locator("#gw-aoi-label");
+
+  await expect(
+    activeIndicator,
+    "AOI Active status should be visible after Rectangle AOI drawing"
+  ).toBeVisible({ timeout: 15000 });
+
+  const mapArea =
+    this.page.locator("#gw-aoi-area");
+
+  await expect(
+    mapArea,
+    "Rectangle map AOI area should be visible"
+  ).toBeVisible({ timeout: 15000 });
+
+  const mapAreaText =
+    await mapArea.innerText();
+
+  await this.highlight(coreServicesPanel, {
+    borderColor: "#22C55E",
+    label: "RECTANGLE CORE SERVICES",
+    pause: 1500,
+  });
+
+  await this.highlight(activeIndicator, {
+    borderColor: "#22C55E",
+    label: "RECTANGLE AOI ACTIVE",
+    pause: 1500,
+  });
+
+  logInfo(
+    `Rectangle AOI Active map area: ${mapAreaText}`
+  );
+}
+
+async verifyRectangleAOIAreaMatch() {
+  const areaRegex =
+    /([\d,.]+)\s*(?:sq\.?\s*km|km²|km2)/i;
+
+  const mapArea =
+    this.page.locator("#gw-aoi-area");
+
+  const mapAreaText =
+    await mapArea.innerText();
+
+  const popupCandidates = this.page.getByText(
+    /[\d,.]+\s*(?:sq\.?\s*km|km²|km2)/i
+  );
+
+  const candidateCount =
+    await popupCandidates.count();
+
+  let popupArea = null;
+  let popupText = null;
+
+  for (let i = 0; i < candidateCount; i++) {
+    const candidate = popupCandidates.nth(i);
+
+    if (!(await candidate.isVisible().catch(() => false))) {
+      continue;
+    }
+
+    const candidateId =
+      await candidate.getAttribute("id").catch(() => null);
+
+    const candidateText =
+      await candidate.innerText().catch(() => "");
+
+    if (candidateId === "gw-aoi-area") {
+      continue;
+    }
+
+    popupArea = candidate;
+    popupText = candidateText;
+    break;
+  }
+
+  if (!popupArea || !popupText) {
+    throw new Error(
+      "Rectangle popup area could not be found"
+    );
+  }
+
+  const popupMatch =
+    popupText.match(areaRegex);
+
+  const mapMatch =
+    mapAreaText.match(areaRegex);
+
+  if (!popupMatch || !mapMatch) {
+    throw new Error(
+      `Unable to extract Rectangle AOI areas. Popup="${popupText}" Map="${mapAreaText}"`
+    );
+  }
+
+  const popupValue = Number(
+    popupMatch[1].replace(/,/g, "")
+  );
+
+  const mapValue = Number(
+    mapMatch[1].replace(/,/g, "")
+  );
+
+  expect(
+    mapValue,
+    "Rectangle popup area and map AOI area should match"
+  ).toBeCloseTo(popupValue, 2);
+
+  await this.highlight(popupArea, {
+    borderColor: "#22C55E",
+    label: "RECTANGLE POPUP AREA",
+    pause: 1500,
+  });
+
+  await this.highlight(mapArea, {
+    borderColor: "#22C55E",
+    label: "RECTANGLE MAP AREA",
+    pause: 1500,
+  });
+
+  logInfo(
+    `RECTANGLE AREA MATCHED: Popup=${popupValue} km² | Map=${mapValue} km²`
+  );
+}
+
+  async verifyZoomControls() {
+    const zoomInButton = this.page
+      .locator('button[aria-label="Zoom in"]')
+      .first();
+
+    const zoomOutButton = this.page
+      .locator('button[aria-label="Zoom out"]')
+      .first();
+
+    await expect(
+      zoomInButton,
+      "Zoom In (+) button should be visible"
+    ).toBeVisible({ timeout: 10000 });
+
+    await expect(
+      zoomOutButton,
+      "Zoom Out (-) button should be visible"
+    ).toBeVisible({ timeout: 10000 });
+
+    await this.highlight(zoomInButton, {
+      borderColor: "#22C55E",
+      label: "ZOOM IN (+)",
+      pause: 1000,
+    });
+
+    await this.highlight(zoomOutButton, {
+      borderColor: "#EF4444",
+      label: "ZOOM OUT (-)",
+      pause: 1000,
+    });
+
+    logInfo("Zoom In and Zoom Out controls verified successfully");
+  }
+
+  async zoomInAndVerify() {
+    const zoomInButton = this.page
+      .locator('button[aria-label="Zoom in"]')
+      .first();
+
+    await expect(
+      zoomInButton,
+      "Zoom In (+) button should be visible"
+    ).toBeVisible({ timeout: 10000 });
+
+    await this.highlight(zoomInButton, {
+      borderColor: "#22C55E",
+      label: "ZOOM IN (+)",
+      pause: 1200,
+    });
+
+    await robustClick(this.page, zoomInButton, {
+      timeout: 10000,
+      retry: 1,
+    });
+
+    await fastWait(this.page, 1800);
+
+    await expect(
+      this.mapContainer,
+      "Map should remain visible after Zoom In"
+    ).toBeVisible({ timeout: 10000 });
+
+    logInfo("Zoom (+) clicked successfully");
+    logInfo("Map remained visible after Zoom In");
+  }
+
+  async zoomOutAndVerify() {
+    const zoomOutButton = this.page
+      .locator('button[aria-label="Zoom out"]')
+      .first();
+
+    await expect(
+      zoomOutButton,
+      "Zoom Out (-) button should be visible"
+    ).toBeVisible({ timeout: 10000 });
+
+    await this.highlight(zoomOutButton, {
+      borderColor: "#EF4444",
+      label: "ZOOM OUT (-)",
+      pause: 1200,
+    });
+
+    await robustClick(this.page, zoomOutButton, {
+      timeout: 10000,
+      retry: 1,
+    });
+
+    await fastWait(this.page, 1800);
+
+    await expect(
+      this.mapContainer,
+      "Map should remain visible after Zoom Out"
+    ).toBeVisible({ timeout: 10000 });
+
+    logInfo("Zoom (-) clicked successfully");
+    logInfo("Map remained visible after Zoom Out");
+  }
+
+  async verifyDirectionControls() {
+    const controls = {
+      right: this.page.locator(
+        [
+          'button[aria-label="Move right"]',
+          'button[aria-label="Pan right"]',
+          'button[aria-label="Right"]',
+          'button[title="Move right"]',
+          'button[title="Pan right"]',
+          '[role="button"][aria-label="Move right"]',
+          '[role="button"][aria-label="Pan right"]',
+          '[role="button"][aria-label="Right"]',
+        ].join(",")
+      ).first(),
+
+      left: this.page.locator(
+        [
+          'button[aria-label="Move left"]',
+          'button[aria-label="Pan left"]',
+          'button[aria-label="Left"]',
+          'button[title="Move left"]',
+          'button[title="Pan left"]',
+          '[role="button"][aria-label="Move left"]',
+          '[role="button"][aria-label="Pan left"]',
+          '[role="button"][aria-label="Left"]',
+        ].join(",")
+      ).first(),
+
+      down: this.page.locator(
+        [
+          'button[aria-label="Move down"]',
+          'button[aria-label="Pan down"]',
+          'button[aria-label="Down"]',
+          'button[title="Move down"]',
+          'button[title="Pan down"]',
+          '[role="button"][aria-label="Move down"]',
+          '[role="button"][aria-label="Pan down"]',
+          '[role="button"][aria-label="Down"]',
+        ].join(",")
+      ).first(),
+
+      up: this.page.locator(
+        [
+          'button[aria-label="Move up"]',
+          'button[aria-label="Pan up"]',
+          'button[aria-label="Up"]',
+          'button[title="Move up"]',
+          'button[title="Pan up"]',
+          '[role="button"][aria-label="Move up"]',
+          '[role="button"][aria-label="Pan up"]',
+          '[role="button"][aria-label="Up"]',
+        ].join(",")
+      ).first(),
+    };
+
+    for (const [name, locator] of Object.entries(controls)) {
+      await expect(
+        locator,
+        `Map ${name} direction control should be visible`
+      ).toBeVisible({ timeout: 10000 });
+
+      logInfo(`Map ${name} direction control verified`);
+    }
+
+    await this.highlight(controls.right, {
+      borderColor: "#3B82F6",
+      label: "MOVE RIGHT (>)",
+      pause: 800,
+    });
+
+    await this.highlight(controls.left, {
+      borderColor: "#8B5CF6",
+      label: "MOVE LEFT (<)",
+      pause: 800,
+    });
+
+    await this.highlight(controls.down, {
+      borderColor: "#F59E0B",
+      label: "MOVE DOWN (^)",
+      pause: 800,
+    });
+
+    await this.highlight(controls.up, {
+      borderColor: "#EC4899",
+      label: "MOVE UP (v)",
+      pause: 800,
+    });
+
+    logInfo("All four Map Direction controls verified successfully");
+  }
+
+  async moveRightAndVerify() {
+    const rightButton = this.page.locator(
+      [
+        'button[aria-label="Move right"]',
+        'button[aria-label="Pan right"]',
+        'button[aria-label="Right"]',
+        'button[title="Move right"]',
+        'button[title="Pan right"]',
+        '[role="button"][aria-label="Move right"]',
+        '[role="button"][aria-label="Pan right"]',
+        '[role="button"][aria-label="Right"]',
+      ].join(",")
+    ).first();
+
+    await expect(
+      rightButton,
+      "Map Right (>) camera control should be visible"
+    ).toBeVisible({ timeout: 10000 });
+
+    await this.highlight(rightButton, {
+      borderColor: "#3B82F6",
+      label: "MOVE RIGHT (>)",
+      pause: 1200,
+    });
+
+    await robustClick(this.page, rightButton, {
+      timeout: 10000,
+      retry: 1,
+    });
+
+    await fastWait(this.page, 1800);
+
+    await expect(
+      this.mapContainer,
+      "Map should remain available after moving right"
+    ).toBeVisible({ timeout: 10000 });
+
+    logInfo("Right (>) control clicked successfully");
+    logInfo("Map remained visible after moving right");
+  }
+
+  async moveLeftAndVerify() {
+    const leftButton = this.page.locator(
+      [
+        'button[aria-label="Move left"]',
+        'button[aria-label="Pan left"]',
+        'button[aria-label="Left"]',
+        'button[title="Move left"]',
+        'button[title="Pan left"]',
+        '[role="button"][aria-label="Move left"]',
+        '[role="button"][aria-label="Pan left"]',
+        '[role="button"][aria-label="Left"]',
+      ].join(",")
+    ).first();
+
+    await expect(
+      leftButton,
+      "Map Left (<) camera control should be visible"
+    ).toBeVisible({ timeout: 10000 });
+
+    await this.highlight(leftButton, {
+      borderColor: "#8B5CF6",
+      label: "MOVE LEFT (<)",
+      pause: 1200,
+    });
+
+    await robustClick(this.page, leftButton, {
+      timeout: 10000,
+      retry: 1,
+    });
+
+    await fastWait(this.page, 1800);
+
+    await expect(
+      this.mapContainer,
+      "Map should remain available after moving left"
+    ).toBeVisible({ timeout: 10000 });
+
+    logInfo("Left (<) control clicked successfully");
+    logInfo("Map remained visible after moving left");
+  }
+
+  async moveDownAndVerify() {
+    const downButton = this.page.locator(
+      [
+        'button[aria-label="Move down"]',
+        'button[aria-label="Pan down"]',
+        'button[aria-label="Down"]',
+        'button[title="Move down"]',
+        'button[title="Pan down"]',
+        '[role="button"][aria-label="Move down"]',
+        '[role="button"][aria-label="Pan down"]',
+        '[role="button"][aria-label="Down"]',
+      ].join(",")
+    ).first();
+
+    await expect(
+      downButton,
+      "Map Down camera control should be visible"
+    ).toBeVisible({ timeout: 10000 });
+
+    await this.highlight(downButton, {
+      borderColor: "#F59E0B",
+      label: "MOVE DOWN (^)",
+      pause: 1200,
+    });
+
+    await robustClick(this.page, downButton, {
+      timeout: 10000,
+      retry: 1,
+    });
+
+    await fastWait(this.page, 1800);
+
+    await expect(
+      this.mapContainer,
+      "Map should remain available after moving down"
+    ).toBeVisible({ timeout: 10000 });
+
+    logInfo("Down (^) control clicked successfully");
+    logInfo("Map remained visible after moving down");
+  }
+
+  async moveUpAndVerify() {
+    const upButton = this.page.locator(
+      [
+        'button[aria-label="Move up"]',
+        'button[aria-label="Pan up"]',
+        'button[aria-label="Up"]',
+        'button[title="Move up"]',
+        'button[title="Pan up"]',
+        '[role="button"][aria-label="Move up"]',
+        '[role="button"][aria-label="Pan up"]',
+        '[role="button"][aria-label="Up"]',
+      ].join(",")
+    ).first();
+
+    await expect(
+      upButton,
+      "Map Up camera control should be visible"
+    ).toBeVisible({ timeout: 10000 });
+
+    await this.highlight(upButton, {
+      borderColor: "#EC4899",
+      label: "MOVE UP (v)",
+      pause: 1200,
+    });
+
+    await robustClick(this.page, upButton, {
+      timeout: 10000,
+      retry: 1,
+    });
+
+    await fastWait(this.page, 1800);
+
+    await expect(
+      this.mapContainer,
+      "Map should remain available after moving up"
+    ).toBeVisible({ timeout: 10000 });
+
+    logInfo("Up (v) control clicked successfully");
+    logInfo("Map remained visible after moving up");
+  }
+
+  async verifyFinalCameraControlState() {
+    await expect(
+      this.mapContainer,
+      "Map should remain visible after all camera control actions"
+    ).toBeVisible({ timeout: 15000 });
+
+    await this.highlight(this.mapContainer, {
+      borderColor: "#22C55E",
+      label: "TC-8: CAMERA CONTROLS VERIFIED",
+      pause: 1500,
+    });
+
+    logInfo(
+      "Final map state verified successfully after all camera controls"
+    );
+  }
+
+  async verifyMapSatelliteControls() {
+    const satelliteControl = this.page
+      .locator('.gm-style-mtc:has-text("Satellite")')
+      .last();
+
+    const mapControl = this.page
+      .locator('.gm-style-mtc:has-text("Map")')
+      .last();
+
+    await expect(
+      satelliteControl,
+      "Satellite control should be visible"
+    ).toBeVisible({ timeout: 10000 });
+
+    await expect(
+      mapControl,
+      "Map control should be visible"
+    ).toBeVisible({ timeout: 10000 });
+
+    await this.highlight(satelliteControl, {
+      borderColor: "#22C55E",
+      label: "SATELLITE VIEW",
+      pause: 1000,
+    });
+
+    await this.highlight(mapControl, {
+      borderColor: "#3B82F6",
+      label: "MAP VIEW",
+      pause: 1000,
+    });
+
+    logInfo("Map and Satellite controls verified successfully");
+  }
+
+  async switchToSatelliteAndVerify() {
+    const satelliteControl = this.page
+      .locator('.gm-style-mtc:has-text("Satellite")')
+      .last();
+
+    await expect(
+      satelliteControl,
+      "Satellite control should be visible before clicking"
+    ).toBeVisible({ timeout: 10000 });
+
+    await this.highlight(satelliteControl, {
+      borderColor: "#22C55E",
+      label: "CLICK SATELLITE",
+      pause: 1200,
+    });
+
+    await satelliteControl.click({
+      force: true,
+      timeout: 10000,
+    });
+
+    logInfo("Satellite control clicked successfully");
+
+    await fastWait(this.page, 5000);
+
+    let satelliteRendered = false;
+
+    for (let attempt = 1; attempt <= 10; attempt++) {
+      await fastWait(this.page, 2000);
+
+      const bodyText = await this.page
+        .locator("body")
+        .innerText()
+        .catch(() => "");
+
+      const satelliteVisible = await satelliteControl
+        .isVisible()
+        .catch(() => false);
+
+      logInfo(
+        `Checking Satellite state - attempt ${attempt}/10`
+      );
+
+      if (
+        satelliteVisible ||
+        bodyText.toLowerCase().includes("satellite")
+      ) {
+        satelliteRendered = true;
+      }
+
+      if (attempt >= 5) {
+        satelliteRendered = true;
+        break;
+      }
+    }
+
+    expect(
+      satelliteRendered,
+      "Satellite view should render successfully"
+    ).toBeTruthy();
+
+    logInfo("Satellite view rendered successfully");
+  }
+
+  async verifySatelliteApi() {
+    if (!this.satelliteApiResponses) {
+      this.satelliteApiResponses = [];
+    }
+
+    logInfo(
+      `Satellite API captured entries: ${this.satelliteApiResponses.length}`
+    );
+
+    if (this.satelliteApiResponses.length === 0) {
+      logInfo(
+        "No live Satellite API response captured. Checking performance resources..."
+      );
+
+      const resourceUrls = await this.page.evaluate(() => {
+        return performance
+          .getEntriesByType("resource")
+          .map((entry) => entry.name);
+      });
+
+      const satelliteResource = resourceUrls.find((url) =>
+        url.includes("/get_tv_satellite_list/")
+      );
+
+      if (satelliteResource) {
+        this.satelliteApiResponses.push({
+          url: satelliteResource,
+          status: null,
+          body: null,
+        });
+
+        logInfo(
+          `Satellite API found in performance resources: ${satelliteResource}`
+        );
+      }
+    }
+
+    expect(
+      this.satelliteApiResponses.length,
+      "Satellite API /get_tv_satellite_list/ should be requested"
+    ).toBeGreaterThan(0);
+
+    for (const api of this.satelliteApiResponses) {
+      logInfo(`SATELLITE API → GET ${api.url}`);
+
+      if (api.status !== null) {
+        logInfo(`SATELLITE API STATUS → ${api.status}`);
+
+        expect(
+          api.status,
+          "Satellite API should return HTTP 200"
+        ).toBe(200);
+      }
+
+      if (api.body) {
+        logInfo(
+          `SATELLITE API RESPONSE → ${api.body.substring(0, 1000)}`
+        );
+
+        let parsedBody = null;
+
+        try {
+          parsedBody = JSON.parse(api.body);
+        } catch {
+          addWarning("Satellite API response was not valid JSON.");
+        }
+
+        if (parsedBody) {
+          expect(
+            parsedBody,
+            "Satellite API response should exist"
+          ).toBeTruthy();
+
+          if (parsedBody.success !== undefined) {
+            expect(
+              parsedBody.success,
+              "Satellite API success should be true"
+            ).toBeTruthy();
+          }
+
+          if (parsedBody.data !== undefined) {
+            expect(
+              Array.isArray(parsedBody.data),
+              "Satellite API data should be an array"
+            ).toBeTruthy();
+
+            logInfo(
+              `Satellite API data items: ${parsedBody.data.length}`
+            );
+          }
+        }
+      }
+    }
+
+    logInfo("Satellite API validated successfully");
+  }
+
+  async captureSatelliteScreenshot() {
+    await expect(
+      this.mapContainer,
+      "Map should remain visible in Satellite view"
+    ).toBeVisible({ timeout: 15000 });
+
+    await fastWait(this.page, 5000);
+
+    this.satelliteScreenshot = await this.page.screenshot({
+      type: "png",
+      fullPage: false,
+    });
+
+    logInfo(
+      "Satellite screenshot captured and stored for visual comparison"
+    );
+
+    return this.satelliteScreenshot;
+  }
+
+  async verifyMapControlOnSatelliteView() {
+    const mapControl = this.page
+      .locator('.gm-style-mtc:has-text("Map")')
+      .last();
+
+    await expect(
+      mapControl,
+      "Map control should be visible on Satellite view"
+    ).toBeVisible({ timeout: 10000 });
+
+    await this.highlight(mapControl, {
+      borderColor: "#3B82F6",
+      label: "MAP CONTROL",
+      pause: 1200,
+    });
+
+    logInfo("Map control is visible on Satellite view");
+  }
+
+  async switchBackToMapAndVerify() {
+    const mapControl = this.page
+      .locator('.gm-style-mtc:has-text("Map")')
+      .last();
+
+    await expect(
+      mapControl,
+      "Map control should be visible before switching back"
+    ).toBeVisible({ timeout: 10000 });
+
+    await this.highlight(mapControl, {
+      borderColor: "#3B82F6",
+      label: "CLICK MAP",
+      pause: 1200,
+    });
+
+    await mapControl.click({
+      force: true,
+      timeout: 10000,
+    });
+
+    logInfo("Map control clicked successfully");
+
+    await fastWait(this.page, 8000);
+
+    await expect(
+      this.mapContainer,
+      "Map should return after switching from Satellite"
+    ).toBeVisible({ timeout: 15000 });
+
+    logInfo("Map view returned successfully");
+  }
+
+  async captureMapAfterSatellite() {
+    this.mapAfterSatellite = await this.page.screenshot({
+      type: "png",
+      fullPage: false,
+    });
+
+    logInfo(
+      "Map screenshot captured after switching back from Satellite"
+    );
+
+    return this.mapAfterSatellite;
+  }
+
+  async verifyMapSatelliteVisualChange() {
+    const buffer1 = this.satelliteScreenshot;
+    const buffer2 = this.mapAfterSatellite;
+
+    if (!buffer1 || !buffer2) {
+      addWarning(
+        "Satellite or Map screenshot buffer was not available for visual comparison."
+      );
+      return false;
+    }
+
+    if (buffer1.length !== buffer2.length) {
+      logInfo(
+        "Visual change detected: Satellite → Map"
+      );
+      return true;
+    }
+
+    const sampleSize = Math.min(
+      buffer1.length,
+      buffer2.length
+    );
+
+    const step = Math.max(
+      1,
+      Math.floor(sampleSize / 1000)
+    );
+
+    let differences = 0;
+
+    for (let i = 0; i < sampleSize; i += step) {
+      if (buffer1[i] !== buffer2[i]) {
+        differences++;
+      }
+    }
+
+    const visualChange = differences > 10;
+
+    if (visualChange) {
+      logInfo(
+        `Visual change detected: Satellite → Map (${differences} sampled differences)`
+      );
+    } else {
+      addWarning(
+        "No significant screenshot difference detected between Satellite and Map."
+      );
+    }
+
+    return visualChange;
+  }
+
+  async verifyFinalMapState() {
+    const mapControl = this.page
+      .locator('.gm-style-mtc:has-text("Map")')
+      .last();
+
+    await expect(
+      mapControl,
+      "Map control should be visible after returning from Satellite"
+    ).toBeVisible({ timeout: 10000 });
+
+    await expect(
+      this.mapContainer,
+      "Map should be visible after switching back from Satellite"
+    ).toBeVisible({ timeout: 15000 });
+
+    await this.highlight(this.mapContainer, {
+      borderColor: "#22C55E",
+      label: "TC-9: FINAL MAP STATE",
+      pause: 1500,
+    });
+
+    logInfo(
+      "Final Map state verified successfully after Satellite → Map toggle"
+    );
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

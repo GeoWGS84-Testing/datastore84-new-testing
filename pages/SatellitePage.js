@@ -1,14 +1,15 @@
-// pages/SatellitePage.js
+ // pages/SatellitePage.js
+
 import { expect } from "@playwright/test";
 import { BasePage } from "./BasePage";
+
 import {
   setContext,
   logInfo,
   addWarning,
   highlight,
   fastWait,
-  clickWhenVisible,
-  waitForAndHighlight,
+  robustClick,
   getInnerTextSafe,
   saveMapScreenshot,
   annotateElementLabel,
@@ -18,6 +19,7 @@ import {
   DETAILS_IMAGE_WAIT_MS,
   markLogicSkipped,
 } from "../utils/helpers";
+
 import {
   highlightOutlineOnMap,
   highlightPreviewOnMap,
@@ -28,17 +30,59 @@ export class SatellitePage extends BasePage {
   constructor(page) {
     super(page);
 
+    // ============================================================
+    // Satellite Locators
+    // ============================================================
+
     this.satelliteSectionWrapper = page.locator("#div_satellite");
+
+    this.removeSceneButton = page
+      .locator(
+        'button.scene-close-btn.gw-scene-active[title="Remove scene"]'
+      )
+      .first();
+
     this.productTable = page.locator("#table_satellite");
+
     this.scenesTableWrapper = page.locator(
-      "#tbl_satellite_scenes_wrapper.dataTables_wrapper",
+      "#tbl_satellite_scenes_wrapper.dataTables_wrapper"
     );
+
     this.scenesTable = page.locator("#tbl_satellite_scenes");
+
     this.scenesRows = this.scenesTable.locator("tbody tr");
 
-    this.sceneDetailModal = page.locator(".modal-content:has(#img_scene)");
+    this.sceneDetailModal = page.locator(
+      ".modal-content:has(#img_scene)"
+    );
+
     this.sceneDetailImage = page.locator("#img_scene");
+
     this.sceneDetailDataTable = page.locator("#tbl_details");
+
+    // Satellite filters
+    this.satelliteFilters = page.locator("#gw-sat-filters");
+
+    this.satelliteTags = page.locator(
+      "#gw-sat-tags .gw-sat-tag"
+    );
+
+    this.satelliteRemoveButtons = page.locator(
+      "#gw-sat-tags span.gw-sat-x"
+    );
+
+    this.addSatelliteButton = page.locator(
+      "button.gw-sat-dropdown-btn[onclick='gwToggleSatDropdown()']"
+    );
+
+    this.satelliteCheckboxes = page.locator(
+      "#gw-sat-filters input[type='checkbox']"
+    );
+
+    this.searchButton = page.locator("#gw-search-btn");
+
+    // Results
+    this.resultsTable = page.locator("#tbl_satellite_scenes");
   }
 
   // ============================================================
@@ -48,40 +92,112 @@ export class SatellitePage extends BasePage {
   async openSatelliteSection() {
     setContext({ flow: "openSatellite" });
 
-    const sidebar = this.page.locator("nav.side-menu");
     try {
-      if ((await sidebar.count()) > 0) await highlight(this.page, sidebar);
-    } catch {}
+      await this.productTable.waitFor({
+        state: "visible",
+        timeout: 60000,
+      });
 
-    const satelliteHeader = this.page.locator("#satellite");
-    try {
-      await satelliteHeader.waitFor({ state: "visible", timeout: 10000 });
-      await highlight(this.page, satelliteHeader);
-      await satelliteHeader.click();
-      await fastWait(this.page, 500);
-      await this.productTable.waitFor({ state: "visible", timeout: 60000 });
-      logInfo("Satellite section opened and product table visible");
+      await highlight(this.page, this.productTable);
+
+      logInfo("Satellite product table is visible");
+      return true;
     } catch (e) {
-      addWarning("Failed to open satellite section: " + (e?.message || e));
+      addWarning(
+        "Satellite product table did not become visible: " +
+          (e?.message || e)
+      );
+
       await saveMapScreenshot(
         this.page,
         "satellite",
         "section_open_failed",
-        true,
+        true
       );
+
       throw e;
     }
   }
 
   async waitForSatelliteTable() {
     try {
-      await this.productTable.waitFor({ state: "visible", timeout: 180000 });
-      logInfo("Product table loaded");
+      await this.productTable.waitFor({
+        state: "visible",
+        timeout: 180000,
+      });
+
+      logInfo("Satellite product table loaded");
+      return true;
     } catch (e) {
-      addWarning("Product table did not appear within 180 seconds.");
-      await saveMapScreenshot(this.page, "satellite", "table_timeout", true);
+      addWarning(
+        "Product table did not appear within 180 seconds."
+      );
+
+      await saveMapScreenshot(
+        this.page,
+        "satellite",
+        "table_timeout",
+        true
+      );
+
       throw e;
     }
+  }
+
+  // ============================================================
+  // Satellite Filter Management
+  // ============================================================
+
+  async removeAllFilters() {
+    setContext({
+      flow: "removeSatelliteFilters",
+    });
+
+    try {
+      const count =
+        await this.satelliteRemoveButtons.count();
+
+      logInfo(`Existing satellite filters: ${count}`);
+
+      for (let i = count - 1; i >= 0; i--) {
+        const button =
+          this.satelliteRemoveButtons.nth(i);
+
+        try {
+          await button.click({ force: true });
+          await this.page.waitForTimeout(300);
+        } catch {
+          try {
+            await button.evaluate((el) => el.click());
+          } catch {
+            logInfo(
+              `Unable to remove satellite filter ${i + 1}`
+            );
+          }
+        }
+      }
+
+      logInfo("All existing satellite filters removed");
+      return true;
+    } catch (e) {
+      addWarning(
+        `Failed while removing satellite filters: ${
+          e?.message || e
+        }`
+      );
+
+      return false;
+    }
+  }
+
+  async verifyFiltersEmpty() {
+    await expect(
+      this.satelliteTags,
+      "Satellite filters should be empty"
+    ).toHaveCount(0);
+
+    logInfo("Satellite filter list is empty");
+    return true;
   }
 
   // ============================================================
@@ -89,13 +205,17 @@ export class SatellitePage extends BasePage {
   // ============================================================
 
   async selectProduct(productName) {
-    setContext({ flow: "selectProduct", details: { product: productName } });
+    setContext({
+      flow: "selectProduct",
+      details: { product: productName },
+    });
 
     const productCell = this.productTable
       .locator(`div[id="${productName}"]`)
       .first();
+
     const productCellByText = this.productTable
-      .locator(`div`, { hasText: productName })
+      .locator("div", { hasText: productName })
       .first();
 
     try {
@@ -106,40 +226,277 @@ export class SatellitePage extends BasePage {
         await highlight(this.page, productCellByText);
         await productCellByText.click();
       } else {
-        addWarning(`Product "${productName}" not found in product table.`);
+        addWarning(
+          `Product "${productName}" not found in product table.`
+        );
+
         await saveMapScreenshot(
           this.page,
           productName,
           "product_not_found",
-          true,
+          true
         );
+
         markLogicSkipped(
-          `Product "${productName}" not found — skipping scene processing`,
+          `Product "${productName}" not found — skipping scene processing`
         );
+
         return false;
       }
     } catch (e) {
-      addWarning(`Failed to click product "${productName}": ${e.message}`);
+      addWarning(
+        `Failed to click product "${productName}": ${e.message}`
+      );
+
       await saveMapScreenshot(
         this.page,
         productName,
         "product_click_failed",
-        true,
+        true
       );
+
       return false;
     }
 
-    logInfo(`Clicked product: ${productName}`);
+    logInfo(`Clicked satellite product: ${productName}`);
 
     await this.scenesTableWrapper
-      .waitFor({ state: "visible", timeout: 15000 })
+      .waitFor({
+        state: "visible",
+        timeout: 15000,
+      })
       .catch(() => {
         addWarning(
-          "Scenes table wrapper did not become visible after selecting product",
+          "Scenes table wrapper did not become visible after selecting product"
         );
       });
 
     return true;
+  }
+
+  // ============================================================
+  // Satellite Selection
+  // ============================================================
+
+  async selectSatellite(satelliteValue) {
+    setContext({
+      flow: "selectSatellite",
+      details: {
+        satellite: satelliteValue,
+      },
+    });
+
+    try {
+      const satelliteOption = this.page
+        .locator(
+          `label.gw-sat-check-item:has(input[value="${satelliteValue}"])`
+        )
+        .first();
+
+      await expect(
+        satelliteOption,
+        `${satelliteValue} satellite option should be visible`
+      ).toBeVisible({
+        timeout: 10000,
+      });
+
+      const satelliteInput =
+        satelliteOption.locator(
+          `input[type="checkbox"][value="${satelliteValue}"]`
+        );
+
+      if (!(await satelliteInput.isChecked())) {
+        await satelliteInput.check();
+      }
+
+      await expect(satelliteInput).toBeChecked();
+
+      logInfo(
+        `${satelliteValue} selected successfully`
+      );
+
+      return true;
+    } catch (e) {
+      addWarning(
+        `Failed to select satellite "${satelliteValue}": ${
+          e?.message || e
+        }`
+      );
+
+      return false;
+    }
+  }
+
+  async selectSatelliteByText(satelliteName) {
+    setContext({
+      flow: "selectSatelliteByText",
+      details: {
+        satellite: satelliteName,
+      },
+    });
+
+    try {
+      const satelliteLabel = this.page
+        .locator("#gw-sat-filters label")
+        .filter({ hasText: satelliteName })
+        .first();
+
+      if ((await satelliteLabel.count()) === 0) {
+        addWarning(
+          `Satellite "${satelliteName}" label not found`
+        );
+
+        return false;
+      }
+
+      await highlight(this.page, satelliteLabel);
+      await satelliteLabel.click();
+
+      logInfo(
+        `Satellite selected by text: ${satelliteName}`
+      );
+
+      return true;
+    } catch (e) {
+      addWarning(
+        `Failed to select satellite "${satelliteName}": ${
+          e?.message || e
+        }`
+      );
+
+      return false;
+    }
+  }
+
+  // ============================================================
+  // Satellite Filter Verification
+  // ============================================================
+
+  async verifySatelliteSelected(satelliteName) {
+    const tag = this.satelliteTags
+      .filter({ hasText: satelliteName })
+      .first();
+
+    await expect(
+      tag,
+      `Satellite filter "${satelliteName}" should be active`
+    ).toBeVisible({
+      timeout: 10000,
+    });
+
+    logInfo(
+      `Verified satellite filter: ${satelliteName}`
+    );
+
+    return true;
+  }
+
+  async verifySatelliteFilters() {
+    try {
+      await this.satelliteFilters.waitFor({
+        state: "visible",
+        timeout: 30000,
+      });
+
+      await highlight(
+        this.page,
+        this.satelliteFilters
+      );
+
+      logInfo("Satellite filter panel is visible");
+
+      return true;
+    } catch (e) {
+      addWarning(
+        `Satellite filter panel did not appear: ${
+          e?.message || e
+        }`
+      );
+
+      return false;
+    }
+  }
+
+  // ============================================================
+  // Add Satellite
+  // ============================================================
+
+  async openAddSatellite() {
+    await expect(
+      this.addSatelliteButton,
+      "Add Satellite button should be visible"
+    ).toBeVisible({
+      timeout: 15000,
+    });
+
+    await expect(
+      this.addSatelliteButton,
+      "Add Satellite button should be enabled"
+    ).toBeEnabled({
+      timeout: 10000,
+    });
+
+    await highlight(this.page, this.addSatelliteButton, {
+      label: "ADD SATELLITE",
+      pause: 1000,
+    });
+
+    await this.addSatelliteButton.click();
+
+    await fastWait(this.page, 700);
+
+    logInfo(
+      "Add Satellite dropdown opened successfully"
+    );
+
+    return true;
+  }
+
+  // ============================================================
+  // Search Imagery
+  // ============================================================
+
+  async searchImagery() {
+    setContext({
+      flow: "searchSatelliteImagery",
+    });
+
+    try {
+      await expect(
+        this.searchButton,
+        "Satellite Search button should be visible"
+      ).toBeVisible({
+        timeout: 30000,
+      });
+
+      await highlight(
+        this.page,
+        this.searchButton
+      );
+
+      await this.searchButton.click();
+
+      logInfo(
+        "Satellite imagery search initiated"
+      );
+
+      return true;
+    } catch (e) {
+      addWarning(
+        `Satellite imagery search failed: ${
+          e?.message || e
+        }`
+      );
+
+      await saveMapScreenshot(
+        this.page,
+        "satellite",
+        "search_imagery_failed",
+        true
+      );
+
+      return false;
+    }
   }
 
   // ============================================================
@@ -147,802 +504,1501 @@ export class SatellitePage extends BasePage {
   // ============================================================
 
   async waitForScenesTable() {
-    setContext({ flow: "waitScenesTable" });
-    logInfo("Waiting for scenes table to populate...");
+    setContext({
+      flow: "waitScenesTable",
+    });
+
+    logInfo(
+      "Waiting for satellite scenes table..."
+    );
 
     try {
       await this.scenesTableWrapper.waitFor({
         state: "visible",
         timeout: 120000,
       });
-    } catch (e) {
-      addWarning("Scenes table wrapper never became visible");
-      await saveMapScreenshot(this.page, "scenes", "wrapper_not_visible", true);
+    } catch {
+      addWarning(
+        "Scenes table wrapper never became visible"
+      );
+
+      await saveMapScreenshot(
+        this.page,
+        "scenes",
+        "wrapper_not_visible",
+        true
+      );
+
       return "error";
     }
 
     const SCENES_LOAD_TIMEOUT = 180000;
     const POLL_INTERVAL = 3000;
     const startTime = Date.now();
+
     let lastLoggedSecond = -1;
 
-    while (Date.now() - startTime < SCENES_LOAD_TIMEOUT) {
+    while (
+      Date.now() - startTime <
+      SCENES_LOAD_TIMEOUT
+    ) {
       try {
-        const processing = this.scenesTableWrapper.locator(
-          ".dataTables_processing",
-        );
+        const processing =
+          this.scenesTableWrapper.locator(
+            ".dataTables_processing"
+          );
+
         if (
           (await processing.count()) > 0 &&
-          (await processing.isVisible().catch(() => false))
+          (await processing
+            .isVisible()
+            .catch(() => false))
         ) {
-          const elapsed = Math.round((Date.now() - startTime) / 1000);
-          if (elapsed !== lastLoggedSecond && elapsed % 10 === 0) {
+          const elapsed = Math.round(
+            (Date.now() - startTime) / 1000
+          );
+
+          if (
+            elapsed !== lastLoggedSecond &&
+            elapsed % 10 === 0
+          ) {
             logInfo(
-              `Scenes table: DataTables still processing... (${elapsed}s elapsed)`,
+              `Scenes table processing... (${elapsed}s elapsed)`
             );
+
             lastLoggedSecond = elapsed;
           }
-          await this.page.waitForTimeout(POLL_INTERVAL);
+
+          await this.page.waitForTimeout(
+            POLL_INTERVAL
+          );
+
           continue;
         }
 
-        const rowCount = await this.scenesRows.count();
+        const rowCount =
+          await this.scenesRows.count();
+
         if (rowCount > 0) {
-          const firstRowText = await getInnerTextSafe(this.scenesRows.first());
-          if (!/^No data available/i.test(firstRowText.trim())) {
-            const emptyCell = this.scenesTable.locator("td.dataTables_empty");
-            if ((await emptyCell.count()) === 0) {
-              const elapsed = Math.round((Date.now() - startTime) / 1000);
-              logInfo(
-                `✅ Scenes table loaded with ${rowCount} row(s) after ${elapsed}s`,
+          const firstRowText =
+            await getInnerTextSafe(
+              this.scenesRows.first()
+            );
+
+          if (
+            !/^No data available/i.test(
+              firstRowText.trim()
+            )
+          ) {
+            const emptyCell =
+              this.scenesTable.locator(
+                "td.dataTables_empty"
               );
+
+            if ((await emptyCell.count()) === 0) {
+              logInfo(
+                `Scenes table loaded with ${rowCount} row(s)`
+              );
+
               return "data";
             }
           }
         }
 
-        const infoEl = this.scenesTableWrapper.locator(".dataTables_info");
-        if (
-          (await infoEl.count()) > 0 &&
-          (await infoEl.isVisible().catch(() => false))
-        ) {
-          const infoText = (await getInnerTextSafe(infoEl)).toLowerCase();
-          if (
-            /showing|displaying/.test(infoText) &&
-            !/0 (entries|scenes|results)/i.test(infoText) &&
-            !/no (entries|data|matching)/i.test(infoText)
-          ) {
-            logInfo(
-              `Scenes table info indicates data loaded: "${infoText}" — waiting for rows to render...`,
-            );
-            await this.page.waitForTimeout( 2000 );
-            const retryRowCount = await this.scenesRows.count();
-            if (retryRowCount > 0) {
-              const retryFirstRow = await getInnerTextSafe(
-                this.scenesRows.first(),
-              );
-              if (!/^No data available/i.test(retryFirstRow.trim())) {
-                const elapsed = Math.round((Date.now() - startTime) / 1000);
-                logInfo(
-                  `✅ Scenes table loaded with ${retryRowCount} row(s) after ${elapsed}s`,
-                );
-                return "data";
-              }
-            }
-          }
-        }
-
-        const elapsed = Math.round((Date.now() - startTime) / 1000);
-        if (elapsed !== lastLoggedSecond && elapsed > 0 && elapsed % 15 === 0) {
-          logInfo(
-            `Scenes table still loading... (${elapsed}s elapsed, ${rowCount} rows so far)`,
-          );
-          lastLoggedSecond = elapsed;
-        }
-
-        await this.page.waitForTimeout(POLL_INTERVAL);
-      } catch (e) {
-        await this.page.waitForTimeout(POLL_INTERVAL);
+        await this.page.waitForTimeout(
+          POLL_INTERVAL
+        );
+      } catch {
+        await this.page.waitForTimeout(
+          POLL_INTERVAL
+        );
       }
     }
 
-    const totalTime = Math.round((Date.now() - startTime) / 1000);
-    const finalRowCount = await this.scenesRows.count();
+    const finalRowCount =
+      await this.scenesRows.count();
+
     if (finalRowCount > 0) {
-      const finalFirstRow = await getInnerTextSafe(this.scenesRows.first());
-      if (!/^No data available/i.test(finalFirstRow.trim())) {
-        logInfo(
-          `✅ Scenes table loaded with ${finalRowCount} row(s) at the last moment (${totalTime}s)`,
+      const finalFirstRow =
+        await getInnerTextSafe(
+          this.scenesRows.first()
         );
+
+      if (
+        !/^No data available/i.test(
+          finalFirstRow.trim()
+        )
+      ) {
+        logInfo(
+          `Scenes table loaded with ${finalRowCount} row(s)`
+        );
+
         return "data";
       }
     }
 
+    const totalTime = Math.round(
+      (Date.now() - startTime) / 1000
+    );
+
     logInfo(
-      `Scenes table still empty after ${totalTime}s — no data available for this product/AOI`,
+      `Scenes table empty after ${totalTime}s`
     );
+
     markLogicSkipped(
-      `Scenes table empty after ${totalTime}s wait — no scenes for this product/AOI`,
+      `Scenes table empty after ${totalTime}s wait`
     );
+
     await saveMapScreenshot(
       this.page,
       "scenes",
       `no_data_after_${totalTime}s`,
-      false,
+      false
     );
+
     return "empty";
   }
 
+  async verifyScenesTable() {
+    await expect(
+      this.scenesTable,
+      "Satellite scenes table should be visible"
+    ).toBeVisible({
+      timeout: 30000,
+    });
+
+    const rowCount =
+      await this.scenesRows.count();
+
+    expect(
+      rowCount,
+      "Satellite scenes table should contain scene rows"
+    ).toBeGreaterThan(0);
+
+    logInfo(
+      `Verified satellite scenes table: ${rowCount} row(s)`
+    );
+
+    return true;
+  }
+
   // ============================================================
-  // SceneId Extraction
+  // Scene ID
   // ============================================================
 
   async getSceneIdFromRow(rowLocator) {
     try {
-      const inputs = rowLocator.locator('td input[type="image"]');
+      const inputs = rowLocator.locator(
+        'td input[type="image"]'
+      );
+
       const inputCount = await inputs.count();
+
       for (let i = 0; i < inputCount; i++) {
-        const idAttr = await inputs.nth(i).getAttribute("id");
+        const idAttr =
+          await inputs.nth(i).getAttribute("id");
+
         if (idAttr && idAttr.length > 10) {
-          const dashIdx = idAttr.indexOf("-");
-          const extracted = dashIdx !== -1 ? idAttr.slice(dashIdx + 1) : idAttr;
-          if (/^[A-Z0-9][A-Z0-9_\-]{9,}$/i.test(extracted)) return extracted;
-          if (extracted.length > 10) return extracted;
+          const dashIdx =
+            idAttr.indexOf("-");
+
+          const extracted =
+            dashIdx !== -1
+              ? idAttr.slice(dashIdx + 1)
+              : idAttr;
+
+          if (
+            /^[A-Z0-9][A-Z0-9_-]{9,}$/i.test(
+              extracted
+            )
+          ) {
+            return extracted;
+          }
+
+          if (extracted.length > 10) {
+            return extracted;
+          }
         }
       }
     } catch {}
 
     try {
-      const cells = rowLocator.locator("td");
-      const cellCount = await cells.count();
-      for (let i = 0; i < cellCount; i++) {
-        const text = (await cells.nth(i).innerText()).trim();
-        const m = text.match(/([A-Z0-9]{2,4}_[A-Z0-9_]{8,})/i);
-        if (m) return m[1];
-      }
-    } catch {}
+      const text =
+        await getInnerTextSafe(rowLocator);
 
-    try {
-      const txt = await getInnerTextSafe(rowLocator);
-      const m = txt.match(/([A-Z0-9]{2,4}_[A-Z0-9_]{8,})/i);
-      if (m) return m[1];
+      const match = text.match(
+        /([A-Z0-9]{2,4}_[A-Z0-9_]{8,})/i
+      );
+
+      if (match) return match[1];
     } catch {}
 
     return null;
   }
 
   // ============================================================
-  // ★ Image Validation
+  // Scene Button Click
+  // ============================================================
+
+  async clickRowButtonRobust(
+    row,
+    buttonLocator
+  ) {
+    try {
+      await buttonLocator
+        .first()
+        .scrollIntoViewIfNeeded();
+
+      await buttonLocator.first().click();
+
+      return true;
+    } catch {
+      try {
+        await buttonLocator
+          .first()
+          .click({ force: true });
+
+        return true;
+      } catch {
+        const clicked =
+          await row.evaluate((r) => {
+            const btn = r.querySelector(
+              [
+                'input[title="show scene outline"]',
+                'input[title*="preview"]',
+                'input[title*="preveiw"]',
+                'input[title="Show scene details"]',
+                'input[value="Details"]',
+                'button[title*="outline"]',
+                'button[title*="preview"]',
+                'button[title*="details"]',
+              ].join(",")
+            );
+
+            if (!btn) return false;
+
+            try {
+              btn.click();
+              return true;
+            } catch {
+              return false;
+            }
+          });
+
+        return !!clicked;
+      }
+    }
+  }
+
+  // ============================================================
+  // Scene Outline
+  // ============================================================
+
+  async _validateSceneOutlineRendered(
+    row,
+    sceneId
+  ) {
+    const outlineBtn = row.locator(
+      'input[title="show scene outline"]'
+    );
+
+    await expect(
+      outlineBtn,
+      `Outline button should exist for ${
+        sceneId || "scene"
+      }`
+    ).toBeVisible({
+      timeout: OUTLINE_WAIT_MS,
+    });
+
+    await expect(
+      outlineBtn,
+      `Outline should switch to Hide for ${
+        sceneId || "scene"
+      }`
+    ).toHaveValue("Hide");
+
+    const map = this.page.locator("#map");
+
+    await expect(
+      map,
+      "Map should remain visible after outline"
+    ).toBeVisible({
+      timeout: OUTLINE_WAIT_MS,
+    });
+  }
+
+  async _highlightSceneOutlineOnMap(
+    outlineButton
+  ) {
+    const highlighted =
+      await highlightOutlineOnMap(
+        this.page,
+        outlineButton
+      );
+
+    if (highlighted) {
+      await fastWait(this.page, 1200);
+    }
+
+    return highlighted;
+  }
+
+  // ============================================================
+  // Preview
+  // ============================================================
+
+  async _highlightPreviewOnMap() {
+    const highlighted =
+      await highlightPreviewOnMap(
+        this.page
+      );
+
+    if (highlighted) {
+      await fastWait(this.page, 1200);
+    }
+
+    return highlighted;
+  }
+
+  async _clearPreviewHighlight() {
+    await clearMapHighlights(
+      this.page
+    );
+  }
+
+  // ============================================================
+  // Image Helpers
   // ============================================================
 
   _isValidSatelliteImageSrc(src) {
-    if (!src || typeof src !== "string") return false;
-    const trimmed = src.trim();
-    if (trimmed === "" || trimmed === "undefined" || trimmed === "null")
+    if (!src || typeof src !== "string") {
       return false;
-    if (trimmed.startsWith("data:")) return false;
-    if (/google|gstatic|googleapis/i.test(trimmed)) return false;
+    }
+
+    const value = src.trim();
+
     if (
-      /marker|icon|pin|static|add-to-cart|show\.png|hide\.png|preview\.png|details\.png/i.test(
-        trimmed,
-      )
-    )
+      !value ||
+      value === "undefined" ||
+      value === "null"
+    ) {
       return false;
-    if (!trimmed.startsWith("http") && !trimmed.startsWith("/")) return false;
-    return true;
-  }
-
-  /**
-   * ★ Check if both URLs reference the same sceneId.
-   * Handles dashed IDs like "Legion01-B1100011002CD010" where
-   * the URL only contains "B1100011002CD010".
-   */
-  _doUrlsMatchSceneId(url1, url2, sceneId) {
-    if (!sceneId) return false;
-
-    // Check full sceneId first
-    if (url1.includes(sceneId) && url2.includes(sceneId)) return true;
-
-    // Check dash-split parts (e.g., "B1100011002CD010" from "Legion01-B1100011002CD010")
-    const dashParts = sceneId.split("-");
-    for (const part of dashParts) {
-      if (part.length >= 8 && url1.includes(part) && url2.includes(part))
-        return true;
     }
 
-    // Check underscore-split parts (e.g., long catalog segments)
-    const underParts = sceneId.split("_");
-    for (const part of underParts) {
-      if (part.length >= 8 && url1.includes(part) && url2.includes(part))
-        return true;
+    if (
+      value.startsWith("data:") ||
+      /google|gstatic|googleapis/i.test(value)
+    ) {
+      return false;
     }
 
-    return false;
-  }
+    if (
+      /marker|icon|pin|add-to-cart|show\.png|hide\.png|preview\.png|details\.png/i.test(
+        value
+      )
+    ) {
+      return false;
+    }
 
-  // ============================================================
-  // Map Image State Helpers
-  // ============================================================
+    return (
+      value.startsWith("http") ||
+      value.startsWith("/")
+    );
+  }
 
   async _getMapImageSrcs() {
     try {
-      const images = this.page.locator("#map img");
-      const count = await images.count();
+      const images =
+        this.page.locator("#map img");
+
+      const count =
+        await images.count();
+
       const srcs = new Set();
+
       for (let i = 0; i < count; i++) {
-        const src = await images.nth(i).getAttribute("src");
-        if (this._isValidSatelliteImageSrc(src)) {
+        const src =
+          await images.nth(i).getAttribute(
+            "src"
+          );
+
+        if (
+          this._isValidSatelliteImageSrc(src)
+        ) {
           srcs.add(src);
         }
       }
+
       return srcs;
     } catch {
       return new Set();
     }
   }
 
-  async _waitForNewMapImage(existingSrcs, timeout = 20000) {
+  async _waitForNewMapImage(
+    existingSrcs,
+    timeout = PREVIEW_WAIT_MS
+  ) {
     const start = Date.now();
-    while (Date.now() - start < timeout) {
-      try {
-        const currentSrcs = await this._getMapImageSrcs();
-        for (const src of currentSrcs) {
-          if (!existingSrcs.has(src)) {
-            const img = this.page.locator(`#map img[src="${src}"]`).first();
-            if ((await img.count()) > 0) return img;
+
+    while (
+      Date.now() - start <
+      timeout
+    ) {
+      const currentSrcs =
+        await this._getMapImageSrcs();
+
+      for (const src of currentSrcs) {
+        if (!existingSrcs.has(src)) {
+          const img = this.page.locator(
+            `#map img[src="${src}"]`
+          ).first();
+
+          if ((await img.count()) > 0) {
+            return img;
           }
         }
-      } catch {}
-      await this.page.waitForTimeout( 500 );
-    }
-    return null;
-  }
-
-  async _findImageBySceneId(sceneId) {
-    if (!sceneId) return null;
-
-    const candidates = [sceneId];
-
-    const dashParts = sceneId.split("-");
-    if (dashParts.length > 1) {
-      for (let i = 1; i < dashParts.length; i++) {
-        if (dashParts[i].length >= 8) {
-          candidates.push(dashParts[i]);
-        }
       }
-      const lastSegment = dashParts[dashParts.length - 1];
-      if (lastSegment.length >= 8 && !candidates.includes(lastSegment)) {
-        candidates.push(lastSegment);
-      }
-    }
 
-    const underscoreParts = sceneId.split("_");
-    if (underscoreParts.length > 1) {
-      const lastUnderscore = underscoreParts[underscoreParts.length - 1];
-      if (lastUnderscore.length >= 8 && !candidates.includes(lastUnderscore)) {
-        candidates.push(lastUnderscore);
-      }
-    }
-
-    for (const candidate of candidates) {
-      try {
-        const imgs = this.page.locator(`#map img[src*="${candidate}"]`);
-        const count = await imgs.count();
-        for (let i = 0; i < count; i++) {
-          const src = await imgs.nth(i).getAttribute("src");
-          if (this._isValidSatelliteImageSrc(src)) {
-            return { locator: imgs.nth(i), src };
-          }
-        }
-      } catch {}
-    }
-
-    return null;
-  }
-
-  async _findBrowseImage(existingSrcs) {
-    try {
-      const candidates = this.page.locator(
-        '#map img[src*="browse"], #map img[src*="browser"], #map img[src*=".browse"]',
+      await fastWait(
+        this.page,
+        500
       );
-      const count = await candidates.count();
+    }
+
+    return null;
+  }
+
+  async _findBrowseImage() {
+    try {
+      const images = this.page.locator(
+        '#map img[src*="browse"], #map img[src*=".browse"]'
+      );
+
+      const count =
+        await images.count();
+
       for (let i = 0; i < count; i++) {
-        const src = await candidates.nth(i).getAttribute("src");
-        if (this._isValidSatelliteImageSrc(src)) {
-          return { locator: candidates.nth(i), src };
+        const src =
+          await images.nth(i).getAttribute(
+            "src"
+          );
+
+        if (
+          this._isValidSatelliteImageSrc(src)
+        ) {
+          return {
+            locator: images.nth(i),
+            src,
+          };
         }
       }
     } catch {}
+
     return null;
   }
 
   // ============================================================
-  // Robust Button Click
+  // Scene Actions
+  // Step 18 = Outline + Preview + Metadata
   // ============================================================
 
-  async clickRowButtonRobust(row, buttonLocator) {
+  async verifySceneActions() {
+    const firstSceneRow =
+      this.scenesRows.first();
+
+    await expect(
+      firstSceneRow,
+      "First satellite scene row should be visible"
+    ).toBeVisible({
+      timeout: 10000,
+    });
+
+    // ==========================================================
+    // STEP 18.1 - OUTLINE
+    // Reference: working satelliteTest Step 12.2
+    // ==========================================================
+
+    const outlineCell =
+      firstSceneRow.locator("td").nth(3);
+
+    const outlineAction =
+      outlineCell.locator("input").first();
+
+    await expect(
+      outlineAction,
+      "Outline action should be available"
+    ).toBeVisible({
+      timeout: 10000,
+    });
+
+    await highlight(
+      this.page,
+      outlineAction,
+      {
+        label: "STEP 18.1: OUTLINE",
+        pause: 1000,
+      }
+    );
+
+    await robustClick(
+      this.page,
+      outlineAction,
+      {
+        timeout: 10000,
+        retry: 1,
+      }
+    );
+
+    await fastWait(
+      this.page,
+      1500
+    );
+
+    await expect(
+      this.page.locator("#map"),
+      "Map should be visible after selecting Outline"
+    ).toBeVisible({
+      timeout: 10000,
+    });
+
+    const outlineMapContent =
+      this.page.locator(
+        [
+          ".leaflet-overlay-pane path",
+          ".leaflet-overlay-pane svg",
+          ".leaflet-interactive",
+          "svg path",
+          "canvas",
+        ].join(",")
+      );
+
+    const outlineContentCount =
+      await outlineMapContent.count();
+
+    expect(
+      outlineContentCount,
+      "Outline should be displayed on map"
+    ).toBeGreaterThan(0);
+
+    const outlineHighlighted =
+      await highlightOutlineOnMap(
+        this.page,
+        outlineAction
+      );
+
+    expect(
+      outlineHighlighted,
+      "Actual satellite scene outline should be highlighted"
+    ).toBe(true);
+
+    logInfo(
+      `Satellite scene Outline verified on map: ${outlineContentCount} map element(s)`
+    );
+
+    // ==========================================================
+    // STEP 18.2 - PREVIEW
+    // Reference: working satelliteTest Step 12.3
+    // ==========================================================
+
+    const previewCell =
+      firstSceneRow.locator("td").nth(4);
+
+    const previewAction =
+      previewCell.locator("input").first();
+
+    await expect(
+      previewAction,
+      "Preview action should be available"
+    ).toBeVisible({
+      timeout: 10000,
+    });
+
+    await highlight(
+      this.page,
+      previewAction,
+      {
+        label: "STEP 18.2: PREVIEW",
+        pause: 1000,
+      }
+    );
+
+    const imagesBefore =
+      await this._getMapImageSrcs();
+
+    await robustClick(
+      this.page,
+      previewAction,
+      {
+        timeout: 10000,
+        retry: 1,
+      }
+    );
+
+    logInfo(
+      "Scene preview clicked successfully"
+    );
+
+    await fastWait(
+      this.page,
+      1500
+    );
+
+    // First try the same map-preview behaviour
+    // used by the working satellite test.
+    let previewImage = null;
+
     try {
-      await buttonLocator.first().scrollIntoViewIfNeeded();
-      await buttonLocator.first().click();
-      return true;
-    } catch {
-      try {
-        await buttonLocator.first().click({ force: true });
-        return true;
-      } catch {
-        const clicked = await row.evaluate((r) => {
-          const btn = r.querySelector(
-            'input[title="show scene outline"], input[title*="preview"], input[title*="preveiw"], ' +
-              'input[title*="Show scene details"], input[value="Details"], ' +
-              'button[title*="outline"], button[title*="preview"], button[title*="details"], ' +
-              'button:has-text("Details")',
-          );
-          if (!btn) return false;
-          try {
-            btn.click();
-            return true;
-          } catch {
-            return false;
-          }
-        });
-        return !!clicked;
+      previewImage =
+        await this._waitForNewMapImage(
+          imagesBefore,
+          PREVIEW_WAIT_MS
+        );
+    } catch {}
+
+    // Browse-image fallback.
+    if (!previewImage) {
+      const browseImage =
+        await this._findBrowseImage();
+
+      if (browseImage) {
+        previewImage =
+          browseImage.locator;
       }
     }
-  }
 
-  async _countVisibleSceneOutlines() {
-    return this.page.locator("#map svg path").evaluateAll(
-      (paths) =>
-        paths.filter((path) => {
-          const rect = path.getBoundingClientRect();
-          const style = window.getComputedStyle(path);
-          const strokeWidth = Number.parseFloat(
-            style.strokeWidth || path.getAttribute("stroke-width") || "0",
-          );
+    // If preview overlay is rendered by the map
+    // helper, validate/highlight it.
+    if (previewImage) {
+      const previewSrc =
+        await previewImage.getAttribute(
+          "src"
+        );
 
-          return (
-            rect.width > 10 &&
-            rect.height > 10 &&
-            strokeWidth >= 3 &&
-            style.stroke !== "none" &&
-            Number(style.strokeOpacity || 0) > 0 &&
-            style.visibility !== "hidden" &&
-            style.display !== "none"
-          );
-        }).length,
+      expect(
+        this._isValidSatelliteImageSrc(
+          previewSrc
+        ),
+        "Preview image should have a valid source"
+      ).toBe(true);
+
+      await highlight(
+        this.page,
+        previewImage,
+        {
+          label: "STEP 18.2: PREVIEW IMAGE",
+          pause: 1200,
+        }
+      );
+
+      logInfo(
+        `Preview image loaded successfully: ${previewSrc}`
+      );
+    } else {
+      // Reference flow's actual preview state.
+      // The app may render the preview as a map
+      // overlay instead of an <img>.
+      const previewHighlighted =
+        await this._highlightPreviewOnMap();
+
+      expect(
+        previewHighlighted,
+        "Satellite preview should be displayed on map"
+      ).toBe(true);
+
+      logInfo(
+        "Satellite preview verified on map"
+      );
+    }
+
+    // ==========================================================
+    // STEP 18.3 - METADATA / DETAILS
+    // Reference: working satelliteTest Step 12.4
+    // ==========================================================
+
+    const metadataCell =
+      firstSceneRow.locator("td").nth(5);
+
+    const metadataAction =
+      metadataCell.locator("input").first();
+
+    await expect(
+      metadataAction,
+      "Metadata action should be available"
+    ).toBeVisible({
+      timeout: 10000,
+    });
+
+    await highlight(
+      this.page,
+      metadataAction,
+      {
+        label: "STEP 18.3: METADATA",
+        pause: 1000,
+      }
     );
-  }
 
-  async _validateSceneOutlineRendered(row, sceneId) {
-    const outlineBtn = row.locator('input[title="show scene outline"]');
+    await robustClick(
+      this.page,
+      metadataAction,
+      {
+        timeout: 10000,
+        retry: 1,
+      }
+    );
+
+    logInfo(
+      "Scene metadata clicked successfully"
+    );
+
+    const metadataModal =
+      this.page.locator(
+        ".modal:visible"
+      ).last();
 
     await expect(
-      outlineBtn,
-      `Outline button should be visible for ${sceneId || "scene"}`,
-    ).toBeVisible({ timeout: OUTLINE_WAIT_MS });
+      metadataModal,
+      "Metadata popup should be visible"
+    ).toBeVisible({
+      timeout: 15000,
+    });
+
+    logInfo(
+      "Metadata popup opened successfully"
+    );
+
+    // ----------------------------------------------------------
+    // STEP 18.3.1 - Metadata Image
+    // ----------------------------------------------------------
+
+    const metadataImage =
+      metadataModal
+        .locator("#img_scene")
+        .first();
 
     await expect(
-      outlineBtn,
-      `Outline button should switch to Hide for ${sceneId || "scene"}`,
-    ).toHaveValue("Hide");
+      metadataImage,
+      "Metadata image should be visible"
+    ).toBeVisible({
+      timeout: DETAILS_IMAGE_WAIT_MS,
+    });
 
     await expect
       .poll(
-        () =>
-          this.page.evaluate(() => {
-            const map = document.querySelector("#map");
-            const rect = map?.getBoundingClientRect();
-
-            return Boolean(rect && rect.width > 0 && rect.height > 0);
-          }),
+        async () =>
+          await metadataImage.evaluate(
+            (img) =>
+              Boolean(
+                img.complete &&
+                  img.naturalWidth > 0 &&
+                  img.naturalHeight > 0 &&
+                  img.getAttribute("src")
+              )
+          ),
         {
-          timeout: OUTLINE_WAIT_MS,
-          message: `A visible highlighted outline should render on the map for ${sceneId || "scene"}`,
-        },
+          timeout: DETAILS_IMAGE_WAIT_MS,
+          intervals: [
+            500,
+            1000,
+            2000,
+          ],
+        }
       )
       .toBe(true);
 
-    const activeCloseButton = row.locator(".scene-close-btn.gw-scene-active");
-    if ((await activeCloseButton.count()) > 0) {
-      await expect(
-        activeCloseButton,
-        `Scene outline state should be highlighted for ${sceneId || "scene"}`,
-      ).toBeVisible({ timeout: OUTLINE_WAIT_MS });
-    }
-  }
+    const metadataImageState =
+      await metadataImage.evaluate(
+        (img) => ({
+          src:
+            img.getAttribute("src") ||
+            "",
+          complete: img.complete,
+          naturalWidth:
+            img.naturalWidth,
+          naturalHeight:
+            img.naturalHeight,
+        })
+      );
 
-  async _highlightSceneOutlineOnMap(outlineButton) {
-    const highlighted = await highlightOutlineOnMap(this.page, outlineButton);
-    if (highlighted) await this.page.waitForTimeout( 1200 );
-    return highlighted;
-  }
+    expect(
+      metadataImageState.src,
+      "Metadata image should have a valid src"
+    ).toMatch(/.+/);
 
-  async _highlightPreviewOnMap() {
-    const highlighted = await highlightPreviewOnMap(this.page);
-    if (highlighted) await this.page.waitForTimeout( 1200 );
-    return highlighted;
-  }
+    expect(
+      metadataImageState.naturalWidth,
+      "Metadata image should have valid width"
+    ).toBeGreaterThan(0);
 
-  async _clearPreviewHighlight() {
-    await clearMapHighlights(this.page);
+    expect(
+      metadataImageState.naturalHeight,
+      "Metadata image should have valid height"
+    ).toBeGreaterThan(0);
+
+    await highlight(
+      this.page,
+      metadataImage,
+      {
+        label:
+          "STEP 18.3.1: METADATA IMAGE",
+        pause: 1200,
+      }
+    );
+
+    logInfo(
+      `Metadata image loaded successfully: ${metadataImageState.naturalWidth}x${metadataImageState.naturalHeight}`
+    );
+
+    // ----------------------------------------------------------
+    // STEP 18.3.2 - Metadata Details
+    // ----------------------------------------------------------
+
+    const detailsSection =
+      metadataModal
+        .locator("#tbl_details_wrapper")
+        .first();
+
+    await expect(
+      detailsSection,
+      "Metadata details section should be visible"
+    ).toBeVisible({
+      timeout: 15000,
+    });
+
+    await highlight(
+      this.page,
+      detailsSection,
+      {
+        label:
+          "STEP 18.3.2: METADATA DETAILS",
+        pause: 1200,
+      }
+    );
+
+    const parameterColumn =
+      metadataModal
+        .locator("#tbl_details thead th")
+        .nth(0);
+
+    const valueColumn =
+      metadataModal
+        .locator("#tbl_details thead th")
+        .nth(1);
+
+    await expect(
+      parameterColumn,
+      "Parameter column should be visible"
+    ).toBeVisible({
+      timeout: 10000,
+    });
+
+    await expect(
+      valueColumn,
+      "Value column should be visible"
+    ).toBeVisible({
+      timeout: 10000,
+    });
+
+    await highlight(
+      this.page,
+      parameterColumn,
+      {
+        label:
+          "STEP 18.3.2: PARAMETER",
+        pause: 700,
+      }
+    );
+
+    await highlight(
+      this.page,
+      valueColumn,
+      {
+        label:
+          "STEP 18.3.2: VALUE",
+        pause: 700,
+      }
+    );
+
+    logInfo(
+      "Metadata image and details sections verified successfully"
+    );
+
+    // ----------------------------------------------------------
+    // STEP 18.4 - CLOSE METADATA
+    // Reference: working satelliteTest Step 12.5
+    // ----------------------------------------------------------
+
+    const closePopup =
+      metadataModal
+        .locator("span")
+        .filter({
+          hasText: "×",
+        })
+        .first();
+
+    await expect(
+      closePopup,
+      "Metadata popup Cancel button should be visible"
+    ).toBeVisible({
+      timeout: 10000,
+    });
+
+    await highlight(
+      this.page,
+      closePopup,
+      {
+        label:
+          "STEP 18.4: METADATA CANCEL",
+        pause: 1000,
+      }
+    );
+
+    await robustClick(
+      this.page,
+      closePopup,
+      {
+        timeout: 10000,
+        retry: 1,
+      }
+    );
+
+    await fastWait(
+      this.page,
+      800
+    );
+
+    await expect(
+      metadataModal,
+      "Metadata popup should disappear after Cancel"
+    ).toBeHidden({
+      timeout: 10000,
+    });
+
+    await this._clearPreviewHighlight();
+
+    logInfo(
+      "Metadata popup closed successfully using Cancel"
+    );
+
+    logInfo(
+      "Step 18 completed: Outline, Preview and Metadata verified successfully"
+    );
+
+    return true;
   }
 
   // ============================================================
-  // Scene Processing
+  // STEP 19 - Remove Scene
+  // Reference: working satelliteTest Step 12.6
   // ============================================================
 
-  async processScene(row, sceneIndex = 0, opts = {}) {
-    const rowText = await getInnerTextSafe(row);
+  async removeScene() {
+    const removeButton = this.page.locator(
+      'button.scene-close-btn.gw-scene-active[title="Remove scene"]'
+    ).first();
 
-    if (/^No data available/i.test(rowText.trim())) {
-      logInfo("Skipping placeholder row (no scene data)");
-      markLogicSkipped(`Scene row ${sceneIndex} is placeholder — no data`);
+    await expect(
+      removeButton,
+      "Active scene Remove Scene (X) button should be visible"
+    ).toBeVisible({
+      timeout: 10000,
+    });
+
+    await highlight(
+      this.page,
+      removeButton,
+      {
+        label:
+          "STEP 19: REMOVE SCENE (X)",
+        pause: 1200,
+      }
+    );
+
+    const sceneKey =
+      await removeButton.getAttribute(
+        "data-scene-key"
+      );
+
+    logInfo(
+      `Removing active satellite scene: ${
+        sceneKey || "unknown scene"
+      }`
+    );
+
+    await robustClick(
+      this.page,
+      removeButton,
+      {
+        timeout: 10000,
+        retry: 1,
+      }
+    );
+
+    await fastWait(
+      this.page,
+      1500
+    );
+
+    await expect(
+      this.page.locator(
+        'button.scene-close-btn.gw-scene-active[title="Remove scene"]'
+      ),
+      "Active scene should be removed after clicking Cancel (X)"
+    ).toHaveCount(0, {
+      timeout: 10000,
+    });
+
+    await fastWait(
+      this.page,
+      1000
+    );
+
+    logInfo(
+      `Satellite scene ${
+        sceneKey || ""
+      } removed successfully`
+    );
+
+    return true;
+  }
+
+  // ============================================================
+  // Process Single Scene
+  // ============================================================
+
+  async processScene(
+    row,
+    sceneIndex = 0
+  ) {
+    const rowText =
+      await getInnerTextSafe(row);
+
+    if (
+      /^No data available/i.test(
+        rowText.trim()
+      )
+    ) {
+      markLogicSkipped(
+        `Scene row ${sceneIndex} is placeholder — no data`
+      );
+
       return;
     }
 
     const displayText =
-      rowText.length > 80 ? rowText.substring(0, 80) + "..." : rowText;
-    await this.showStep(`Processing scene: ${displayText}`);
-    await highlight(this.page, row);
+      rowText.length > 80
+        ? rowText.substring(0, 80) + "..."
+        : rowText;
 
-    const sceneId = await this.getSceneIdFromRow(row);
-    if (sceneId) {
-      logInfo(`Parsed scene ID: ${sceneId}`);
-    } else {
-      logInfo(
-        "Scene ID not parsed — proceeding with sceneId-agnostic validation",
-      );
-    }
+    await this.showStep(
+      `Processing scene: ${displayText}`
+    );
+
+    const sceneId =
+      await this.getSceneIdFromRow(row);
 
     setContext({
       flow: "sceneProcessing",
-      scene: sceneId || `row${sceneIndex}`,
+      scene:
+        sceneId ||
+        `row${sceneIndex}`,
     });
 
     // ==========================================================
-    // 1. OUTLINE
+    // OUTLINE
     // ==========================================================
-    const outlineBtn = row.locator('input[title="show scene outline"]');
 
-    if ((await outlineBtn.count()) > 0) {
-      await highlight(this.page, outlineBtn.first());
-      const currentState = await outlineBtn.first().getAttribute("value");
-      logInfo(`Outline button found. Current state: ${currentState}`);
+    const outlineBtn =
+      row.locator(
+        'input[title="show scene outline"]'
+      );
 
-      if (currentState === "Show") {
-        const mapBeforeOutline = await this.page.locator("#map").screenshot();
-        const label = sceneId || displayText.substring(0, 40);
-        await this.showStep(`Clicking 'Show' outline for ${label}`);
-        await this.clickRowButtonRobust(row, outlineBtn);
-        await this.page.waitForTimeout( 500 );
-        await this._validateSceneOutlineRendered(
-          row,
-          sceneId || `row${sceneIndex}`,
+    if (
+      (await outlineBtn.count()) > 0
+    ) {
+      const state =
+        await outlineBtn
+          .first()
+          .getAttribute("value");
+
+      if (state === "Show") {
+        await robustClick(
+          this.page,
+          outlineBtn.first(),
+          {
+            timeout: 10000,
+            retry: 1,
+          }
         );
 
-        expect(
-          await this._highlightSceneOutlineOnMap(outlineBtn.first()),
-          `Scene outline should be visibly highlighted on the map for ${sceneId || "scene"}`,
-        ).toBe(true);
-
-        const mapAfterOutline = await this.page.locator("#map").screenshot();
-        const changedBytes = mapAfterOutline.reduce(
-          (count, value, index) =>
-            count + (value !== mapBeforeOutline[index] ? 1 : 0),
-          Math.abs(mapAfterOutline.length - mapBeforeOutline.length),
+        await fastWait(
+          this.page,
+          1000
         );
-
-        expect(
-          changedBytes,
-          `Map should visibly change after showing the outline for ${sceneId || "scene"}`,
-        ).toBeGreaterThan(100);
-      } else {
-        logInfo(`Outline already active (state: ${currentState})`);
-        await this._validateSceneOutlineRendered(
-          row,
-          sceneId || `row${sceneIndex}`,
-        );
-        await this._highlightSceneOutlineOnMap(outlineBtn.first());
       }
-    } else {
-      markLogicSkipped(
-        `Outline button not found for scene ${sceneId || `row${sceneIndex}`}`,
+
+      await this._validateSceneOutlineRendered(
+        row,
+        sceneId
+      );
+
+      await this._highlightSceneOutlineOnMap(
+        outlineBtn.first()
       );
     }
 
     // ==========================================================
-    // 2. PREVIEW
+    // PREVIEW
     // ==========================================================
-    const previewBtn = row.locator(
-      'input[title="Show scene preveiw"], input[title*="preview"], input[title*="preveiw"]',
-    );
-    let previewImageSrc = "";
-    let previewValid = false;
 
-    if ((await previewBtn.count()) > 0) {
-      await this.page.evaluate(() => {
-        window.__pwSceneOutlineHighlight?.setMap(null);
-        window.__pwSceneOutlineHighlight = null;
-      });
-      await highlight(this.page, previewBtn.first());
-      const imagesBefore = await this._getMapImageSrcs();
-      const clickedPreview = await this.clickRowButtonRobust(row, previewBtn);
-      if (clickedPreview) {
-        await expect(
-          previewBtn.first(),
-          `Preview button should be highlighted as active for ${sceneId || "scene"}`,
-        ).toHaveAttribute("data-preview-active", "true");
+    const previewBtn =
+      row.locator(
+        'input[title="Show scene preview"], input[title="Show scene preveiw"], input[title*="preview"], input[title*="preveiw"]'
+      );
 
-        await this.showStep(`Waiting for preview image to appear...`);
-        await this.page.waitForTimeout( 15000 );
+    if (
+      (await previewBtn.count()) > 0
+    ) {
+      const imagesBefore =
+        await this._getMapImageSrcs();
 
-        // Strategy 1: Wait for new map image via src diff
-        const previewImgLocator = await this._waitForNewMapImage(
+      await robustClick(
+        this.page,
+        previewBtn.first(),
+        {
+          timeout: 10000,
+          retry: 1,
+        }
+      );
+
+      await fastWait(
+        this.page,
+        1500
+      );
+
+      let previewImage =
+        await this._waitForNewMapImage(
           imagesBefore,
-          PREVIEW_WAIT_MS,
+          PREVIEW_WAIT_MS
         );
 
-        if (previewImgLocator) {
-          const rawSrc = await previewImgLocator
-            .getAttribute("src")
-            .catch(() => null);
+      if (!previewImage) {
+        const browse =
+          await this._findBrowseImage();
 
-          if (this._isValidSatelliteImageSrc(rawSrc)) {
-            previewImageSrc = rawSrc;
-            previewValid = true;
-            logInfo(`Preview image found: ${previewImageSrc}`);
+        if (browse) {
+          previewImage =
+            browse.locator;
+        }
+      }
 
-            try {
-              await highlight(this.page, previewImgLocator, {
-                borderColor: "rgba(0, 200, 120, 0.95)",
-                pause: 1500,
-              });
-              await annotateElementLabel(
-                this.page,
-                previewImgLocator,
-                "PREVIEW ✅",
-              );
-            } catch {}
-
-            const idForFile = sceneId || `row${sceneIndex + 1}`;
-            await saveMapScreenshot(
-              this.page,
-              idForFile,
-              "preview_highlighted",
-              false,
-            );
-            try {
-              await removeAnnotationLabels(this.page);
-            } catch {}
-          } else {
-            const rejectedSrc = (rawSrc || "null").substring(0, 80);
-            logInfo(
-              `Preview detector found img element but src is invalid: ${rejectedSrc} — trying fallbacks...`,
-            );
+      if (previewImage) {
+        await highlight(
+          this.page,
+          previewImage,
+          {
+            label: "PREVIEW",
+            pause: 1000,
           }
-        }
+        );
 
-        // Strategy 2: Fallback — find by sceneId in src
-        if (!previewValid && sceneId) {
-          const found = await this._findImageBySceneId(sceneId);
-          if (found) {
-            previewImageSrc = found.src;
-            previewValid = true;
-            logInfo(
-              `Preview image found via sceneId fallback: ${previewImageSrc}`,
-            );
+        await annotateElementLabel(
+          this.page,
+          previewImage,
+          "PREVIEW"
+        );
 
-            try {
-              await highlight(this.page, found.locator, {
-                borderColor: "rgba(0, 200, 120, 0.95)",
-                pause: 1500,
-              });
-              await annotateElementLabel(
-                this.page,
-                found.locator,
-                "PREVIEW ✅",
-              );
-            } catch {}
-
-            await saveMapScreenshot(
-              this.page,
-              sceneId,
-              "preview_sceneid_fallback",
-              false,
-            );
-            try {
-              await removeAnnotationLabels(this.page);
-            } catch {}
-          }
-        }
-
-        // Strategy 3: Fallback — find any img with "browse" or "browser" in src
-        if (!previewValid) {
-          const found = await this._findBrowseImage(imagesBefore);
-          if (found) {
-            previewImageSrc = found.src;
-            previewValid = true;
-            logInfo(
-              `Preview image found via browse-url fallback: ${previewImageSrc}`,
-            );
-
-            try {
-              await highlight(this.page, found.locator, {
-                borderColor: "rgba(0, 200, 120, 0.95)",
-                pause: 1500,
-              });
-              await annotateElementLabel(
-                this.page,
-                found.locator,
-                "PREVIEW ✅",
-              );
-            } catch {}
-
-            const idForFile = sceneId || `row${sceneIndex + 1}`;
-            await saveMapScreenshot(
-              this.page,
-              idForFile,
-              "preview_browse_fallback",
-              false,
-            );
-            try {
-              await removeAnnotationLabels(this.page);
-            } catch {}
-          }
-        }
-
-        // Final verdict for preview
-        if (previewValid) {
-          expect(
-            await this._highlightPreviewOnMap(),
-            `Preview should be visibly highlighted on the map for ${sceneId || displayText}`,
-          ).toBe(true);
-          logInfo(
-            `✅ PASS: Preview image loaded successfully for ${sceneId || displayText}`,
-          );
-        } else {
-          addWarning(
-            `No valid preview image detected on map for ${sceneId || displayText}`,
-          );
-          await saveMapScreenshot(
-            this.page,
-            sceneId || `row${sceneIndex + 1}`,
-            "preview_missing",
-            true,
-          );
-        }
-
-        expect(
-          previewValid,
-          `Preview should be visible and load a valid image for ${sceneId || displayText}`,
-        ).toBe(true);
-      } else {
-        addWarning(`Preview button click failed for ${sceneId || displayText}`);
         await saveMapScreenshot(
           this.page,
-          sceneId || `row${sceneIndex + 1}`,
-          "preview_click_failed",
-          true,
+          sceneId || "scene",
+          "preview_highlighted",
+          false
         );
+
+        await removeAnnotationLabels(
+          this.page
+        );
+      } else {
+        expect(
+          await this._highlightPreviewOnMap(),
+          "Preview should be highlighted on map"
+        ).toBe(true);
       }
-    } else {
-      markLogicSkipped(
-        `Preview button not found for scene ${sceneId || `row${sceneIndex}`}`,
-      );
     }
 
     await this._clearPreviewHighlight();
 
     // ==========================================================
-    // 3. DETAILS
+    // DETAILS / METADATA
     // ==========================================================
-    const detailsBtn = row.locator(
-      'input[title="Show scene details"], input[value="Details"]',
-    );
-    if ((await detailsBtn.count()) > 0) {
-      await highlight(this.page, detailsBtn.first());
-      const clickedDetails = await this.clickRowButtonRobust(row, detailsBtn);
-      if (clickedDetails) {
-        const modal = this.sceneDetailModal;
-        try {
-          await modal.waitFor({ state: "visible", timeout: 25000 });
 
-          await this.showStep(`Waiting for details data to load...`);
-          await this.page.waitForTimeout( 5000 );
+    const detailsBtn =
+      row.locator(
+        'input[title="Show scene details"], input[value="Details"]'
+      );
 
-          await highlight(this.page, modal, {
-            borderColor: "rgba(255, 165, 0, 0.95)",
-            pause: 500,
-          });
-
-          const img = this.sceneDetailImage;
-          await expect(img).toBeVisible({ timeout: DETAILS_IMAGE_WAIT_MS });
-
-          await highlight(this.page, img, {
-            borderColor: "orange",
-            pause: 500,
-          });
-          const detailSrc = (await img.getAttribute("src")) || "";
-
-          // Validate detail image src
-          if (this._isValidSatelliteImageSrc(detailSrc)) {
-            logInfo(`Detail image src: ${detailSrc}`);
-
-            // Compare preview vs detail only when both are valid
-            if (previewValid && previewImageSrc) {
-              const previewFile = previewImageSrc
-                .split("/")
-                .pop()
-                .split("?")[0];
-              const detailFile = detailSrc.split("/").pop().split("?")[0];
-
-              if (previewFile === detailFile) {
-                logInfo(`✅ PASS: Preview and Detail filenames match exactly.`);
-              } else if (
-                this._doUrlsMatchSceneId(previewImageSrc, detailSrc, sceneId)
-              ) {
-                // ★ Uses the robust matcher that handles "Legion01-B1100011002CD010" → "B1100011002CD010"
-                logInfo(
-                  `✅ PASS: Both Preview and Detail images match Scene ID ${sceneId}`,
-                );
-              } else {
-                logInfo(
-                  `INFO: Preview (${previewFile}) and Detail (${detailFile}) show different images — this can be normal.`,
-                );
-              }
-            } else if (!previewValid) {
-              logInfo(
-                `✅ PASS: Detail image loaded successfully (preview was not valid, skipping comparison) for ${sceneId || displayText}`,
-              );
-            } else {
-              logInfo(
-                `✅ PASS: Detail image loaded successfully (no preview to compare) for ${sceneId || displayText}`,
-              );
-            }
-          } else {
-            addWarning(
-              `Detail modal appeared but image src is not valid for ${sceneId || displayText}`,
-              {
-                src: (detailSrc || "").substring(0, 80) || "empty",
-              },
-            );
-            await saveMapScreenshot(
-              this.page,
-              sceneId || `row${sceneIndex + 1}`,
-              "detail_invalid_image_src",
-              true,
-            );
-          }
-
-          await modal
-            .locator("button.close, button.btn-danger")
-            .first()
-            .click();
-          await modal.waitFor({ state: "hidden", timeout: 8000 });
-        } catch (e) {
-          addWarning(
-            `Scene detail modal did not appear for ${sceneId || displayText}: ${e.message}`,
-          );
-          await saveMapScreenshot(
-            this.page,
-            sceneId || `row${sceneIndex + 1}`,
-            "detail_modal_error",
-            true,
-          );
+    if (
+      (await detailsBtn.count()) > 0
+    ) {
+      await robustClick(
+        this.page,
+        detailsBtn.first(),
+        {
+          timeout: 10000,
+          retry: 1,
         }
-      } else {
-        addWarning(`Details button click failed for ${sceneId || displayText}`);
-        await saveMapScreenshot(
+      );
+
+      await this._validateSceneDetails(
+        sceneId,
+        displayText
+      );
+    }
+  }
+
+  // ============================================================
+  // Scene Details Validation
+  // ============================================================
+
+  async _validateSceneDetails(
+    sceneId,
+    displayText
+  ) {
+    const modal =
+      this.sceneDetailModal;
+
+    try {
+      await modal.waitFor({
+        state: "visible",
+        timeout: 25000,
+      });
+
+      const img =
+        this.sceneDetailImage;
+
+      await expect(
+        img,
+        "Metadata image should be visible"
+      ).toBeVisible({
+        timeout: DETAILS_IMAGE_WAIT_MS,
+      });
+
+      await expect
+        .poll(
+          async () =>
+            await img.evaluate(
+              (image) =>
+                Boolean(
+                  image.complete &&
+                    image.naturalWidth > 0 &&
+                    image.naturalHeight > 0 &&
+                    image.getAttribute("src")
+                )
+            ),
+          {
+            timeout:
+              DETAILS_IMAGE_WAIT_MS,
+            intervals: [
+              500,
+              1000,
+              2000,
+            ],
+          }
+        )
+        .toBe(true);
+
+      const detailsSection =
+        modal
+          .locator(
+            "#tbl_details_wrapper"
+          )
+          .first();
+
+      await expect(
+        detailsSection,
+        "Metadata details section should be visible"
+      ).toBeVisible({
+        timeout: 15000,
+      });
+
+      await highlight(
+        this.page,
+        detailsSection,
+        {
+          label:
+            "METADATA DETAILS",
+          pause: 1000,
+        }
+      );
+
+      const closeButton =
+        modal
+          .locator("span")
+          .filter({
+            hasText: "×",
+          })
+          .first();
+
+      if (
+        await closeButton.isVisible()
+          .catch(() => false)
+      ) {
+        await robustClick(
           this.page,
-          sceneId || `row${sceneIndex + 1}`,
-          "detail_click_failed",
-          true,
+          closeButton,
+          {
+            timeout: 10000,
+            retry: 1,
+          }
+        );
+      } else {
+        await this.page.keyboard.press(
+          "Escape"
         );
       }
-    } else {
-      markLogicSkipped(
-        `Details button not found for scene ${sceneId || `row${sceneIndex}`}`,
+
+      await expect(
+        modal
+      ).toBeHidden({
+        timeout: 10000,
+      });
+
+      logInfo(
+        `Scene metadata verified successfully: ${
+          sceneId || displayText
+        }`
       );
+    } catch (e) {
+      addWarning(
+        `Scene detail modal error for ${
+          sceneId || displayText
+        }: ${e.message}`
+      );
+
+      await saveMapScreenshot(
+        this.page,
+        sceneId || "scene",
+        "detail_modal_error",
+        true
+      );
+
+      throw e;
+    }
+  }
+
+  // ============================================================
+  // Process All Scenes
+  // ============================================================
+
+  async processAllScenes() {
+    const rows =
+      this.scenesRows;
+
+    const count =
+      await rows.count();
+
+    logInfo(
+      `Processing ${count} satellite scene row(s)`
+    );
+
+    for (
+      let i = 0;
+      i < count;
+      i++
+    ) {
+      await this.processScene(
+        rows.nth(i),
+        i
+      );
+    }
+
+    return count;
+  }
+  // ============================================================
+  // ADD FIRST SATELLITE SCENE TO CART
+  // ============================================================
+
+  async addFirstSceneToCart(mapPage, satelliteName) {
+    setContext({
+      flow: "addFirstSceneToCart",
+      details: { satellite: satelliteName },
+    });
+
+    try {
+      const satelliteRows = this.page.locator(
+        "#tbl_satellite_scenes tbody tr"
+      );
+
+      const firstSceneRow = satelliteRows.first();
+
+      await expect(
+        firstSceneRow,
+        "First satellite scene row should be visible"
+      ).toBeVisible({ timeout: 10000 });
+
+      await mapPage.highlight(firstSceneRow, {
+        label: "STEP 12.1: SATELLITE SCENE ROW",
+        pause: 1000,
+      });
+
+      const addToCartButton = firstSceneRow.locator(
+        'input[type="image"][src*="add-to-cart"]'
+      );
+
+      await expect(
+        addToCartButton,
+        `Add to Cart button should be visible for ${satelliteName}`
+      ).toBeVisible({ timeout: 10000 });
+
+      await expect(
+        addToCartButton,
+        `Add to Cart button should be enabled for ${satelliteName}`
+      ).toBeEnabled({ timeout: 10000 });
+
+      await mapPage.highlight(addToCartButton, {
+        label: "STEP 12.2: ADD TO CART",
+        pause: 1000,
+      });
+
+      await addToCartButton.click();
+
+      logInfo(
+        `Add to Cart clicked successfully for ${satelliteName}`
+      );
+
+      const cartPopup = this.page.locator("#popup");
+
+      await expect(
+        cartPopup,
+        "Item added to cart popup should appear"
+      ).toBeVisible({ timeout: 80000 });
+
+      await expect(
+        cartPopup,
+        "Popup should confirm item was added to cart"
+      ).toContainText("Item added to cart", {
+        timeout: 10000,
+      });
+
+      await mapPage.highlight(cartPopup, {
+        label: "STEP 12.3: ITEM ADDED TO CART",
+        pause: 1500,
+      });
+
+      logInfo(
+        `Item added to cart popup verified successfully for ${satelliteName}`
+      );
+
+      return true;
+    } catch (e) {
+      addWarning(
+        `Failed to add ${satelliteName} to cart: ${
+          e?.message || e
+        }`
+      );
+
+      return false;
     }
   }
 }

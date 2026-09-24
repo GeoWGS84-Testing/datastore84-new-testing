@@ -578,13 +578,23 @@ export async function assertVisible(locator, label) {
         });
 
         return true;
-      } catch (err) {
+     /* } catch (err) {
         addWarning("robustClick attempt failed", {
           attempt,
           error: err.message,
         });
 
-        if (attempt < retry) {
+        if (attempt < retry) {*/
+
+        } catch (err) {
+  logInfo("robustClick retrying after failed attempt", {
+    attempt,
+    error: err.message,
+    testcase: CURRENT_TESTCASE,
+  });
+
+  if (attempt < retry) {
+
           await new Promise((r) => setTimeout(r, 250));
           continue;
         }
