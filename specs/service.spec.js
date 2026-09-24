@@ -27,28 +27,22 @@ test.use({
 // TC-1
 // SERVICE POPUP + ALL SECTIONS + AOI OPTIONS + ACTIVE STATUS + AOI AREA
 // ============================================================================
-<<<<<<< HEAD
 
 test(
-  "[P0] 1 - Verify Service popup and AOI ",
-=======
- 
-test("[P0] 1 - Verify Service popup and AOI", 
-  
->>>>>>> f80a72c (Update Playwright page objects and test flows)
+  "[P0] 1 - Verify Service popup and AOI",
   async ({ page }) => {
-  const homePage = new HomePage(page);
-  const mapPage = new MapPage(page);
-  const cartPanel = new CartPanel(page, mapPage);
-  const servicePage = new ServicePage(page, mapPage);
+    const homePage = new HomePage(page);
+    const mapPage = new MapPage(page);
+    const cartPanel = new CartPanel(page, mapPage);
+    const servicePage = new ServicePage(page, mapPage);
 
-  clearDiagnostics();
+    clearDiagnostics();
 
-  await showStep(page, "Step 1: Navigate to DataStore");
-  await homePage.open();
+    await showStep(page, "Step 1: Navigate to DataStore");
+    await homePage.open();
 
-  await showStep(page, "Step 2: Wait for loader");
-  await homePage.waitForLoaderAndHighlight();
+    await showStep(page, "Step 2: Wait for loader");
+    await homePage.waitForLoaderAndHighlight();
 
     // STEP 3 - Tutorial
     await homePage.closeTutorial();
@@ -56,13 +50,13 @@ test("[P0] 1 - Verify Service popup and AOI",
     // STEP 4 - Map
     await mapPage.waitForMapToLoad();
 
-  await showStep(page, "Step 5: Verify Search icon");
-  await cartPanel.verifySearchIcon();
+    await showStep(page, "Step 5: Verify Search icon");
+    await cartPanel.verifySearchIcon();
 
-  await showStep(page, "Step 6: Click Search");
-  await cartPanel.clickSearchIcon();
+    await showStep(page, "Step 6: Click Search");
+    await cartPanel.clickSearchIcon();
 
-       // STEP 7 - Search Denver
+    // STEP 7 - Search Denver
     await showStep(page, "Step 7: Search Denver");
     await cartPanel.searchDenver();
 
@@ -74,24 +68,27 @@ test("[P0] 1 - Verify Service popup and AOI",
     await showStep(page, "Step 9: Rectangle AOI");
     await cartPanel.drawRectangleAOI();
 
-  await showStep(page, "Step 10: Verify Service popup");
-  await servicePage.verifyServicePopup();
+    await showStep(page, "Step 10: Verify Service popup");
+    await servicePage.verifyServicePopup();
 
-  await showStep(page, "Step 11: Verify Steps section");
-  await servicePage.verifyStepsSection();
+    await showStep(page, "Step 11: Verify Steps section");
+    await servicePage.verifyStepsSection();
 
-  await showStep(page, "Step 12: Verify Service options");
-  await servicePage.verifyServiceOptions();
+    await showStep(page, "Step 12: Verify Service options");
+    await servicePage.verifyServiceOptions();
 
-  await showStep(page, "Step 13: Verify Area of Interest");
-  await servicePage.verifyAOISection();
+    await showStep(page, "Step 13: Verify Area of Interest");
+    await servicePage.verifyAOISection();
 
-  await showStep(page, "Step 14: Verify Draw and Upload AOI");
-  await servicePage.verifyAOITabs();
+    await showStep(page, "Step 14: Verify Draw and Upload AOI");
+    await servicePage.verifyAOITabs();
 
-  await showStep(page, "Step 15: Verify AOI Active and Area");
-  await servicePage.verifyAOIStatusAndArea();
-});
+    await showStep(page, "Step 15: Verify AOI Active and Area");
+    await servicePage.verifyAOIStatusAndArea();
+
+    logInfo("P0 Verify Service popup and AOI test flow completed successfully");
+  }
+);
 
 // ============================================================================
 // TC-2
@@ -149,8 +146,8 @@ test(
     await showStep(page, "Step 12: Verify uploaded KML AOI");
     await servicePage.verifyKMLAOI();
 
-   //await showStep(page, "Step 13: Verify AOI Active and Area");
-   // await servicePage.verifyAOIArea();
+    logInfo("P0 TC-2 Upload KML AOI and compare AOI area with service popup completed successfully");
+ 
   }
 );
 
@@ -1069,3 +1066,4 @@ test("[P0] 11 - Satellite Service Date Range filter and imagery results verifica
 
 
  
+

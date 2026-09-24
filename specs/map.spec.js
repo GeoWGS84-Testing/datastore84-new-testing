@@ -58,7 +58,7 @@ test.use({
       await showStep( page, "Step 7: Verify the selected location marker");
       await mapPage.verifyMapMarker();
 
-      logInfo("Map Search test completed successfully");
+       logInfo("P0 Map Search test completed successfully");
     } catch (error) {
       addError(`Map Search test failed: ${error.message}`);
 
@@ -129,7 +129,7 @@ test(
       await showStep(page, "Step 12: Complete the final map state");
       await mapPage.verifyFinalLocateMeState();
 
-      logInfo("Locate Me test flow completed successfully");
+      logInfo("P0 Locate Me test flow completed successfully");
     } catch (error) {
       addError(`Locate Me test failed: ${error?.message || error}`);
 
@@ -287,7 +287,7 @@ test(
       await showStep( page,"Step 35: Final KMZ map state after closing information box");
       await mapPage.highlight(mapPage.mapContainer, { borderColor: "#3FB950", label: "STEP 35: Final KMZ Map State", pause: 1500,});
 
-      logInfo("KML and KMZ upload test flow completed successfully" );
+      logInfo("P0 KML and KMZ upload test flow completed successfully");
     } catch (error) {
       addError(
         `KML/KMZ Upload test failed: ${error?.message || error}`
@@ -370,7 +370,7 @@ test(
       await showStep(page,"Step 18: Final map state after coordinate navigation");
       await mapPage.verifyFinalCoordinateNavigationState();
 
-      logInfo( "Coordinates navigation test flow completed successfully");
+       logInfo("P0 Coordinates navigation test flow completed successfully");
     } catch (error) {
       addError(
         `Coordinates navigation test failed: ${error?.message || error}`
@@ -431,7 +431,7 @@ test(
       await showStep(page, "Step 10: Complete the User Guide flow");
       await mapPage.verifyFinalUserGuideState();
 
-      logInfo("User Guide tutorial popup test flow completed successfully");
+      logInfo("P0 User Guide tutorial popup test flow completed successfully");
     } catch (error) {
       addError(`User Guide test failed: ${error?.message || error}`);
 

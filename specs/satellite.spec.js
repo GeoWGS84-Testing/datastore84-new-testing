@@ -181,6 +181,8 @@ test.use({
   await showStep(page, "Step 19: Remove Satellite Scene");
   await satellitePage.removeScene();
 
+  logInfo("P0 TC-1 Satellite Service WorldView02 completed successfully");
+
     }
   },
 );
@@ -337,7 +339,9 @@ test(
 
       await showStep(page, "Step 19: Remove Satellite Scene");
       await satellitePage.removeScene();
+
     }
+     logInfo("P0 TC-2 Satellite Service WorldView03 completed successfully");
   }
 );
 

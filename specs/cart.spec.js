@@ -125,145 +125,6 @@ test.use({
 //================================================
 // TC-2 checkout/submit request
 //===================================================
- /*
- test('[P0] 2 - Verify the checkout functionality and submit request', async ({ page }) => {
-  const homePage = new HomePage(page);
-  const mapPage = new MapPage(page);
-  const cartPanel = new CartPanel(page, mapPage);
-
-  clearDiagnostics();
-
-  try {
-    // STEP 1
-    await showStep(page, "Step 1: Navigate to DataStore");
-    await homePage.open();
-
-    // STEP 2
-    await showStep(page, "Step 2: Wait for loader");
-    await homePage.waitForLoaderAndHighlight();
-
-    // STEP 3
-    await showStep(page, "Step 3: Close tutorial");
-    await homePage.closeTutorial();
-
-    // STEP 4
-    await showStep(page, "Step 4: Wait for map");
-    await mapPage.waitForMapToLoad();
-
-    // STEP 5
-    await showStep(page, "Step 5: Search icon");
-    await cartPanel.verifySearchIcon();
-
-    // STEP 6
-    await showStep(page, "Step 6: Click Search");
-    await cartPanel.clickSearchIcon();
-
-    // STEP 7
-    await showStep(page, "Step 7: Search Denver");
-    await cartPanel.searchDenver();
-
-    // STEP 8
-    await showStep(page, "Step 8: Camera + Zoom + Draw");
-    await cartPanel.openCameraZoomAndDrawTool();
-
-    // STEP 9
-    await showStep(page, "Step 9: Rectangle AOI");
-    await cartPanel.drawRectangleAOI();
-
-    // STEP 10
-    await showStep(page, "Step 10: Satellite + Search Imagery");
-    await cartPanel.selectSatelliteService();
-    await cartPanel.searchImagery();
-    await cartPanel.waitForImageryScenes();
-
-    // STEP 10.4
-    await showStep(page, "Step 10.4: Add scene to cart");
-    await cartPanel.addSceneToCart();
-    await cartPanel.verifyItemAdded();
-    await cartPanel.verifyAndProceedToCart();
-
-    // STEP 11.1
-    await showStep(page, "Step 11.1: Verify Checkout");
-    await cartPanel.verifyCheckoutButton();
-
-    // STEP 11.2
-    await showStep(page, "Step 11.2: Submit Request page");
-    await cartPanel.openSubmitRequestPage();
-
-    // STEP 11.3
-    await showStep(page, "Step 11.3: Download AOI button");
-    await cartPanel.verifyDownloadAoiButton();
-
-    // STEP 11.4
-    await showStep(page, "Step 11.4: Download AOI");
-    await cartPanel.downloadAoi();
-
-    // STEP 11.5
-    await showStep(page, "Step 11.5: First Name");
-    await cartPanel.fillFirstName();
-
-    // STEP 11.6
-    await showStep(page, "Step 11.6: Last Name");
-    await cartPanel.fillLastName();
-
-    // STEP 11.7
-    await showStep(page, "Step 11.7: Email");
-    await cartPanel.fillEmail();
-
-    // STEP 11.8
-    await showStep(page, "Step 11.8: Company");
-    await cartPanel.fillCompany();
-
-    // STEP 11.9
-    await showStep(page, "Step 11.9: Phone");
-    await cartPanel.fillPhone();
-
-    // STEP 11.10
-    await showStep(page, "Step 11.10: Street");
-    await cartPanel.fillStreet();
-
-    // STEP 11.11
-    await showStep(page, "Step 11.11: City");
-    await cartPanel.fillCity();
-
-    // STEP 11.12
-    await showStep(page, "Step 11.12: State");
-    await cartPanel.fillState();
-
-    // STEP 11.13
-    await showStep(page, "Step 11.13: Zip");
-    await cartPanel.fillZip();
-
-    // STEP 11.14
-    await showStep(page, "Step 11.14: Country");
-    await cartPanel.fillCountry();
-
-    // STEP 11.15
-    await showStep(page, "Step 11.15: Additional Notes");
-    await cartPanel.fillAdditionalNotes();
-
-    // STEP 11.16
-    await showStep(page, "Step 11.16: Industry");
-    await cartPanel.selectIndustry();
-
-    // STEP 11.17
-    await showStep(page, "Step 11.17: Submit Request button");
-    await cartPanel.verifySubmitRequestButton();
-
-    // STEP 11.18
-    await showStep(page, "Step 11.18: Submit Request");
-    await cartPanel.submitRequest();
-
-    // STEP 11.19
-    await showStep(page, "Step 11.19: Thank You page");
-    await cartPanel.verifyThankYouPage();
-
-    logInfo("TC-2 completed successfully");
-  } catch (error) {
-    addError(`TC-2 failed: ${error?.message || error}`);
-    throw error;
-  }
-}); */
 
  test(
   '[P0] 2 - Verify the checkout functionality and submit request',
@@ -583,86 +444,58 @@ try {
 }
 
 
-// ============================================================
+ // ============================================================
 // STEP 11.21: VERIFY EMAIL DETAILS
 // ============================================================
 
-await showStep(
-  page,
-  'Step 11.21: Verify email details'
-);
+await showStep(page,'Step 11.21: Verify email details');
 
 expect(mail).toBeTruthy();
 
-expect(
-  emailHelper.emailSubjectMatches(
-    mail,
-    expectedSubject
-  )
-).toBeTruthy();
+expect( emailHelper.emailSubjectMatches(mail, expectedSubject)).toBeTruthy();
 
-expect(
-  emailHelper.emailSenderMatches(
-    mail,
-    expectedSender
-  )
-).toBeTruthy();
+expect( emailHelper.emailSenderMatches(mail, expectedSender)).toBeTruthy();
 
-expect(
-  emailHelper.emailRecipientMatches(
-    mail,
-    checkoutEmail
-  )
-).toBeTruthy();
+expect(emailHelper.emailRecipientMatches(mail, checkoutEmail)).toBeTruthy();
+
+
+// ============================================================
+// STEP 11.22: EMAIL VERIFICATION COMPLETED
+// ============================================================
+
+await showStep(page,'Step 11.22: Verify confirmation email sent successfully');
 
 logInfo(
-  `TC-2 completed successfully. Checkout request submitted and AOI Data Availability Report received at ${checkoutEmail}.`
+  `P0 TC-2 Email verification completed successfully. ` +
+  `Confirmation email received and verified successfully. ` +
+  `Subject, sender, and recipient details matched expected values.`
 );
 
 console.log(
   `\n============================================================`
 );
 
-console.log(
-  `[EMAIL] ✅ Email received successfully`
-);
+console.log( `[EMAIL] ✅ Email received successfully`);
 
-console.log(
-  `[EMAIL] From    : ${mail.from?.text || 'N/A'}`
-);
+console.log(`[EMAIL] From    : ${mail.from?.text || 'N/A'}`);
 
-console.log(
-  `[EMAIL] To      : ${mail.to?.text || 'N/A'}`
-);
+console.log(`[EMAIL] To      : ${mail.to?.text || 'N/A'}`);
 
-console.log(
-  `[EMAIL] Subject : ${mail.subject || 'N/A'}`
-);
+console.log(`[EMAIL] Subject : ${mail.subject || 'N/A'}`);
 
-console.log(
-  `[EMAIL] Date    : ${mail.date || 'N/A'}`
-);
+console.log(`[EMAIL] Date    : ${mail.date || 'N/A'}`);
 
 console.log(
   `============================================================\n`
 );
 
-console.log(
-  `[EMAIL] ✅ Subject verified successfully`
-);
+console.log( `[EMAIL] ✅ Subject verified successfully`);
 
-console.log(
-  `[EMAIL] ✅ Sender verified successfully`
-);
+console.log( `[EMAIL] ✅ Sender verified successfully`);
 
-console.log(
-  `[EMAIL] ✅ Recipient verified successfully`
-);
+console.log(`[EMAIL] ✅ Recipient verified successfully`);
 
-console.log(
-  `[EMAIL] ✅ Confirmation email verified successfully for ${checkoutEmail}`
-);
-
+console.log(`[EMAIL] ✅ Confirmation email verified successfully for ${checkoutEmail}`);
    
     } 
      catch (error) {
